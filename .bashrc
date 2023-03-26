@@ -166,16 +166,11 @@ alias largesthome='btrfs fi du ~/ | sort -h'
 alias largestroot='sudo btrfs fi du / | sort -h'
 alias threads='ps --no-headers -Leo user | sort | uniq --count'
 alias setuid='find /usr/bin -perm "/u=s,g=s"'
-alias smartdata='sudo smartctl -a /dev/nvme0'
+alias smart='sudo smartctl -a /dev/nvme0'
+alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 
 # Add an "alert" alias for long running commands.  Use like so: sleep 10; alert
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
-
-alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
-
-
-
-# # Set Alias functions
 
 # report disk usage of directory and sort files by size
 function dusort(){
@@ -228,7 +223,6 @@ function virev {
     nvim -p "${toOpen}"
 }
 
-
 # ex = EXtractor for all kinds of archives - usage: ex <file>
 ex ()
 {
@@ -244,7 +238,7 @@ ex ()
       *.tgz)       tar xzf "$1"   ;;
       *.zip)       unzip "$1"     ;;
       *.Z)         uncompress "$1";;
-      *.7z)        7z x "$1"      ;;
+      *.7z)        7z x "$1";;
       *.deb)       ar x "$1"      ;;
       *.tar.xz)    tar xf "$1"    ;;
       *.tar.zst)   tar xf "$1"    ;;
@@ -269,6 +263,13 @@ export HISTCONTROL=ignorespace
 export MANPAGER="less -R --use-color -Dd+r -Du+b"
 #export RANGER_LOAD_DEFAULT_RC=FALSE
 #export PAGER='less'
+
+#if ! pgrep -u "$USER" ssh-agent > /dev/null; then
+#    ssh-agent -t 1h > "$XDG_RUNTIME_DIR/ssh-agent.env"
+#fi
+#if [[ ! -f "$SSH_AUTH_SOCK" ]]; then
+#    source "$XDG_RUNTIME_DIR/ssh-agent.env" >/dev/null
+#fi
 
 for sh in /etc/bash/bashrc.d/* ; do
 	[[ -r ${sh} ]] && source "${sh}"
