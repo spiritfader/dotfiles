@@ -1,0 +1,8 @@
+*.vt100.locale: false
+*.vt100.utf8: true
+*.vt100.metaSendsEscape: true
+*.vt100.backarrowKey: false
+*.ttyModes: erase ^?
+*.vt100.saveLines: 4096
+*.vt100.faceName: Terminus:size=12:antialias=true
+*.vt100.bellIsUrgent: true

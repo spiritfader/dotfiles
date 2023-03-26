@@ -1,0 +1,9 @@
+# --timer 10 \
+#   "brightnessctl --save; brightnessctl set 10%" "brightnessctl --restore" \ # Dim the screen after 300 seconds, undim if user becomes active
+# --timer 120 \
+#   "brightnessctl --restore; ~/.config/scripts/locker/ff-lock.sh" "" \
+# --timer 20 \
+#   "grep 0 /sys/class/power_supply/ACAD/online > /dev/null && xset dpms force off" "brightnessctl --restore" \
+# --timer 3600 \
+#   "systemctl suspend" ""
+#
