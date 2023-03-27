@@ -1,8 +1,90 @@
-*.vt100.locale: false
-*.vt100.utf8: true
-*.vt100.metaSendsEscape: true
-*.vt100.backarrowKey: false
-*.ttyModes: erase ^?
-*.vt100.saveLines: 4096
-*.vt100.faceName: Terminus:size=12:antialias=true
-*.vt100.bellIsUrgent: true
+XTerm.vt100.locale: false
+XTerm.vt100.utf8: true
+XTerm.vt100.metaSendsEscape: true
+XTerm.vt100.backarrowKey: false
+XTerm.ttyModes: erase ^?
+XTerm.vt100.saveLines: 4096
+XTerm.vt100.faceName: Terminus:size=12:antialias=true
+XTerm.vt100.bellIsUrgent: true
+
+! from old xresources file
+XTerm*vt100*background: Black 
+XTerm*vt100*foreground: White
+XTerm*vt100*transparent: true 
+XTerm*vt100*allowTitleOps: false
+URxvt*buffered: true
+URxvt*geometry: 80x24
+URxvt*background: [90]Black
+URxvt*foreground: White
+!URxvt*underlineColor:ting o get
+!URxvt*highlightColor:
+!URxvt*highlightTextColor:
+!URxvt*cursorColor:
+!URxvt*cursorColor2:
+!URxvt*reverseVideo:
+URxvt*jumpScroll: false
+URxvt*skipScroll: false
+!URxvt*fading: 80
+!URxvt*fadeColor: Magenta
+!URxvt*iconFile:
+!URxvt*scrollColor:
+!URxvt*troughColor:
+!URxvt*borderColor:
+URxvt*intensityStyles: true 
+URxvt*title: urxvt
+!URxvt*iconName:
+URxvt*mapAlert: false
+URxvt*urgentOnBell: true
+URxvt*visualBell: true
+URxvt*loginShell: true
+URxvt*utmpInhibit: false
+!URxvt*print-pipe:
+URxvt*scrollstyle: plain
+!URxvt*thickness: 4
+URxvt*scrollBar: false
+URxvt*scrollBar_right: true
+URxvt*scrollBar_floating: true
+URxvt*scrollBar_align: centre
+URxvt*scrollTtyOutput: true
+URxvt*scrollWithBuffer: true
+URxvt*scrollTtyKeypress: true
+URxvt*saveLines: 1000
+URxvt*internalBorder: 1
+URxvt*externalBorder: 1
+URxvt*borderLess: false
+URxvt*skipBuiltInGlyphs: false
+!URxvt*termName: urxvt
+URxvt*lineSpace: 0
+!URxvt*meta8: false
+URxvt*mouseWheelScrollPage: true
+URxvt*pastableTabs: false
+URxvt*cursorBlink: true
+URxvt*cursorUnderline: false
+URxvt*pointerBlank: false
+!URxvt*pointerColor:
+!URxvt*pointerColor2:
+URxvt*pointerBlankDelay: 2
+!URxvt*backspacekey:
+!URxvt*deletekey:
+URxvt*cutchars: BACKSLASH '"'&()*,;<=>?@[]^{|}
+!URxvt*preeditType:
+!URxvt*inputMethod:
+!URxvt*imLocale:
+!URxvt*imFont:
+!URxvt*tripleclickwords:
+!URxvt*insecure:
+!URxvt*modifer: meta
+!URxvt*answerbackString:
+URxvt*secondaryScreen: enabled
+URxvt*secondaryScroll: enabled
+URxvt*hold: false
+!URxvt*chdir:
+URxvt*transparent: true
+URxvt*font: xft:Hack:size=10
+URxvt*boldFont: xft:Hack:size=10
+URxvt*italicFont: xft:Hack:size=10
+URxvt*boldItalicFont: xft:Hack:size=10
+URxvt*letterSpace: -1
+URxvt*depth: 32
+
+

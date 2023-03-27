@@ -1,9 +1,6 @@
 #!/bin/bash
 
-# Example locker script -- demonstrates how to use the --transfer-sleep-lock
-# option with i3lock's forking mode to delay sleep until the screen is locked.
-
-## CONFIGURATION ##############################################################
+# Example locker script -- demonstrates how to use the --transfer-sleep-lock option with i3lock's forking mode to delay sleep until the screen is locked.
 
 # Options to pass to i3lock
 i3lock_options="-d"
@@ -23,8 +20,7 @@ post_lock() {
 
 pre_lock
 
-# We set a trap to kill the locker if we get killed, then start the locker and
-# wait for it to exit. The waiting is not that straightforward when the locker
+# We set a trap to kill the locker if we get killed, then start the locker and wait for it to exit. The waiting is not that straightforward when the locker
 # forks, so we use this polling only if we have a sleep lock to deal with.
 if [[ -e /dev/fd/${XSS_SLEEP_LOCK_FD:--1} ]]; then
     kill_i3lock() {

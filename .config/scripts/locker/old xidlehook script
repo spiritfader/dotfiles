@@ -6,4 +6,3 @@
 #   "grep 0 /sys/class/power_supply/ACAD/online > /dev/null && xset dpms force off" "brightnessctl --restore" \
 # --timer 3600 \
 #   "systemctl suspend" ""
-#

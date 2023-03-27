@@ -1,5 +1,5 @@
 #!/bin/sh
-
+# NetworkManager Dispatcher Script to put chrony in online mode if network access is present, and offline mode if not
 INTERFACE=$1
 STATUS=$2
 
