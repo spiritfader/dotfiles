@@ -1,5 +1,6 @@
 # ~/.bashrc: executed by bash(1) for non-login shells.
 
+
 source /usr/share/git/git-prompt.sh
 
 # If not running interactively, don't do anything
