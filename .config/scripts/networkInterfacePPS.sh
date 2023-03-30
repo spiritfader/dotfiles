@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Measure Packets per Second on an Interface
+
+# The following script periodically prints out the number of RX/TX packets for a given network interface (to be provided as an argument to the script).
+
 INTERVAL="1"  # update interval in seconds
 
 if [ -z "$1" ]; then

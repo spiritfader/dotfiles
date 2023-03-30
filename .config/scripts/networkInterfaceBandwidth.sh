@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Measure Network Bandwidth on an Interface
+
+# The following script periodically prints out the RX/TX bandwidth (KB/s) for a given network interface (to be provided as an argument to the script).
+
 INTERVAL="1"  # update interval in seconds
 
 if [ -z "$1" ]; then
