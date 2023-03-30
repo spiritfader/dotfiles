@@ -1,6 +1,5 @@
 # ~/.bashrc: executed by bash(1) for non-login shells.
 
-
 source /usr/share/git/git-prompt.sh
 
 # If not running interactively, don't do anything
@@ -144,7 +143,7 @@ unset use_color sh
 alias ll='ls -lh'
 alias la='ls -lha'
 alias l='ls -CF'
-alias less='less -FR'
+alias less='less -FR --use-color'
 alias dd='dd status=progress'
 alias _='sudo'
 alias _i='sudo -i'
@@ -309,7 +308,7 @@ export HISTSIZE=2500
 export HISTCONTROL=ignorespace
 #export HISTCONTROL=ignoreboth:erasedups:ignorespace
 export MANPAGER="less -R --use-color -Dd+r -Du+b"
-#export RANGER_LOAD_DEFAULT_RC=FALSE
+export RANGER_LOAD_DEFAULT_RC=FALSE
 #export PAGER='less'
 
 #if ! pgrep -u "$USER" ssh-agent > /dev/null; then
