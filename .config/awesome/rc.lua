@@ -70,11 +70,11 @@ client.connect_signal("mouse::enter", function(c)
     c:activate { context = "mouse_enter", raise = false }
 end)
 
--- Switch focus to urgent client automatically when browser link is opened
+-- Switch focus to urgent client automatically when link is called
 client.connect_signal("property::urgent", function(c)
     if (c.class == "firefox") or (c.class == "discord") or (c.class == "alacritty") then
       awful.client.urgent.jumpto(false)
     end
 end)
 
-awful.spawn.with_shell("~/.config/awesome/autostart.sh")
+awful.spawn.with_shell("$HOME/.config/awesome/autostart.sh")
