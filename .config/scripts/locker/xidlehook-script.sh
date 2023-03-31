@@ -21,8 +21,8 @@ xidlehook \
     "xrandr --output $PRIMARY_DISPLAY --brightness 1" \
   `# Undim & lock after 10 more seconds` \
   --timer 10 \
-    "xrandr --output $PRIMARY_DISPLAY --brightness 1; ~/.config/scripts/locker/ff-lock.sh" \
-    "" \
+    "$HOME/.config/scripts/locker/ff-lock.sh" \
+    "xrandr --output eDP --brightness 1" \
   --timer 20 \
     "xrandr --output $PRIMARY_DISPLAY --brightness .1" \
     "xrandr --output $PRIMARY_DISPLAY --brightness 1" \
@@ -30,3 +30,5 @@ xidlehook \
   --timer 1200 \
     "systemctl suspend" \
     "xrandr --output $PRIMARY_DISPLAY --brightness 1"
+
+#xrandr --output $PRIMARY_DISPLAY --brightness 1; 

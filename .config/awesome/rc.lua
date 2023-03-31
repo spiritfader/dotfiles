@@ -70,16 +70,9 @@ client.connect_signal("mouse::enter", function(c)
     c:activate { context = "mouse_enter", raise = false }
 end)
 
--- Switch focus to firefox automatically when browser link is opened
+-- Switch focus to urgent client automatically when browser link is opened
 client.connect_signal("property::urgent", function(c)
-    if c.class == "firefox" then
-      awful.client.urgent.jumpto(false)
-    end
-end)
-
--- Switch focus to alacritty automatically when browser link is opened
-client.connect_signal("property::urgent", function(c)
-    if c.class == "alacritty" then
+    if (c.class == "firefox") or (c.class == "discord") or (c.class == "alacritty") then
       awful.client.urgent.jumpto(false)
     end
 end)
