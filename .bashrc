@@ -178,10 +178,7 @@ function dusort(){
   find "$@" -mindepth 1 -maxdepth 1 -exec du -sch {} + | sort -h
 }
 
-# Change up a variable number of directories
-#   cu   -> cd ../
-#   cu 2 -> cd ../../
-#   cu 3 -> cd ../../../
+# Traverse up a number of directories | cu   -> cd ../ | cu 2 -> cd ../../ |  cu 3 -> cd ../../../
 function cu { 
     local count=$1
     if [ -z "${count}" ]; then
@@ -250,14 +247,14 @@ ex ()
   fi
 }
 
-function extract { #Author: Vitalii Tereshchuk, 2013
- SAVEIFS=$IFS      #Github: https://github.com/xvoland/Extract
- IFS="$(printf '\n\t')"
- if [ $# -eq 0 ]; then
+extract () { #Author: Vitalii Tereshchuk, 2013
+  SAVEIFS=$IFS      #Github: https://github.com/xvoland/Extract
+  IFS="$(printf '\n\t')"
+  if [ $# -eq 0 ]; then
     # display usage if no parameters given
     echo "Usage: extract <path/file_name>.<zip|rar|bz2|gz|tar|tbz2|tgz|Z|7z|xz|ex|tar.bz2|tar.gz|tar.xz|.zlib|.cso>"
     echo "       extract <path/file_name_1.ext> [path/file_name_2.ext] [path/file_name_3.ext]"
- fi
+  fi
     for n in "$@"; do
         if [ ! -f "$n" ]; then
             echo "'$n' - file doesn't exist"
@@ -265,35 +262,28 @@ function extract { #Author: Vitalii Tereshchuk, 2013
         fi
 
         case "${n##*.}" in
-          *.cbt|*.tar.bz2|*.tar.gz|*.tar.xz|*.tbz2|*.tgz|*.txz|*.tar)
-                       tar xvf -p "$n"    ;;
-          *.lzma)      unlzma ./"$n"      ;;
+          *.cbt|*.tar.bz2|*.tar.gz|*.tar.xz|*.tbz2|*.tgz|*.txz|*.tar) tar xvf -p "$n";;
+          *.lzma)      unlzma  /"$n"      ;;
           *.bz2)       bunzip2 ./"$n"     ;;
           *.cbr|*.rar) unrar x -ad ./"$n" ;;
           *.gz)        gunzip ./"$n"      ;;
-          *.cbz|*.epub|*.zip) unzip ./"$n"   ;;
+          *.cbz|*.epub|*.zip) unzip ./"$n";;
           *.z)         uncompress ./"$n"  ;;
-          *.7z|*.apk|*.arj|*.cab|*.cb7|*.chm|*.deb|*.iso|*.lzh|*.msi|*.pkg|*.rpm|*.udf|*.wim|*.xar|*.vhd)
-                       7z x ./"$n"        ;;
+          *.7z|*.apk|*.arj|*.cab|*.cb7|*.chm|*.deb|*.iso|*.lzh|*.msi|*.pkg|*.rpm|*.udf|*.wim|*.xar|*.vhd) 7z x "$n";;
           *.xz)        unxz ./"$n"        ;;
           *.exe)       cabextract ./"$n"  ;;
           *.cpio)      cpio -id < ./"$n"  ;;
           *.cba|*.ace) unace x ./"$n"     ;;
           *.zpaq)      zpaq x ./"$n"      ;;
           *.arc)       arc e ./"$n"       ;;
-          *.cso)       ciso 0 ./"$n" ./"$n.iso" && \
-                            extract "$n.iso" && \rm -f "$n" ;;
-          *.zlib)      zlib-flate -uncompress < ./"$n" > ./"$n.tmp" && \
-                            mv ./"$n.tmp" ./"${n%.*zlib}" && rm -f "$n"   ;;
-          *.dmg)
-                      hdiutil mount ./"$n" -mountpoint "./$n.mounted" ;;
-          *)
-                      echo "extract: '$n' - unknown archive method"
-                      return 1
-                      ;;
+          *.cso)       ciso 0 ./"$n" ./"$n.iso" extract "$n.iso" && \rm -f "$n" ;;
+          *.zlib)      zlib-flate -uncompress < ./"$n" > ./"$n.tmp" && mv ./"$n.tmp" ./"${n%.*zlib}" && rm -f "$n";;
+          *.dmg)       hdiutil mount ./"$n" -mountpoint "./$n.mounted" ;;
+          *)           echo "extract: '$n' - unknown archive method"
+            return 1;;
         esac
     done
- IFS=$SAVEIFS
+  IFS=$SAVEIFS
 }
 
 buffer_clean(){
@@ -310,6 +300,9 @@ export HISTCONTROL=ignorespace
 export MANPAGER="less -R --use-color -Dd+r -Du+b"
 export RANGER_LOAD_DEFAULT_RC=FALSE
 #export PAGER='less'
+
+# colored GCC warnings and errors
+export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
 #if ! pgrep -u "$USER" ssh-agent > /dev/null; then
 #    ssh-agent -t 1h > "$XDG_RUNTIME_DIR/ssh-agent.env"
