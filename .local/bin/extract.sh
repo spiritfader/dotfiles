@@ -64,4 +64,4 @@ function extract {
     done
 }
 
-IFS=$SAVEIFS
+IFS=$SAVEIFSll

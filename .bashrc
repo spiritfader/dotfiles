@@ -7,14 +7,15 @@
 
 source /usr/share/git/git-prompt.sh
 
-# set PATH so it includes user's private bin if it exists
-if [ -d "$HOME/bin" ] ; then
-    PATH="$HOME/bin:$PATH"
+
+# Check for user private bin $HOME/.local/bin and add to path if it exists and is not already in path
+if [ -d "$HOME/.local/bin" ] && [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
+    PATH="$HOME/.local/bin${PATH:+":$PATH"}"
 fi
 
-# set PATH so it includes user's private bin if it exists
-if [ -d "$HOME/.local/bin" ] ; then
-    PATH="$HOME/.local/bin:$PATH"
+## Check for user private bin $HOME/bin and add to path if it exists and is not already in path
+if [ -d "$HOME/bin" ] && [[ ":$PATH:" != *":$HOME/bin:"* ]]; then
+    PATH="$HOME/bin${PATH:+":$PATH"}"
 fi
 
 shopt -s autocd # Enable auto cd when typing directories 
@@ -106,19 +107,6 @@ else
 	PS1+='\u@\h \w \$ '
 fi
 
-# default Athena OS PS1 (broken, not working lol)
-#PS1="\e[1;32m┌──[HQ🚀\e[1;31m$(ip -4 addr | grep -v 127.0.0.1 | grep -v secondary | grep -Po "inet \K[\d.]+" | sed -z "s/\n/|/g;s/|$/\n/")⚔️\u\e[1;32m]\n└──╼[👾]\[\e[1;36m\]\$(pwd) $ \[\e[0m\]"
-
-# modified Athena OS PS1 (fixed, universal)
-#PS1="\e[1;32m┌──[HQ🚀\e[1;31m$(ip -4 addr | grep -v 127.0.0.1 | grep -v secondary | grep "inet" | awk '{print $2}' | cut -d'/' -f1)⚔️\u\e[1;32m]\n└──╼[👾]\[\e[1;36m\]\$(pwd) $ \[\e[0m\]"
-
-# default Parrot OS PS1
-#if [ "$color_prompt" = yes ]; then
-#  PS1="\[\033[0;31m\]\342\224\214\342\224\200\$([[ \$? != 0 ]] && echo \"[\[\033[0;31m\]\342\234\227\[\033[0;37m\]]\342\224\200\")[$(if [[ ${EUID} == 0 ]]; then printf '\[\033[01;31m\]root\[\033[01;33m\]@\[\033[01;96m\]\h'; else printf '\[\033[0;39m\]\u\[\033[01;33m\]@\[\033[01;96m\]\h'; fi)\[\033[0;31m\]]\342\224\200[\[\033[0;32m\]\w\[\033[0;31m\]]\n\[\033[0;31m\]\342\224\224\342\224\200\342\224\200\342\225\274 \[\033[0m\]\[\e[01;33m\]\\$\[\e[0m\]"
-#else
-#  PS1='┌──[\u@\h]─[\w]\n└──╼ \$ '
-#fi
-
 # Set 'man' colors
 if [ "$use_color" = yes ]; then
 	man() {
@@ -151,8 +139,9 @@ alias la='ls -lha'
 alias l='ls -CF'
 alias less='less -FR --use-color'
 alias dd='dd status=progress'
-alias _='sudo'
-alias _i='sudo -i'
+alias rm='rm -i'
+alias mv='mv -i'
+alias cp='cp -i'
 alias shred="shred -zf"
 alias wget="wget -U 'noleak'"
 alias curl="curl --user-agent 'noleak'"
@@ -160,41 +149,38 @@ alias count='find . -type f | wc -l'
 alias empty_trash='rm -rf ~/.local/share/Trash/*'
 alias infgears='vblank_mode=0 glxgears'
 alias updaterepo='sudo reflector --verbose -c "United States" --age 12 --latest 10 --score 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist'
+
 alias awesomeerr='tail -f .cache/awesome/stderr'
 alias awesomeout='tail -f .cache/awesome/stdout'
+
 alias scrubstart='sudo btrfs scrub start'
 alias scrubstatus='sudo btrfs scrub status'
 alias scrublive='sudo btrfs scrub start /; watch -n 1 sudo btrfs scrub status /'
+
 alias balancestart='sudo btrfs balance start'
 alias balancestatus='sudo btrfs balance status'
 alias balancelive='sudo btrfs balance status /; watch -n 1 sudo btrfs balance status /'
+
 alias largesthome='btrfs fi du ~/ | sort -h'
 alias largestroot='sudo btrfs fi du / | sort -h'
+
 alias threads='ps --no-headers -Leo user | sort | uniq --count'
 alias setuid='find /usr/bin -perm "/u=s,g=s"'
 alias smart='sudo smartctl -a /dev/nvme0'
 alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 alias trim='sudo fstrim -av'  
-
-alias openports='netstat -nape --inet'
-alias ns='netstat -alnp --protocol=inet | grep -v CLOSE_WAIT | cut -c-6,21-94 | tail +2'
-alias da='date "+%Y-%m-%d %A    %T %Z"'
 alias rsync='rsync -P'
-alias sb='source ~/.bashrc'
 alias free="free -mth"
-alias ports='echo -e "\n${ECHOR}Open connections :$NC "; netstat -pan --inet;'
-alias qwd='printf "%q\n" "$(pwd)"'
-alias localip='ifconfig | sed -rn "s/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p"' # Show local primary IP address
-alias publicip='wget http://ipecho.net/plain -O - -q ; echo' # Show public (Internet) IP address
-alias memwatch='watch -d vmstat -sSM' # Watch memory usage in real time
-alias xip='echo; curl -s tput; echo;' # Quickly find out external IP address for your device by typing 'xip'
+alias da='date "+%Y-%m-%d %A    %T %Z"'
+alias sb='source ~/.bashrc'
+
+alias portcheck='nc -v -i1 -w1' # Test port connection - Usage: portcheck 192.168.122.137 22
+alias ports='netstat -nape --inet'
+alias ns='netstat -alnp --protocol=inet | grep -v CLOSE_WAIT | cut -c-6,21-94 | tail +2'
 alias intercept="sudo strace -ff -e trace=write -e write=1,2 -p" #given a PID, intercept the stdout and stderr
 alias psg="ps aux | grep -v grep | grep -i -e VSZ -e" # search processes (find PID easily)
 alias psf="ps auxfww" # show all processes
-
-whatsmy_public_ip() {
-  curl --silent 'https://jsonip.com/' | json_val '["ip"]'
-}
+alias localip='ifconfig | sed -rn "s/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p"' # Show local primary IP address
 
 # Add an "alert" alias for long running commands.  Use like so: sleep 10; alert
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
@@ -203,12 +189,18 @@ pskill() { # kill a given process by name
     pgrep "$1" | grep -v grep | awk '{ print $1 }' | xargs kill
 }
 
-ask() { # See 'killps' for example of use.
+ask() { # Wrap in loop to evaluate command, statement, or idea OR use confirm()
   echo -n "$@" '[y/n] ' ; read -r ans
   case "$ans" in
       y*|Y*) return 0 ;;
       *) return 1 ;;
   esac
+}
+
+confirm() { # Usage: confirm ls or confirm htop, etc.
+  if ask "$1"; then 
+    "$1" 
+  fi
 }
 
 utime() { # Convert unix time to human readable - Usage: utime unixtime "utime 23454236" 
@@ -217,16 +209,9 @@ utime() { # Convert unix time to human readable - Usage: utime unixtime "utime 2
   fi
 }
 
-load() { # Returns system load as percentage, i.e., '40' rather than '0.40)'.
-  local SYSLOAD
-  SYSLOAD=$(cut -d " " -f1 /proc/loadavg | tr -d '.')
-  # System load of the current host.
-  echo $((10#$SYSLOAD))%       # Convert to decimal.
-}
-
-quote() { #fix output
+quote() { # Pulls quote
 	echo
-	curl -s https://favqs.com/api/qotd #| jq -r '[.quote.body, .quote.author] | "\(.[0]) -\(.[1])"'
+	curl -s https://favqs.com/api/qotd | jq -r '[.quote.body, .quote.author] | "\(.[0]) \n~\(.[1])\n"'
 }
 
 repeat() { # Repeat n times command. Usage: "repeat 20 ls"
@@ -237,117 +222,181 @@ repeat() { # Repeat n times command. Usage: "repeat 20 ls"
   done
 }
 
-corename() { # Get name of app that created a corefile.
-    for file ; do
-        echo -n "$file" : ; gdb --core="$file" --batch | head -1
-    done
+# check top ten commands executed
+top10() { 
+    all=$(history | awk '{print $2}' | awk 'BEGIN {FS="|"}{print $1}') 
+    echo "$all" | sort | uniq -c | sort -n | tail | sort -nr
 }
 
-unicode='×Ø÷±ÿłŊŋƜɨɷɸΔΣΦΨΩαβγδεζηθκλμνξπρστυφχψωᴀᴃᴕᴖ⚗🗺🌀🌁🌂🌃🌄🌅🌆🌇🌈🌉🌊🌋'
-unicode+='🌌🌍🌎🌏🌐🌑🌒🌓🌔🌕🌖🌗🌘🌙🌚🌛🌜🌝🌞🌟🌠🌡🌢🌣🌤🌥🌦🌧🌨🌩🌪🌫🌬🌭🌮🌯🌰🌱🌲🌳🌴🌵🌶'
-unicode+='🌷🌸🌹🌺🌻🌼🌽🌾🌿🍀🍁🍂🍃🍄🍅🍆🍇🍈🍉🍊🍋🍌🍍🍎🍏🍐🍑🍒🍓🍔🍕🍖🍗🍘🍙🍚🍛🍜🍝🍞🍟🍠'
-unicode+='🍡🍢🍣🍤🍥🍦🍧🍨🍩🍪🍫🍬🍭🍮🍯🍰🍱🍲🍳🍴🍵🍶🍷🍸🍹🍺🍻🍼🍽🍾🍿🎀🎁🎂🎃🎄🎅🎆🎇🎈🎉🎊'
-unicode+='🎋🎌🎍🎎🎏🎐🎑🎒🎓🎔🎕🎖🎗🎘🎙🎚🎛🎜🎝🎞🎟🎠🎡🎢🎣🎤🎥🎦🎧🎨🎩🎪🎫🎬🎭🎮🎯🎰🎱🎲🎳🎴'
-unicode+='🎵🎶🎷🎸🎹🎺🎻🎼🎽🎾🎿🏀🏁🏂🏃🏄🏅🏆🏇🏈🏉🏊🏋🏌🏍🏎🏏🏐🏑🏒🏓🏔🏕🏖🏗🏘🏙🏚🏛🏜🏝🏞🏟'
-unicode+='🏠🏡🏢🏣🏤🏥🏦🏧🏨🏩🏪🏫🏬🏭🏮🏯🏰🏱🏲🏳🏴🏵🏶🏷🏸🏹🏺🏻🏼🏽🏾🏿🐀🐁🐂🐃🐄🐅🐆🐇🐈🐉'
-unicode+='🐊🐋🐌🐍🐎🐏🐐🐑🐒🐓🐔🐕🐖🐗🐘🐙🐚🐛🐜🐝🐞🐟🐠🐡🐢🐣🐤🐥🐦🐧🐨🐩🐪🐫🐬🐭🐮🐯🐰🐱🐲'
-unicode+='🐳🐴🐵🐶🐷🐸🐹🐺🐻🐼🐽🐾🐿👀👁👂👃👄👅👆👇👈👉👊👋👌👍👎👏👐👑👒👓👔👕👖👗👘👙👚👛'
-unicode+='👜👝👞👟👠👡👢👣👤👥👦👧👨👩👪👫👬👭👮👯👰👱👲👳👴👵👶👷👸👹👺👻👼👽👾👿💀💁💂💃💄💅'
-unicode+='💆💇💈💉💊💋💌💍💎💏💐💑💒💓💔💕💖💗💘💙💚💛💜💝💞💟💠💡💢💣💤💥💦💧💨💩💪💫💬💭💮'
-unicode+='💯💰💱💲💳💴💵💶💷💸💹💺💻💼💽💾💿📀📁📂📃📄📅📆📇📈📉📊📋📌📍📎📏📐📑📒📓📔📕📖📗'
-unicode+='📘📙📚📛📜📝📞📟📠📡📢📣📤📥📦📧📨📩📪📫📬📭📮📯📰📱📲📳📴📵📶📷📸📹📺📻📼📽📾📿🔀🔁'
-unicode+='🔂🔃🔄🔅🔆🔇🔈🔉🔊🔋🔌🔍🔎🔏🔐🔑🔒🔓🔔🔕🔖🔗🔘🔙🔚🔛🔜🔝🔞🔟🔠🔡🔢🔣🔤🔥🔦🔧🔨🔩🔪🔫'
-unicode+='🔬🔭🔮🔯🔰🔱🔲🔳🔴🔵🔶🔷🔸🔹🔺🔻🔼🔽🔾🔿🕀🕁🕂🕃🕄🕅🕆🕇🕈🕉🕊🕋🕌🕍🕎🕏🕐🕑🕒🕓🕔🕕🕖🕗'
-unicode+='🕘🕙🕚🕛🕜🕝🕞🕟🕠🕡🕢🕣🕤🕥🕦🕧🕨🕩🕪🕫🕬🕭🕮🕯🕰🕱🕲🕳🕴🕵🕶🕷🕸🕹🕺🕻🕼🕽🕾🕿🖀🖁🖂🖃'
-unicode+='🖄🖅🖆🖇🖈🖉🖊🖋🖌🖍🖎🖏🖐🖑🖒🖓🖔🖕🖖🖗🖘🖙🖚🖛🖜🖝🖞🖟🖠🖡🖢🖣🖤🖥🖦🖧🖨🖩🖪🖫🖬🖭🖮🖯🖰🖱🖲'
-unicode+='🖳🖴🖵🖶🖷🖸🖹🖺🖻🖼🖽🖾🖿🗀🗁🗂🗃🗄🗅🗆🗇🗈🗉🗊🗋🗌🗍🗎🗏🗐🗑🗒🗓🗔🗕🗖🗗🗘🗙🗚🗛🗜🗝🗞🗟'
-unicode+='🗠🗡🗢🗣🗤🗥🗦🗧🗨🗩🗪🗫🗬🗭🗮🗯🗰🗱🗲🗳🗴🗵🗶🗷🗸🗹🗺🗻🗼🗽🗾🗿🗡🖱🖲🖼🗂🏵🏷🐿👁'
-unicode+='📽🕉🕊🕯🕰🕳🕴🏕🏖🏗🏘🏙🏚🏛🏜🏝🏞🏟🙐🙑🙒🙓🙔🙕🙖🙗🙘🙙🙚🙛🙜🙝🙞🙟🙠🙡🙢🙣🙤🙥🙦🙧'
-unicode+='🙨🙩🙪🙫🙬🙭🙮🙯🙰🙱🙲🙳🙴🙵🙶🙷🙸🙹🙺🙻🙼🙽🙾🙿🏳🕵🗃🗄🗑🗒🗓🗜🗝🗞ᴗᴟᴤᴥᴦᴧᴨᴩᴪ•‣…‰‱※D‼‽⁁'
-unicode+='⁂⁃⁄⁅⁆⁇⁈⁉⁎⁏⁐⁑⁰ⁱ⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ⁿ₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎ℂ℃ℇ℉ℊℋℌℍℎℏℐℑℒℓℕ№ℚℛℜℝ℣ℤΩKÅℬℯℰℱ'
-unicode+='ℳ⅋ⅎ⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞⅟ⅠⅡⅢⅣⅤⅥⅦⅧⅨⅩⅰⅱⅲⅳⅴⅵⅶⅷⅸⅹ↔↕↝↠↣↦↬↭↮↯'
-unicode+='↹↺↻⇎⇏⇒⇛⇝⇢⇶∀∁∂∃∄∅∆∇S∈∉∎∏∐∑−∓∔∕∖∗∘∙√∛∜∝∞∟∠∡∢∣∤∥∦∧∨∩∪∫∬∭∮∯∰∱'
-unicode+='∲∳∴∵∶∷∸∹∺∻∼∽∾∿≀≁≂≃≄≅≆≇≈≉≊≋≌≍≎≏≐≑≒≓≔≕≖≗≘≙≚≛≜≝≞≟≠≡≢≣≤≥≦'
-unicode+='≧≨≩≪≫≬≭≮≯≰≱≲≳≴≵≶≷≸≹≺≻≼≽≾≿⊀⊁⊂⊃⊄⊅⊆⊇⊈⊉⊊⊋⊌⊍⊎⊏⊐⊑⊒⊓⊔⊕⊖⊗⊘'
-unicode+='⊙⊚⊛⊜⊝⊞⊟⊠⊡⊰⊱⊲⊳⊴⊵⊶⊷⊸⊹⊾⊿⋀⋁⋂⋃⋄⋅⋆⋇⋈⋉⋊⋋⋌⋍⋎⋏⋐⋑⋒⋓⋔⋕⋖⋗⋘⋙⋚'
-unicode+='⋛⋜⋝⋞⋟⋠⋡⋢⋣⋤⋥⋦⋧⋨⋩⋪⋫⋬⋭⋮⋯⋰⋱⌀⌁⌂⌃⌄⌅⌆⌇⌑⌐⌒⌓⌔⌕⌖⌗⌘⌙⌚⌛⌤⌥⌦⌧⌨'
-unicode+='⌫⌬⏏⏚⏛⏰⏱⏲⏳␣╱╲╳▀▁▂▃▄▅▆▇█▉▊▋▌▍▎▏░▒▓▖▗▘▙▚▛▜▝▞▟■□▢▣▤▥▦▧▨'
-unicode+='▩▪▫▬▭▮▯▰▱▲△▴▵▶▷▸▹►▻▼▽▾▿◀◁◂◃◄◅◆◇◈◉◊○◌◍◎●◐◑◒◓◔◕◖◗◘◙◚◛◜◝◞◟◠◡'
-unicode+='◢◣◤◥◦◧◨◩◪◫◬◭◮◯◰◱◲◳◴◵◶◷◸◹◺◻◼◽◾◿☀☁☂☃☄★☆☇☈☉☊☋☌☍☎☏☐☑'
-unicode+='☒☓☔☕☖☗☘☙☚☛☜☝☞☟☠☡☢☣☤☥☦☧☨☩☪☫☬☭☮☯☰☱☲☳☴☵☶☷☸☼☽☾☿♀♁♂♃♄♅'
-unicode+='♆♇♔♕♖♗♘♙♚♛♜♝♞♟♠♡♢♣♤♥♦♧♨♩♪♫♬♭♮♯♲♳♴♵♶♷♸♹♺♻♼♽♾⚀⚁⚂⚃⚄⚅'
-unicode+='⚐⚑⚒⚓⚔⚕⚖⚗⚘⚙⚚⚛⚜⚝⚞⚟⚠⚡⚢⚣⚤⚥⚦⚧⚨⚩⚪⚫⚬⚭⚮⚯⚰⚱⚲⚳⚴⚵⚶⚷⚸⚹⚺⚻⚼⛀⛁⛂'
-unicode+='⛃⛢⛤⛥⛦⛧⛨⛩⛪⛫⛬⛭⛮⛯⛰⛱⛲⛴⛵⛶⛷⛸⛹⛺⛻⛼⛽⛾⛿✁✂✃✄✅✆✇✈✉✊✋✌✍✎✏'
-unicode+='✐✑✒✓✔✕✖✗✘✙✚✛✜✝✞✟✠✡✢✣✤✥✦✧✨✩✪✫✬✭✮✯✰✱✲✳✴✵✶✷✸✹✺✻✼✽✾✿❀'
-unicode+='❁❂❃❄❅❆❇❈❉❊❋❌❍❎❏❐❑❒❓❔❕❖❗❟❠❡❢❣❤❥❦❧⟴⟿⤀⤁⤐⤑⤔⤕⤖⤗⤘⤨⤩⤪⤫⤬'
-unicode+='⤭⤮⤯⤰⤱⤲⤼⤽⤾⤿⥀⥁⥂⥃⥄⥅⥆⥇⥈⥉⥊⥋⥌⥍⥎⥏⥐⥑⬒⬓⬔⬕⬖⬗⬘⬙⬚⸮〃〄﴾﴿︽︾﹁﹂﹃﹄﹅'
-unicode+='﹆｟｠⌬⌬⌬⌬◉∰⁂⛃⛁◉∰⁂⛃⛁◉∰⁂⛃⛁◉∰⁂⛃⛁⛇⛓⚛⛇⛓⚛⛇⛓⚛⛇⛓⚛'
-
-# Length of the previous string
-unicodelen=${#unicode}
-
-# Get a random character from the previous string
-getunicodec() {
-    r="$RANDOM"
-    from=$((r%unicodelen))
-    echo "${unicode:from:1}"
+# returns a bunch of information about the current host, useful when jumping around hosts a lot
+ii() {
+    echo -e "\nYou are logged on to $HOSTNAME"
+    echo -e "\nAdditionnal information: " ; uname -a
+    echo -e "\nUsers logged on: " ; w -hs | cut -d " " -f1 | sort | uniq
+    echo -e "\nCurrent date : " ; date
+    echo -e "\nMachine stats : " ; uptime
+    echo -e "\nMemory stats : " ; free
+    echo -e "\nDiskspace : " ; df / "$HOME"
+    echo -e "\nLocal IP Address :" ; ip -4 addr | grep -v 127.0.0.1 | grep -v secondary | grep "inet" | awk '{print $2}' | cut -d'/' -f1; ip -6 addr | grep -v ::1 | grep -v secondary | grep "inet" | awk '{print $2}' | cut -d'/' -f1
+    echo ''
 }
 
-# Gets the exit code of the last command executed. Use "printf '%.*s' $? $?" to show only non-zero codes. The characters ✓ and ✗ may also be helpful!
-lastexit() {
-        EXITSTATUS="$1"
-        if [ "$EXITSTATUS" -eq 0 ]; 
-        then echo -e "${ESG}${EXITSTATUS}"; 
-        else echo -e "${RED}${EXITSTATUS}"; 
-        fi;
+# print uptime, host name, number of users, and average load
+upinfo() {
+    echo -ne "$HOSTNAME uptime is ";
+    uptime | awk /'up/ {print $3,$4,$5,$6,$7,$8,$9,$10}'
 }
 
-# Returns only a red or green color, depending on exit status
-lastexitcolor() {
-        EXITSTATUS="$1"
-        if [ "$EXITSTATUS" -eq 0 ]; 
-        then echo -e "${ESG}";
-        else echo -e "${ESR}"; 
-        fi;
+# swap the names/contents of two files
+swapname() { # Swap 2 filenames around, if they exist (from Uzi's bashrc). - Usage: swapname file1 file2
+    local TMPFILE=tmp.$$
+
+    [ $# -ne 2 ] && echo "swap: 2 arguments needed" && return 1
+    [ ! -e "$1" ] && echo "swap: $1 does not exist" && return 1
+    [ ! -e "$2" ] && echo "swap: $2 does not exist" && return 1
+
+    mv "$1" $TMPFILE
+    mv "$2" "$1"
+    mv $TMPFILE "$2"
 }
 
-# Returns epoch nanosecond time
-timer_now() {
-    date +%s%N
+# compare the md5 of a file to a known sum
+md5check() { 
+  md5sum "$1" | grep "$2";
 }
 
-# Start a timer for the next command, or leave it at its current value if it exists
-timer_start() {
-    start_time="${start_time:-$(timer_now)}"
+# report disk usage of directory and sort files by size
+dusort() {
+  find "$@" -mindepth 1 -maxdepth 1 -exec du -sch {} + | sort -h
 }
 
-# Stop a timer if running, and set the timer_show variable to the final value in a human-readable format.
-timer_stop() {
-    # If no command was run, ignore any elapsed time.
-    if [[ $NUM_CALLS -lt 2 ]]; then
-        timer_show="␣"
-        NUM_CALLS=0
-        unset start_time
-        return
+# Traverse up a number of directories | cu   -> cd ../ | cu 2 -> cd ../../ |  cu 3 -> cd ../../../
+cu() { 
+  local count=$1
+  if [ -z "${count}" ]; then
+      count=1
+  fi
+  local path=""
+  for i in $(seq 1 "${count}"); do
+      path="${path}../"
+  done
+  cd $path || exit
+}
+
+# Open all modified files in vim tabs
+nvimod() {
+    nvim -p "$(git status -suall | awk '{print $2}')"
+}
+
+# Open files modified in a git commit in nvim tabs; defaults to HEAD. Pop it in your .bashrc - Examples: "virev 49808d5" or "virev HEAD~3"
+virev() {
+  commit=$1
+  if [ -z "${commit}" ]; then
+    commit="HEAD"
+  fi
+  rootdir=$(git rev-parse --show-toplevel)
+  sourceFiles=$(git show --name-only --pretty="format:" "${commit}" | grep -v '^$')
+  toOpen=""
+  for file in ${sourceFiles}; do
+    file="${rootdir}/${file}"
+    if [ -e "${file}" ]; then
+      toOpen="${toOpen} ${file}"
     fi
-    # Unit conversion
-    local delta_us=$((($(timer_now)-start_time)/1000))
-    local us=$((delta_us%1000))
-    local ms=$(((delta_us/1000)%1000))
-    local s=$(((delta_us/1000000)%60))
-    local m=$(((delta_us/60000000)%60))
-    local h=$((delta_us/3600000000))
-    # Goal: always show around 3 digits of accuracy
-    if ((h>0)); then timer_show=${h}h${m}m
-    elif ((m>0)); then timer_show=${m}m${s}s
-    elif ((s>=10)); then timer_show=${s}.$((ms/100))s
-    elif ((s>0)); then timer_show=${s}.$(printf %03d $ms)s
-    elif ((ms>=100)); then timer_show=${ms}ms
-    elif ((ms>0)); then timer_show=${ms}.$((us/100))ms
-    else timer_show=${us}us
-    fi
-    unset start_time
-    NUM_CALLS=0
+  done
+  if [ -z "${toOpen}" ]; then
+    echo "No files were modified in ${commit}"
+    return 1
+  fi
+  nvim -p "${toOpen}"
+}
+
+# ex = EXtractor for all kinds of archives - usage: ex <file>
+ex() {
+  SAVEIFS=$IFS
+  IFS="$(printf '\n\t')"
+  if [ -f "$1" ] ; then
+    case $1 in
+      *.tar.bz2)   tar xjf "$1"   ;;
+      *.tar.gz)    tar xzf "$1"   ;;
+      *.bz2)       bunzip2 "$1"   ;;
+      *.rar)       unrar x "$1"   ;;
+      *.gz)        gunzip "$1"    ;;
+      *.tar)       tar xf "$1"    ;;
+      *.tbz2)      tar xjf "$1"   ;;
+      *.tgz)       tar xzf "$1"   ;;
+      *.zip)       unzip "$1" "${1%.zip}" ;;
+      *.Z)         uncompress "$1";;
+      *.7z)        7z x -o"${1%.7z}" "$1"      ;;
+      *.deb)       ar x "$1"      ;;
+      *.tar.xz)    tar xf "$1"    ;;
+      *.tar.zst)   tar xf "$1"    ;;
+      *)           echo "'$1' cannot be extracted via ex()" ;;
+    esac
+  else
+    echo "'$1' is not a valid file"
+  fi
+  IFS=$SAVEIFS
+}
+
+# ex = EXtractor for all kinds of archives - usage: ex <file>
+exhere() {
+  SAVEIFS=$IFS
+  IFS="$(printf '\n\t')"
+  if [ -f "$1" ] ; then
+    case $1 in
+      *.tar.bz2)   tar xjf "$1"   ;;
+      *.tar.gz)    tar xzf "$1"   ;;
+      *.bz2)       bunzip2 "$1"   ;;
+      *.rar)       unrar x "$1"   ;;
+      *.gz)        gunzip "$1"    ;;
+      *.tar)       tar xf "$1"    ;;
+      *.tbz2)      tar xjf "$1"   ;;
+      *.tgz)       tar xzf "$1"   ;;
+      *.zip)       unzip "$1"     ;;
+      *.Z)         uncompress "$1";;
+      *.7z)        7z x "$1"      ;;
+      *.deb)       ar x "$1"      ;;
+      *.tar.xz)    tar xf "$1"    ;;
+      *.tar.zst)   tar xf "$1"    ;;
+      *)           echo "'$1' cannot be extracted via ex()" ;;
+    esac
+  else
+    echo "'$1' is not a valid file"
+  fi
+  IFS=$SAVEIFS
+}
+
+smush() { # Usage "smush <file> <tar.gz.>"
+    FILE=$1
+    case $FILE in
+        *.tar.bz2) shift && tar cjf "$FILE" "$1" ;;
+        *.tar.gz)  shift && tar czf "$FILE" "$1" ;;
+        *.tgz)     shift && tar czf "$FILE" "$1" ;;
+        *.zip)         shift && 7z a -tzip "$FILE" "$1" ;;
+        *.rar)         shift && rar "$FILE" "$1" ;;
+        *.7z)         shift && 7z a -t7z -m0=lzma2 -mx=9 -mfb=64 -md=64m -ms=on "$FILE" ;;
+    esac
+}
+
+buffer_clean() {
+	free -h && sudo sh -c 'echo 1 > /proc/sys/vm/drop_caches' && free -h
+}
+
+calc() { # Calculate the input string using bc command
+  echo "$*" | bc;
+}
+
+mktargz() { 
+  tar czf "${1%%/}.tar.gz" "${1%%/}/"; 
+}
+
+mkmine() { # take ownership of file
+  sudo chown -R "${USER}" "${1:-.}"; 
+}
+
+mkmv() { # make directory and move file into it - Usage: "mkmv filetobemoved.txt NewDirectory"
+    mkdir "$2"
+    mv "$1" "$2"
 }
 
 # prints ANSI 16-colors
@@ -390,156 +439,6 @@ ansicolortest() {
         done
         done
         echo -e "\n"
-}
-
-# check top ten commands executed
-topten() { 
-    all=$(history | awk '{print $2}' | awk 'BEGIN {FS="|"}{print $1}') 
-    echo "$all" | sort | uniq -c | sort -n | tail | sort -nr
-}
-
-# returns a bunch of information about the current host, useful when jumping around hosts a lot
-ii() {
-    echo -e "\nYou are logged on to $HOSTNAME"
-    echo -e "\nAdditionnal information: " ; uname -a
-    echo -e "\nUsers logged on: " ; w -hs | cut -d " " -f1 | sort | uniq
-    echo -e "\nCurrent date : " ; date
-    echo -e "\nMachine stats : " ; uptime
-    echo -e "\nMemory stats : " ; free
-    echo -e "\nDiskspace : " ; df / "$HOME"
-    echo -e "\nLocal IP Address :" ; ip -4 addr | grep -v 127.0.0.1 | grep -v secondary | grep "inet" | awk '{print $2}' | cut -d'/' -f1; ip -6 addr | grep -v ::1 | grep -v secondary | grep "inet" | awk '{print $2}' | cut -d'/' -f1
-    echo ''
-}
-
-# print uptime, host name, number of users, and average load
-upinfo() {
-    echo -ne "$HOSTNAME uptime is ";
-    uptime | awk /'up/ {print $3,$4,$5,$6,$7,$8,$9,$10}'
-}
-
-# swap the names/contents of two files
-swapname() { # Swap 2 filenames around, if they exist (from Uzi's bashrc).
-    local TMPFILE=tmp.$$
-
-    [ $# -ne 2 ] && echo "swap: 2 arguments needed" && return 1
-    [ ! -e "$1" ] && echo "swap: $1 does not exist" && return 1
-    [ ! -e "$2" ] && echo "swap: $2 does not exist" && return 1
-
-    mv "$1" $TMPFILE
-    mv "$2" "$1"
-    mv $TMPFILE "$2"
-}
-
-# compare the md5 of a file to a known sum
-md5check() { 
-  md5sum "$1" | grep "$2";
-}
-
-# report disk usage of directory and sort files by size
-dusort() {
-  find "$@" -mindepth 1 -maxdepth 1 -exec du -sch {} + | sort -h
-}
-
-# Traverse up a number of directories | cu   -> cd ../ | cu 2 -> cd ../../ |  cu 3 -> cd ../../../
-cu() { 
-    local count=$1
-    if [ -z "${count}" ]; then
-        count=1
-    fi
-    local path=""
-    for i in $(seq 1 "${count}"); do
-        path="${path}../"
-    done
-    cd $path || exit
-}
-
-# Open all modified files in vim tabs
-nvimod() {
-    nvim -p "$(git status -suall | awk '{print $2}')"
-}
-
-# Open files modified in a git commit in nvim tabs; defaults to HEAD. Pop it in your .bashrc
-# Examples: "virev 49808d5" or "virev HEAD~3"
-virev() {
-    commit=$1
-    if [ -z "${commit}" ]; then
-      commit="HEAD"
-    fi
-    rootdir=$(git rev-parse --show-toplevel)
-    sourceFiles=$(git show --name-only --pretty="format:" "${commit}" | grep -v '^$')
-    toOpen=""
-    for file in ${sourceFiles}; do
-      file="${rootdir}/${file}"
-      if [ -e "${file}" ]; then
-        toOpen="${toOpen} ${file}"
-      fi
-    done
-    if [ -z "${toOpen}" ]; then
-      echo "No files were modified in ${commit}"
-      return 1
-    fi
-    nvim -p "${toOpen}"
-}
-
-# ex = EXtractor for all kinds of archives - usage: ex <file>
-ex() {
-  if [ -f "$1" ] ; then
-    case $1 in
-      *.tar.bz2)   tar xjf "$1"   ;;
-      *.tar.gz)    tar xzf "$1"   ;;
-      *.bz2)       bunzip2 "$1"   ;;
-      *.rar)       unrar x "$1"   ;;
-      *.gz)        gunzip "$1"    ;;
-      *.tar)       tar xf "$1"    ;;
-      *.tbz2)      tar xjf "$1"   ;;
-      *.tgz)       tar xzf "$1"   ;;
-      *.zip)       unzip "$1"     ;;
-      *.Z)         uncompress "$1";;
-      *.7z)        7z x "$1"      ;;
-      *.deb)       ar x "$1"      ;;
-      *.tar.xz)    tar xf "$1"    ;;
-      *.tar.zst)   tar xf "$1"    ;;
-      *)           echo "'$1' cannot be extracted via ex()" ;;
-    esac
-  else
-    echo "'$1' is not a valid file"
-  fi
-}
-
-smush() {
-    FILE=$1
-    case $FILE in
-        *.tar.bz2) shift && tar cjf "$FILE" "$*" ;;
-        *.tar.gz)  shift && tar czf "$FILE" "$*" ;;
-        *.tgz)     shift && tar czf "$FILE" "$*" ;;
-        *.zip)         shift && zip "$FILE" "$*" ;;
-        *.rar)         shift && rar "$FILE" "$*" ;;
-    esac
-}
-
-buffer_clean() {
-	free -h && sudo sh -c 'echo 1 > /proc/sys/vm/drop_caches' && free -h
-}
-
-calc() { # Calculate the input string using bc command
-  echo "$*" | bc;
-}
-
-mktar() { 
-  tar czf "${1%%/}.tar.gz" "${1%%/}/"; 
-}
-
-mkzip() { 
-  zip -r "${1%%/}.zip" "$1" ; 
-}
-
-mkmine() { # take ownership of file
-  sudo chown -R "${USER}" "${1:-.}"; 
-}
-
-mkmv() { # make directory and move file into it - Usage: "mkmv filetobemoved.txt NewDirectory"
-    mkdir "$2"
-    mv "$1" "$2"
 }
 
 showcolors256() {
@@ -618,41 +517,30 @@ subnetfree() {
   nmap -v -sn -n "${1}" -oG - | awk '/Status: Down/{print $2}'
 }
 
-# Quick network port scan of an IP - Usage: portscan 192.168.122.37
+# Quick network port scan of an IP - Usage: portscan 192.168.122.37 - FIX
 portscan() {
-  nmap -oG -T4 -F "${1}" | grep "\bopen\b"
+  nmap -T4 -F "${1}" -oG - | grep "\bopen\b"
 }
 
 # Stealth syn scan, OS and version detection, verbose output - Usage: portscan-stealth 192.168.122.1/24 or portscan-stealth 192.168.122.137
 portscan-stealth() {
-  nmap -v -sV -O -sS -T5 "${1}"
+  sudo nmap -v -sV -O -sS -T5 "${1}"
 }
 
-# Test port connection - Usage: portcheck 192.168.122.137 22
-alias portcheck='nc -v -i1 -w1'
-
-# Detect frame drops using `ping` - Usage: pingdrops 192.168.122.137
-pingdrops() {
+pingdrops() { # Detect frame drops using `ping` - Usage: pingdrops 192.168.122.137
   ping "${1}" | \
   grep -oP --line-buffered "(?<=icmp_seq=)[0-9]{1,}(?= )" | \
   awk '$1!=p+1{print p+1"-"$1-1}{p=$1}'
 }
 
-# Quickly test network throughput between two servers via SSH -  Usage: bandwidth-test 192.168.122.137
-bandwidth-test() {
-  yes | pv | ssh "${1}" "cat > /dev/null"
-}
-
-# Identify local listening ports and services
-localports() {
+localports() { # Identify local listening ports and services
   for i in $(lsof -i -P -n | grep -oP '(?<=\*:)[0-9]{2,}(?= \(LISTEN)' | sort -nu)
   do
     lsof -i :"${i}" | grep -v COMMAND | awk -v i="$i" '{print $1,$3,i}' | sort -u
   done | column -t
 }
 
-# Use Curl to check URL connection performance - urltest https://google.com
-urltest() {
+urltest() { # Use Curl to check URL connection performance - urltest https://google.com
   URL="$*"
   if [ -n "${URL[0]}" ]; then
     curl -L --write-out "URL,DNS,conn,time,speed,size\n
@@ -661,8 +549,7 @@ urltest() {
   fi
 }
 
-# List processes associated with a port
-portproc() {
+portproc() { # List processes associated with a port - Usage: "portproc 22"
   port="${1}"
   if [ -n "${port}" ]
   then
@@ -672,12 +559,11 @@ portproc() {
       do
         ps -eo user,pid,lstart,cmd | awk -v pid="$pid" '$2 == pid'
       done
-    done
+    done 
   fi
 }
 
-# Generate a random alphanumeric file of certain size - Usage: filegen size location
-filegen() {
+filegen-alpha() { # Generate a random alphanumeric file of certain size - Usage: filegen size location
   s="${1}"
   if [ -z "${s}" ]; then s="1M"; fi
   fsize="$(echo "${s}" | grep -Eo '[0-9]{1,}')"
@@ -686,6 +572,42 @@ filegen() {
   f="${2}"
   if [ -z "${f}" ] || [ -f "${f}" ]; then f="$(mktemp)"; fi
   head -c "${fsize}${sunit}" <(head -c "${ssize}${sunit}" </dev/urandom | tr -dc A-Za-z0-9) > "${f}"
+  ls -alh "${f}"
+}
+
+filegen-num() { # Generate a random alphanumeric file of certain size - Usage: filegen size location
+  s="${1}"
+  if [ -z "${s}" ]; then s="1M"; fi
+  fsize="$(echo "${s}" | grep -Eo '[0-9]{1,}')"
+  sunit="$(echo "${s}" | grep -oE '[Aa-Zz]{1,}')"
+  (( ssize = fsize * 6 ))
+  f="${2}"
+  if [ -z "${f}" ] || [ -f "${f}" ]; then f="$(mktemp)"; fi
+  head -c "${fsize}${sunit}" <(head -c "${ssize}${sunit}" </dev/urandom | tr -dc 0-9) > "${f}"
+  ls -alh "${f}"
+}
+
+filegen() { # Generate a random alphanumeric file of certain size - Usage: filegen size location
+  s="${1}"
+  if [ -z "${s}" ]; then s="1M"; fi
+  fsize="$(echo "${s}" | grep -Eo '[0-9]{1,}')"
+  sunit="$(echo "${s}" | grep -oE '[Aa-Zz]{1,}')"
+  (( ssize = fsize * 6 ))
+  f="${2}"
+  if [ -z "${f}" ] || [ -f "${f}" ]; then f="$(mktemp)"; fi
+  head -c "${fsize}${sunit}" <(head -c "${ssize}${sunit}" </dev/urandom) > "${f}"
+  ls -alh "${f}"
+}
+
+filegen-bin() { # Generate a random alphanumeric file of certain size - Usage: filegen size location
+  s="${1}"
+  if [ -z "${s}" ]; then s="1M"; fi
+  fsize="$(echo "${s}" | grep -Eo '[0-9]{1,}')"
+  sunit="$(echo "${s}" | grep -oE '[Aa-Zz]{1,}')"
+  (( ssize = fsize * 6 ))
+  f="${2}"
+  if [ -z "${f}" ] || [ -f "${f}" ]; then f="$(mktemp)"; fi
+  head -c "${fsize}${sunit}" <(head -c "${ssize}${sunit}" </dev/urandom | tr -dc 0-1) > "${f}"
   ls -alh "${f}"
 }
 
