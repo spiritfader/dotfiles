@@ -1,17 +1,42 @@
+! cursor
+Xcursor.theme:                Adwaita
+Xcursor.size:                 12
+
+! xft
+xft.antialias:                true
+
+! generic settings
+!*foreground:                  #cccccc
+!*background:                  #000000
+
+! XTerm settings
+XTerm.termName: xterm-256color
+! force utf-8
 XTerm.vt100.locale: false
 XTerm.vt100.utf8: true
+! make 'Alt' key behave as on other terminal emulators
 XTerm.vt100.metaSendsEscape: true
+! fix the backspace key
 XTerm.vt100.backarrowKey: false
 XTerm.ttyModes: erase ^?
-XTerm.vt100.saveLines: 4096
+XTerm.vt100.saveLines: 8192
 XTerm.vt100.faceName: Terminus:size=12:antialias=true
 XTerm.vt100.bellIsUrgent: true
+XTerm*vt100*transparent: true
+XTerm*vt100*allowTitleOps: true
+XTerm.vt100.selectToClipboard: true
 
-! from old xresources file
-XTerm*vt100*background: Black 
-XTerm*vt100*foreground: White
-XTerm*vt100*transparent: true 
-XTerm*vt100*allowTitleOps: false
+! xterm baclkarch
+!XTerm*VT100*geometry:         80x24
+!XTerm*faceName:               xft:xos4 Terminus:size=12:antialias=true
+!XTerm*faceSize:               12
+!XTerm*renderFont:             true
+!XTerm*utf8Title:              true
+!XTerm*trimSelection:          true
+!XTerm*cutNewline:             false
+!XTerm*highlightSelection:     true
+
+! URXVT settings
 URxvt*buffered: true
 URxvt*geometry: 80x24
 URxvt*background: [90]Black
@@ -87,4 +112,36 @@ URxvt*boldItalicFont: xft:Hack:size=10
 URxvt*letterSpace: -1
 URxvt*depth: 32
 
-
+! from blackarch Xresources
+!urxvt.font:                   xft:xos4 Terminus:size=12:antialias=true:hinting=true
+!urxvt.url-launcher:           /usr/bin/xdg-open
+!urxvt.matcher.button:         1
+!urxvt.matcher.pattern.0:      \\b([a-zA-Z]+:\/\/\\w[\\w-.@:]*|www\\.\\w[\\w-]*\\.\\w[\\w-.]*)(\/[^"' ()]*)?
+!urxvt.scrollBar:              false
+!urxvt.termName:               xterm-256color
+!urxvt.saveLines:              10000
+!urxvt.inheritPixmap:          true
+!urxvt.shading:                20
+!urxvt.clipboard.autocopy:     true
+!urxvt.perl-ext-common:        default,selection-to-clipboard,pasta,matcher,keyboard-select,resize-font,font
+!urxvt.keysym.M-u:             perl:url-select:select_next
+!urxvt.transparent:            true
+!urxvt.buffered:               true
+!urxvt.jumpScroll:             false
+!urxvt.scrollTtyKeypress:      true
+!urxvt.scrollTtyOutput:        false
+!urxvt.scrollWithBuffer:       false
+!urxvt.scrollstyle:            plain
+!urxvt.secondaryScroll:        false
+!urxvt.xftAntialias:           true
+!!urxvt.color4:                 RoyalBlue
+!urxvt.color12:                RoyalBlue
+!urxvt.matcher.rend.0:         Bold fg6
+!urxvt.cursorBlink:            false
+!urxvt.cursorColor:            #5f8fff
+!urxvt.mapAlert:               true
+!urxvt.pointerBlank:           true
+!urxvt.resource:               value
+!urxvt.iso14755:               false
+!urxvt.iso14755_52:            false
+!
