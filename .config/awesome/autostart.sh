@@ -5,7 +5,7 @@ run() {
     "$@"&
   fi
 }
-run xss-lock --transfer-sleep-lock -- "$HOME"/.config/scripts/locker/ff-lock.sh
+run xss-lock --transfer-sleep-lock -- ff-lock.sh
 run /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 run aa-notify -p -s 1 -w 60 -f /var/log/audit/audit.log
 run picom -b --config "$HOME"/.config/picom/picom.conf
@@ -17,4 +17,4 @@ run cbatticon
 run variety
 run numlockx on
 run wal -R
-"$HOME"/.config/scripts/locker/xidlehook-script.sh
+xidlehook-script.sh

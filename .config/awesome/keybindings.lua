@@ -33,7 +33,7 @@ awful.keyboard.append_global_keybindings({
               {description = "start rofi launcher", group = "launcher"}),
     awful.key({ modkey }, "r", function () awful.spawn.with_shell("rofi -show run -theme dmenu") end,            -- spawn rofi in dmenu mode
                {description = "start rofi dmenu launcher", group = "launcher"}),
-    awful.key({ modkey }, "i", function () awful.spawn.with_shell("~/.config/scripts/touchpadtoggle.sh") end,    -- Toggle touchpad on/off
+    awful.key({ modkey }, "i", function () awful.spawn.with_shell("touchpadtoggle.sh") end,                      -- Toggle touchpad on/off
               {description = "toggle touchpad on/off", group = "hotkeys"}),
     awful.key({ }, "XF86MonBrightnessUp", function () awful.spawn.with_shell("brightnessctl set +10%") end,      -- Increase Brightness by 10%
               {description = "+10%", group = "hotkeys"}),
@@ -49,17 +49,17 @@ awful.keyboard.append_global_keybindings({
               {description = "screenshot window", group = "hotkeys"}),                                           -- Screenshot the window, save to file and clipboard
     awful.key({ modkey, "Shift" }, "s", function () awful.spawn.with_shell("maim -sum 10 -f png | xclip -selection clipboard -t image/png -i") end,
               {description = "screenshot selection without save", group = "hotkeys"}),                           -- Screenshot the selection and send to clipboard
-    awful.key({ altkey }, "t", function () awful.spawn.with_shell( "variety -t" ) end,                        -- Wallpaper trash
+    awful.key({ altkey }, "t", function () awful.spawn.with_shell( "variety -t" ) end,                           -- Wallpaper trash
               {description = "Wallpaper trash", group = "hotkeys"}),
-    awful.key({ altkey }, "n", function () awful.spawn.with_shell( "variety -n" ) end,                        -- Wallpaper next
+    awful.key({ altkey }, "n", function () awful.spawn.with_shell( "variety -n" ) end,                           -- Wallpaper next
               {description = "Wallpaper next", group = "hotkeys"}),
-    awful.key({ altkey }, "p", function () awful.spawn.with_shell( "variety -p" ) end,                        -- Wallpaper previous
+    awful.key({ altkey }, "p", function () awful.spawn.with_shell( "variety -p" ) end,                           -- Wallpaper previous
               {description = "Wallpaper previous", group = "hotkeys"}),               
-    awful.key({ altkey }, "f", function () awful.spawn.with_shell( "variety -f" ) end,                        -- Wallpaper favorite
+    awful.key({ altkey }, "f", function () awful.spawn.with_shell( "variety -f" ) end,                           -- Wallpaper favorite
               {description = "Wallpaper favorite", group = "hotkeys"}),
-    awful.key({ altkey }, "Up", function () awful.spawn.with_shell( "variety --pause" ) end,                  -- Wallpaper pause
+    awful.key({ altkey }, "Up", function () awful.spawn.with_shell( "variety --pause" ) end,                     -- Wallpaper pause
               {description = "Wallpaper pause", group = "hotkeys"}),
-    awful.key({ altkey }, "Down", function () awful.spawn.with_shell( "variety --resume" ) end,               -- Wallpaper resume
+    awful.key({ altkey }, "Down", function () awful.spawn.with_shell( "variety --resume" ) end,                  -- Wallpaper resume
               {description = "Wallpaper resume", group = "hotkeys"}),
     awful.key({ altkey, "Shift"   }, "t", function () awful.spawn.with_shell( "variety -t  && wal -i $(cat $HOME/.config/variety/wallpaper/wallpaper.jpg.txt)&" ) end,
               {description = "Pywal Wallpaper trash", group = "hotkeys"}),
@@ -69,9 +69,9 @@ awful.keyboard.append_global_keybindings({
               {description = "Pywal Wallpaper update", group = "hotkeys"}),
     awful.key({ altkey, "Shift"   }, "p", function () awful.spawn.with_shell( "variety -p  && wal -i $(cat $HOME/.config/variety/wallpaper/wallpaper.jpg.txt)&" ) end,
               {description = "Pywal Wallpaper previous", group = "hotkeys"}),
-    awful.key({ modkey, "Ctrl" }, "l", function () awful.spawn.with_shell("~/.config/scripts/locker/ff-lock.sh") end,     -- lock screen with i3lock script
+    awful.key({ modkey, "Ctrl" }, "l", function () awful.spawn.with_shell("ff-lock.sh") end,                    -- lock screen with i3lock script
               {description = "run i3lock script", group = "hotkeys"}),              
-    awful.key({ modkey }, "p", function() awful.spawn.with_shell("~/.config/scripts/picomtoggle.sh") end,
+    awful.key({ modkey }, "p", function() awful.spawn.with_shell("picomtoggle.sh") end,                         -- disable/enale compositor
               {description = "Toggle compositor", group = "hotkeys"}),
 
         -- Show/hide wibox
