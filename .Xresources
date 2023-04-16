@@ -74,6 +74,7 @@ URxvt.loginShell:                     false
 URxvt.multiClickTime:                 false
 URxvt.jumpScroll:                     false
 URxvt.skipScroll:                     false
+URxvt.scrollBar_align:                top   
 URxvt.pastableTabs:                   false
 URxvt.scrollstyle:                    plain
 URxvt.scrollBar:                      false
@@ -108,7 +109,7 @@ URxvt.skipBuiltinGlyphs:              true
 URxvt.print-pipe:                     "cat > /dev/null"
 URxvt.cutchars:                       BACKSLASH '"'&()*,;<=>?@[]^{|}
 URxvt.secondaryScreen:                true
-URxvt.secondaryScroll:                false
+URxvt.secondaryScroll:                true
 URxvt.perl-eval:                      perl-eval
 URxvt.perl-ext-common:                default,selection-to-clipboard,pasta,matcher,keyboard-select,resize-font,font
 URxvt.iso14755:                       false
@@ -118,5 +119,38 @@ URxvt.keysym.Control-Left:            \033[1;5D
 URxvt.keysym.Control-Right:           \033[1;5C
 URxvt.matcher.button:                 1
 urxvt.matcher.rend.0:                 Bold fg6
-URxvt.transparent:                    true
+URxvt.transparent:                    false
 URxvt.url-launcher:                   /usr/bin/xdg-open
+
+
+! aterm settings
+aterm*tintColor: red
+aterm*background: black
+aterm*foreground: green
+aterm*internalBorder: 0
+aterm*scrollstyle: false
+aterm*scrollBar: false
+aterm*saveLines: 1500
+aterm*loginShell: false
+aterm*transparent: true
+aterm*fadeColor: black
+aterm*depth: 32
+aterm*fading: 70
+aterm*shading: 40
+aterm*inheritPixmap: true
+aterm*cursorColor: rgb:00/80/00
+aterm*cursorColor2: black
+aterm*colorUL: red
+aterm*colorBD: red
+aterm*cursorBlink: true
+aterm*font:*-*-fixed-medium-r-normal--*-140-*-*-*-*-iso8859-1
+aterm*boldFont:*-*-fixed-bold-r-normal--*-*-140-*-*-*-*-iso8859-1
+aterm*dynamicColors: true
+aterm*utf8: 2
+aterm*eightBitInput: true
+aterm*scrollTtyKeypress: true
+aterm*scrollTtyOutput: false
+aterm*jumpScroll:       true
+aterm*multiScroll:      true
+aterm*toolBar:          false
+aterm*charClass:        33:48,35-38:48,39:43,42-47:48,58-59:48,61:48,63-64:48,126:48

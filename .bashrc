@@ -232,12 +232,12 @@ top10() {
 ii() {
     echo -e "\nYou are logged on to $HOSTNAME"
     echo -e "\nAdditionnal information: " ; uname -a
-    echo -e "\nUsers logged on: " ; w -hs | cut -d " " -f1 | sort | uniq
+    echo -e "\nUsers logged on: " ; PROCPS_USERLEN=32 w -hs | cut -d " " -f1 | sort | uniq
     echo -e "\nCurrent date : " ; date
     echo -e "\nMachine stats : " ; uptime
     echo -e "\nMemory stats : " ; free
     echo -e "\nDiskspace : " ; df / "$HOME"
-    echo -e "\nLocal IP Address :" ; ip -4 addr | grep -v 127.0.0.1 | grep -v secondary | grep "inet" | awk '{print $2}' | cut -d'/' -f1; ip -6 addr | grep -v ::1 | grep -v secondary | grep "inet" | awk '{print $2}' | cut -d'/' -f1
+    echo -e "\nLocal IP Address :" ; ip -4 addr | grep -v 127.0.0.1 | grep -v secondary | grep "inet" | awk '{print $2}' ; ip -6 addr | grep -v ::1 | grep -v secondary | grep "inet" | awk '{print $2}'
     echo ''
 }
 
@@ -324,9 +324,11 @@ ex() {
       *.tar)       tar xf "$1"    ;;
       *.tbz2)      tar xjf "$1"   ;;
       *.tgz)       tar xzf "$1"   ;;
-      *.zip)       unzip "$1" "${1%.zip}" ;;
+      *.zip)       7z x -o"${1%.zip}" "$1" ;; 
       *.Z)         uncompress "$1";;
-      *.7z)        7z x -o"${1%.7z}" "$1"      ;;
+      *.7z)        7z x -o"${1%.7z}" "$1"  ;;
+      *.iso)       7z x -o"${1%.iso}" "$1" ;;
+      *.lzm)       7z x -o"${1%.lzm}" "$1" ;;
       *.deb)       ar x "$1"      ;;
       *.tar.xz)    tar xf "$1"    ;;
       *.tar.zst)   tar xf "$1"    ;;
@@ -354,7 +356,7 @@ exhere() {
       *.tgz)       tar xzf "$1"   ;;
       *.zip)       unzip "$1"     ;;
       *.Z)         uncompress "$1";;
-      *.7z)        7z x "$1"      ;;
+      *.7z|*.iso|.lzm)  7z x "$1"      ;;
       *.deb)       ar x "$1"      ;;
       *.tar.xz)    tar xf "$1"    ;;
       *.tar.zst)   tar xf "$1"    ;;
@@ -390,8 +392,12 @@ mktargz() {
   tar czf "${1%%/}.tar.gz" "${1%%/}/"; 
 }
 
-mkmine() { # take ownership of file
+mkown() { # take ownership of file
   sudo chown -R "${USER}" "${1:-.}"; 
+}
+
+mkgrp() { # change ownership of group on file to self
+  sudo chgrp -R "${USER}" "${1:-.}"; 
 }
 
 mkmv() { # make directory and move file into it - Usage: "mkmv filetobemoved.txt NewDirectory"

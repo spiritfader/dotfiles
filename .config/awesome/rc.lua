@@ -32,7 +32,7 @@ require "awful.hotkeys_popup.keys.firefox"
 beautiful.init("~/.config/awesome/themes/aure/theme.lua")       -- Use regular hardcoded theme
 --beautiful.init("~/.config/awesome/themes/aure/theme-pywal.lua")     -- Use pywal generated theme
 
-terminal = "alacritty"
+terminal = "urxvt"
 editor = os.getenv("EDITOR") or "nvim"
 editor_cmd = terminal .. " -e " .. editor
 modkey       = "Mod4"

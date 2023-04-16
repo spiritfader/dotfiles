@@ -8,7 +8,8 @@ ruled.client.connect_signal("request::rules", function()
             focus     = awful.client.focus.filter,
             raise     = true,
             screen    = awful.screen.preferred,
-            placement = awful.placement.no_overlap+awful.placement.no_offscreen+awful.placement.centered
+            placement = awful.placement.no_overlap+awful.placement.no_offscreen+awful.placement.centered,
+            size_hints_honor = false -- Enabled to fix term spacing in xterm/urxvt etc
         }
     }
 
