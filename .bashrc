@@ -146,6 +146,7 @@ alias shred="shred -zf"
 alias wget="wget -U 'noleak'"
 alias curl="curl --user-agent 'noleak'"
 alias count='find . -type f | wc -l'
+
 alias empty_trash='rm -rf ~/.local/share/Trash/*'
 alias infgears='vblank_mode=0 glxgears'
 alias updaterepo='sudo reflector --verbose -c "United States" --age 12 --latest 10 --score 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist'
@@ -173,6 +174,7 @@ alias rsync='rsync -P'
 alias free="free -mth"
 alias da='date "+%Y-%m-%d %A    %T %Z"'
 alias sb='source ~/.bashrc'
+alias xlx='xrdb -load $HOME/.Xresources'
 
 alias portcheck='nc -v -i1 -w1' # Test port connection - Usage: portcheck 192.168.122.137 22
 alias ports='netstat -nape --inet'
@@ -525,7 +527,7 @@ subnetfree() {
 
 # Quick network port scan of an IP - Usage: portscan 192.168.122.37 - FIX
 portscan() {
-  nmap -T4 -F "${1}" -oG - | grep "\bopen\b"
+  nmap -T4 -F "${1}" -oG - | grep "\bopen\b\n"
 }
 
 # Stealth syn scan, OS and version detection, verbose output - Usage: portscan-stealth 192.168.122.1/24 or portscan-stealth 192.168.122.137
