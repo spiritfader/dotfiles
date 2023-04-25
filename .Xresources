@@ -21,7 +21,7 @@ XTerm.ttyModes:                        erase ^?
 XTerm*ScrollKey:                       true
 XTerm*visualbell:                      true
 XTerm*bellIsUrgent:                    true
-XTerm.vt100.saveLines:                 100000
+XTerm.vt100.saveLines:                 8192
 XTerm.vt100.bellIsUrgent:              true
 XTerm*vt100*transparent:               true
 XTerm*vt100*allowTitleOps:             true
@@ -54,7 +54,7 @@ UXTerm.ttyModes:                      erase ^?
 UXTerm*ScrollKey:                     true
 UXTerm*visualbell:                    true
 UXTerm*bellIsUrgent:                  true
-UXTerm.vt100.saveLines:               100000
+UXTerm.vt100.saveLines:               8192
 UXTerm.vt100.bellIsUrgent:            true
 UXTerm*vt100*transparent:             true
 UXTerm*vt100*allowTitleOps:           true
@@ -139,7 +139,7 @@ aterm*foreground:                     green
 aterm*internalBorder:                 0
 aterm*scrollstyle:                    false
 aterm*scrollBar:                      false
-aterm*saveLines:                      1500
+aterm*saveLines:                      8192
 aterm*loginShell:                     false
 aterm*transparent:                    true
 aterm*fadeColor:                      black

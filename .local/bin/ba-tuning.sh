@@ -4,9 +4,7 @@
 
 # TBD
 
-
 ### NETWORK ###
-
 
 # Disable Explicit Congestion Notification in TCP
 sysctl -w net.ipv4.tcp_ecn=0

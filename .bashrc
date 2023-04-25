@@ -7,6 +7,15 @@
 
 source /usr/share/git/git-prompt.sh
 
+# Default umask.  A umask of 022 prevents new files from being created group and world writable.
+# umask 022
+
+# Set ksh93 visual editing mode:
+if [ "$SHELL" = "/bin/ksh" ]; then
+  VISUAL=emacs
+#  VISUAL=gmacs
+#  VISUAL=vi
+fi
 
 # Check for user private bin $HOME/.local/bin and add to path if it exists and is not already in path
 if [ -d "$HOME/.local/bin" ] && [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
@@ -146,6 +155,7 @@ alias shred="shred -zf"
 alias wget="wget -U 'noleak'"
 alias curl="curl --user-agent 'noleak'"
 alias count='find . -type f | wc -l'
+alias upd='sudo pacman -Syu && paru -Syu'
 
 alias empty_trash='rm -rf ~/.local/share/Trash/*'
 alias infgears='vblank_mode=0 glxgears'

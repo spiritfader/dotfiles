@@ -1,6 +1,6 @@
 #!/bin/sh
 # Blackarch sysclean script
-pacman -Rscn "$(yay -Qtdq)" # Remove all packages marked as orphans, their dependencies and all the packages that depend on the target packages, quietly (no titles)
+#pacman -Rscn "$(yay -Qtdq)" # Remove all packages marked as orphans, their dependencies and all the packages that depend on the target packages, quietly (no titles)
 updatedb                    # update the locate/plocate database
 pkgfile -u                  # update the pkgfile database
 pacman -Fyy                 # update the pacman file database
