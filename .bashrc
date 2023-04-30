@@ -31,6 +31,7 @@ shopt -s autocd # Enable auto cd when typing directories
 shopt -s checkwinsize # check the terminal size when it regains control - check winsize when resize
 shopt -s histappend # append to the history file, don't overwrite it
 shopt -s globstar # the pattern "**" used in a pathname expansion context will match all files and zero or more directories and subdirectories.
+shopt -s promptvars # prompt strings undergo parameter expansion, command substitution, arithmetic expansion, and quote removal after being expanded.
 #shopt -s no_empty_cmd_completion # Disable completion when the input buffer is empty
 
 bind "set completion-ignore-case on" #ignore upper and lowercase when TAB completion
@@ -100,7 +101,7 @@ if ${use_color} ; then
 		#PS1+='\[\033[01;32m\]\u@\h\[\033[01;34m\] \w\033[33m\]$(parse_git_branch)\033[01;34m\] \$\[\033[00m\] ' # default with inline git branch status
     #PS1+='\[\033[01;34m\]\w \$\[\033[00m\] ' # custom
     PS1+='\[\033[01;34m\]\w\[\033[33m\]$(gitPrompt)\[\033[01;34m\] \$\[\033[00m\] ' # custom with inline git branch status
-	fi
+  fi
 	#BSD#@export CLICOLOR=1
   alias ls='ls --color=auto'
   alias grep='grep --color=auto'
@@ -115,6 +116,8 @@ else
 	# show root@ when we don't have colors
 	PS1+='\u@\h \w \$ '
 fi
+# Start bash PS1 prompt on newline if none within previous EOF
+PS1='$(printf "%$((`tput cols`-1))s\r")'$PS1
 
 # Set 'man' colors
 if [ "$use_color" = yes ]; then
@@ -185,7 +188,8 @@ alias free="free -mth"
 alias da='date "+%Y-%m-%d %A    %T %Z"'
 alias sb='source ~/.bashrc'
 alias xlx='xrdb -load $HOME/.Xresources'
-
+alias errorlog='journalctl -p 3 -b'
+alias brokensym='sudo find / -xtype l -print'
 alias portcheck='nc -v -i1 -w1' # Test port connection - Usage: portcheck 192.168.122.137 22
 alias ports='netstat -nape --inet'
 alias ns='netstat -alnp --protocol=inet | grep -v CLOSE_WAIT | cut -c-6,21-94 | tail +2'
@@ -243,7 +247,7 @@ top10() {
 # returns a bunch of information about the current host, useful when jumping around hosts a lot
 ii() {
     echo -e "\nYou are logged on to $HOSTNAME"
-    echo -e "\nAdditionnal information: " ; uname -a
+    echo -e "\nAdditional information: " ; uname -a
     echo -e "\nUsers logged on: " ; PROCPS_USERLEN=32 w -hs | cut -d " " -f1 | sort | uniq
     echo -e "\nCurrent date : " ; date
     echo -e "\nMachine stats : " ; uptime
@@ -322,7 +326,7 @@ virev() {
   nvim -p "${toOpen}"
 }
 
-# ex = EXtractor for all kinds of archives - usage: ex <file>
+# ex = extracts archives into folders - usage: ex <file>
 ex() {
   SAVEIFS=$IFS
   IFS="$(printf '\n\t')"
@@ -352,27 +356,27 @@ ex() {
   IFS=$SAVEIFS
 }
 
-# ex = EXtractor for all kinds of archives - usage: ex <file>
+# exhere = extracts files loosely into directory - usage: exhere <file>
 exhere() {
   SAVEIFS=$IFS
   IFS="$(printf '\n\t')"
   if [ -f "$1" ] ; then
     case $1 in
-      *.tar.bz2)   tar xjf "$1"   ;;
-      *.tar.gz)    tar xzf "$1"   ;;
-      *.bz2)       bunzip2 "$1"   ;;
-      *.rar)       unrar x "$1"   ;;
-      *.gz)        gunzip "$1"    ;;
-      *.tar)       tar xf "$1"    ;;
-      *.tbz2)      tar xjf "$1"   ;;
-      *.tgz)       tar xzf "$1"   ;;
-      *.zip)       unzip "$1"     ;;
-      *.Z)         uncompress "$1";;
+      *.tar.bz2)        tar xjf "$1"   ;;
+      *.tar.gz)         tar xzf "$1"   ;;
+      *.bz2)            bunzip2 "$1"   ;;
+      *.rar)            unrar x "$1"   ;;
+      *.gz)             gunzip "$1"    ;;
+      *.tar)            tar xf "$1"    ;;
+      *.tbz2)           tar xjf "$1"   ;;
+      *.tgz)            tar xzf "$1"   ;;
+      *.zip)            unzip "$1"     ;;
+      *.Z)              uncompress "$1";;
       *.7z|*.iso|.lzm)  7z x "$1"      ;;
-      *.deb)       ar x "$1"      ;;
-      *.tar.xz)    tar xf "$1"    ;;
-      *.tar.zst)   tar xf "$1"    ;;
-      *)           echo "'$1' cannot be extracted via ex()" ;;
+      *.deb)            ar x "$1"      ;;
+      *.tar.xz)         tar xf "$1"    ;;
+      *.tar.zst)        tar xf "$1"    ;;
+      *)                echo "'$1' cannot be extracted via ex()" ;;
     esac
   else
     echo "'$1' is not a valid file"
@@ -383,12 +387,12 @@ exhere() {
 smush() { # Usage "smush <file> <tar.gz.>"
     FILE=$1
     case $FILE in
-        *.tar.bz2) shift && tar cjf "$FILE" "$1" ;;
-        *.tar.gz)  shift && tar czf "$FILE" "$1" ;;
-        *.tgz)     shift && tar czf "$FILE" "$1" ;;
-        *.zip)         shift && 7z a -tzip "$FILE" "$1" ;;
-        *.rar)         shift && rar "$FILE" "$1" ;;
-        *.7z)         shift && 7z a -t7z -m0=lzma2 -mx=9 -mfb=64 -md=64m -ms=on "$FILE" ;;
+        *.tar.bz2)   shift && tar cjf "$FILE" "$1" ;;
+        *.tar.gz)    shift && tar czf "$FILE" "$1" ;;
+        *.tgz)       shift && tar czf "$FILE" "$1" ;;
+        *.zip)       shift && 7z a -tzip "$FILE" "$1" ;;
+        *.rar)       shift && rar "$FILE" "$1" ;;
+        *.7z)        shift && 7z a -t7z -m0=lzma2 -mx=9 -mfb=64 -md=64m -ms=on "$FILE" ;;
     esac
 }
 
@@ -525,9 +529,9 @@ _showcolor256_bg() {
     echo -ne "\033[0m"
 }
 
-# Scan subnet for active systems - Usage: ubnetscan 192.168.122.1/24
+# Scan subnet for active systems - Usage: subnetscan 192.168.122.1/24
 subnetscan() {
-  nmap -sn "${1}" -oG - | awk '$4=="Status:" && $5=="Up" {print $2}'
+  nmap -v -sn "${1}" -oG - | awk '$4=="Status:" && $5=="Up" {print $2}'
 }
 
 # Scan subnet for available IPs - Usage: subnetfree 192.168.122.1/24
@@ -537,25 +541,30 @@ subnetfree() {
 
 # Quick network port scan of an IP - Usage: portscan 192.168.122.37 - FIX
 portscan() {
-  nmap -T4 -F "${1}" -oG - | grep "\bopen\b\n"
+  nmap -T4 -F "${1}" -oG - | grep "\bopen\b"
 }
 
-# Stealth syn scan, OS and version detection, verbose output - Usage: portscan-stealth 192.168.122.1/24 or portscan-stealth 192.168.122.137
+# trace a packet on a single IP - Usage "tracepacket 192.168.1.1"
+tracepacket() { 
+  sudo nmap -vv -n -sn -PE -T4 --packet-trace "${1}"
+}
+
+stealthscan-dns(){ # use recursive DNS proxies for a stealth scan on a target - Usage: "stealthscan-dns <dns-server1,[server2]> <target>" 
+  nmap --dns-servers "${1}" -sL "${2}"
+}
+
+# detect if a website is protected by such a web-application firewall - usage: "wafscan url"
+wafscan(){
+  nmap -p443 --script http-waf-detect --script-args="http-waf-detect.aggro,http-waf-detect.detectBodyChanges" "${1}"
+}
+
+# Stealth syn scan, OS and version detection, verbose output - Usage: portscan-stealth 192.168.122.1/24 or portscan-stealth 192.168.122.137 1-65535
 portscan-stealth() {
-  sudo nmap -v -sV -O -sS -T5 "${1}"
+  sudo nmap -v -p "${2}" -sV -O -sS -T5 "${1}" 
 }
 
 pingdrops() { # Detect frame drops using `ping` - Usage: pingdrops 192.168.122.137
-  ping "${1}" | \
-  grep -oP --line-buffered "(?<=icmp_seq=)[0-9]{1,}(?= )" | \
-  awk '$1!=p+1{print p+1"-"$1-1}{p=$1}'
-}
-
-localports() { # Identify local listening ports and services
-  for i in $(lsof -i -P -n | grep -oP '(?<=\*:)[0-9]{2,}(?= \(LISTEN)' | sort -nu)
-  do
-    lsof -i :"${i}" | grep -v COMMAND | awk -v i="$i" '{print $1,$3,i}' | sort -u
-  done | column -t
+  ping "${1}" | grep -oP --line-buffered "(?<=icmp_seq=)[0-9]{1,}(?= )" | awk '$1!=p+1{print p+1"-"$1-1}{p=$1}'
 }
 
 urltest() { # Use Curl to check URL connection performance - urltest https://google.com
@@ -581,7 +590,7 @@ portproc() { # List processes associated with a port - Usage: "portproc 22"
   fi
 }
 
-filegen-alpha() { # Generate a random alphanumeric file of certain size - Usage: filegen size location
+filegen() { # Generate a file of randomized data and certain size - Usage: filegen <size> <location> <(a)lpha, (n)umeric, (r)andom, (b)inary> 
   s="${1}"
   if [ -z "${s}" ]; then s="1M"; fi
   fsize="$(echo "${s}" | grep -Eo '[0-9]{1,}')"
@@ -589,43 +598,12 @@ filegen-alpha() { # Generate a random alphanumeric file of certain size - Usage:
   (( ssize = fsize * 6 ))
   f="${2}"
   if [ -z "${f}" ] || [ -f "${f}" ]; then f="$(mktemp)"; fi
-  head -c "${fsize}${sunit}" <(head -c "${ssize}${sunit}" </dev/urandom | tr -dc A-Za-z0-9) > "${f}"
-  ls -alh "${f}"
-}
-
-filegen-num() { # Generate a random alphanumeric file of certain size - Usage: filegen size location
-  s="${1}"
-  if [ -z "${s}" ]; then s="1M"; fi
-  fsize="$(echo "${s}" | grep -Eo '[0-9]{1,}')"
-  sunit="$(echo "${s}" | grep -oE '[Aa-Zz]{1,}')"
-  (( ssize = fsize * 6 ))
-  f="${2}"
-  if [ -z "${f}" ] || [ -f "${f}" ]; then f="$(mktemp)"; fi
-  head -c "${fsize}${sunit}" <(head -c "${ssize}${sunit}" </dev/urandom | tr -dc 0-9) > "${f}"
-  ls -alh "${f}"
-}
-
-filegen() { # Generate a random alphanumeric file of certain size - Usage: filegen size location
-  s="${1}"
-  if [ -z "${s}" ]; then s="1M"; fi
-  fsize="$(echo "${s}" | grep -Eo '[0-9]{1,}')"
-  sunit="$(echo "${s}" | grep -oE '[Aa-Zz]{1,}')"
-  (( ssize = fsize * 6 ))
-  f="${2}"
-  if [ -z "${f}" ] || [ -f "${f}" ]; then f="$(mktemp)"; fi
-  head -c "${fsize}${sunit}" <(head -c "${ssize}${sunit}" </dev/urandom) > "${f}"
-  ls -alh "${f}"
-}
-
-filegen-bin() { # Generate a random alphanumeric file of certain size - Usage: filegen size location
-  s="${1}"
-  if [ -z "${s}" ]; then s="1M"; fi
-  fsize="$(echo "${s}" | grep -Eo '[0-9]{1,}')"
-  sunit="$(echo "${s}" | grep -oE '[Aa-Zz]{1,}')"
-  (( ssize = fsize * 6 ))
-  f="${2}"
-  if [ -z "${f}" ] || [ -f "${f}" ]; then f="$(mktemp)"; fi
-  head -c "${fsize}${sunit}" <(head -c "${ssize}${sunit}" </dev/urandom | tr -dc 0-1) > "${f}"
+  case "${3}" in
+      -a)  head -c "${fsize}${sunit}" <(head -c "${ssize}${sunit}" </dev/urandom | tr -dc A-Za-z0-9) > "${f}" ;;
+      -n)  head -c "${fsize}${sunit}" <(head -c "${ssize}${sunit}" </dev/urandom | tr -dc 0-9) > "${f}" ;;
+      -r)  head -c "${fsize}${sunit}" <(head -c "${ssize}${sunit}" </dev/urandom) > "${f}"  ;;
+      -b)  head -c "${fsize}${sunit}" <(head -c "${ssize}${sunit}" </dev/urandom | tr -dc 0-1) > "${f}" ;;
+  esac
   ls -alh "${f}"
 }
 
