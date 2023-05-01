@@ -87,7 +87,7 @@ else
 	esac
 fi
 
-# 'Safe' version of __git_ps1 to avoid errors on systems that don't have it
+# 'Safe' version of __git_ps1 to avoid errors on systems that don't have it, shows git status within bash prompt
 gitPrompt () {
   command -v __git_ps1 > /dev/null && __git_ps1 " (%s)"
 }
@@ -95,12 +95,9 @@ gitPrompt () {
 # Set PS1 prompt display
 if ${use_color} ; then 
 	if [[ ${EUID} == 0 ]] ; then # set root PS1
-		PS1+='\[\033[01;31m\]\h\[\033[01;34m\] \w \$\[\033[00m\] '
+    PS1+='\[\033[01;34m\]\w\[\033[01;33m\]$(gitPrompt)\[\033[01;34m\] \$\[\033[00m\] ' # custom with inline git branch status
 	else # set user PS1
-  	#PS1+='\[\033[01;32m\]\u@\h\[\033[01;34m\] \w \$\[\033[00m\] ' # default
-		#PS1+='\[\033[01;32m\]\u@\h\[\033[01;34m\] \w\033[33m\]$(parse_git_branch)\033[01;34m\] \$\[\033[00m\] ' # default with inline git branch status
-    #PS1+='\[\033[01;34m\]\w \$\[\033[00m\] ' # custom
-    PS1+='\[\033[01;34m\]\w\[\033[33m\]$(gitPrompt)\[\033[01;34m\] \$\[\033[00m\] ' # custom with inline git branch status
+    PS1+='\[\033[01;34m\]\w\[\033[01;33m\]$(gitPrompt)\[\033[01;34m\] \$\[\033[00m\] ' # custom with inline git branch status
   fi
 	#BSD#@export CLICOLOR=1
   alias ls='ls --color=auto'
@@ -116,8 +113,8 @@ else
 	# show root@ when we don't have colors
 	PS1+='\u@\h \w \$ '
 fi
-# Start bash PS1 prompt on newline if none within previous EOF
-PS1='$(printf "%$((`tput cols`-1))s\r")'$PS1
+# Start bash PS1 prompt on newline if none within previous EOT (FIX, breaks multiple term in tiled wm)
+#PS1='$(printf "%$((`tput cols`-1))s\r")'$PS1
 
 # Set 'man' colors
 if [ "$use_color" = yes ]; then
@@ -159,10 +156,9 @@ alias wget="wget -U 'noleak'"
 alias curl="curl --user-agent 'noleak'"
 alias count='find . -type f | wc -l'
 alias upd='sudo pacman -Syu && paru -Syu'
-
 alias empty_trash='rm -rf ~/.local/share/Trash/*'
 alias infgears='vblank_mode=0 glxgears'
-alias updaterepo='sudo reflector --verbose -c "United States" --age 12 --latest 10 --score 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist'
+alias updaterepo='sudo reflector --verbose -c "United States" --latest 30 --fastest 30 --score 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist'
 
 alias awesomeerr='tail -f .cache/awesome/stderr'
 alias awesomeout='tail -f .cache/awesome/stdout'
@@ -287,7 +283,7 @@ dusort() {
 }
 
 # Traverse up a number of directories | cu   -> cd ../ | cu 2 -> cd ../../ |  cu 3 -> cd ../../../
-cu() { 
+..() { 
   local count=$1
   if [ -z "${count}" ]; then
       count=1
@@ -549,18 +545,18 @@ tracepacket() {
   sudo nmap -vv -n -sn -PE -T4 --packet-trace "${1}"
 }
 
-stealthscan-dns(){ # use recursive DNS proxies for a stealth scan on a target - Usage: "stealthscan-dns <dns-server1,[server2]> <target>" 
+stealthscan-dns(){ # use recursive DNS proxies for a stealth scan on a target - Usage: "stealthscan-dns <dns-server1,[dns-server2]> <target>" 
   nmap --dns-servers "${1}" -sL "${2}"
+}
+
+# Stealth syn scan, OS and version detection, verbose output - Usage: portscan-stealth 192.168.122.1/24 or portscan-stealth 192.168.122.137 1-65535
+stealthscan-port() {
+  sudo nmap -v -p "${2}" -sV -O -sS -T5 "${1}" 
 }
 
 # detect if a website is protected by such a web-application firewall - usage: "wafscan url"
 wafscan(){
   nmap -p443 --script http-waf-detect --script-args="http-waf-detect.aggro,http-waf-detect.detectBodyChanges" "${1}"
-}
-
-# Stealth syn scan, OS and version detection, verbose output - Usage: portscan-stealth 192.168.122.1/24 or portscan-stealth 192.168.122.137 1-65535
-portscan-stealth() {
-  sudo nmap -v -p "${2}" -sV -O -sS -T5 "${1}" 
 }
 
 pingdrops() { # Detect frame drops using `ping` - Usage: pingdrops 192.168.122.137
