@@ -180,12 +180,21 @@ alias smart='sudo smartctl -a /dev/nvme0'
 
 # Dotfile Management
 alias df='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
-alias dfpush='dotfiles push origin'
-alias dfshow='dotfiles ls-tree --full-tree -r --name-only HEAD'
-dftrack(){
-  while IFS="" read -r p || [ -n "$p" ]; do df add "$p"; done < "$HOME"/.dotfiles.conf
+alias dfpush='df push origin'
+alias dfshow='df ls-tree --full-tree -r --name-only HEAD'
+
+dftrack(){ # Loop through the git file of tracked dotfiles, check to see if it exists and track it in the bare repo
+  untrack+=()
+  while IFS="" read -r p;
+    do 
+    if ! [[ -e $p ]]; then untrack+=("$p"); fi
+    if [[ -e $p ]]; then df add "$p"; fi
+  done < "$HOME"/.dotfiles.conf
+  for i in "${untrack[@]}"; do sed -i "/$i/d" "$HOME"/.dotfiles.conf; done
+  unset untrack
 }
-dfadd(){
+
+dfadd(){ # Add file(s) to the git file of tracked dotfiles (Add check to make sure file isn't alredy there)
   for i in "$@"; do printf '%s\n' "$i" >> "$HOME"/.dotfiles.conf; done; 
 }
   
