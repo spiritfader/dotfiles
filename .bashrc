@@ -179,11 +179,11 @@ alias setuid='find /usr/bin -perm "/u=s,g=s"'
 alias smart='sudo smartctl -a /dev/nvme0'
 
 # Dotfile Management
-alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
+alias df='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 alias dfpush='dotfiles push origin'
 alias dfshow='dotfiles ls-tree --full-tree -r --name-only HEAD'
 dftrack(){
-  while IFS="" read -r p || [ -n "$p" ]; do dotfiles add "$p"; done < "$HOME"/.dotfiles.conf
+  while IFS="" read -r p || [ -n "$p" ]; do df add "$p"; done < "$HOME"/.dotfiles.conf
 }
 dfadd(){
   for i in "$@"; do printf '%s\n' "$i" >> "$HOME"/.dotfiles.conf; done; 
