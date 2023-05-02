@@ -184,18 +184,23 @@ alias dfpush='df push origin'
 alias dfshow='df ls-tree --full-tree -r --name-only HEAD'
 
 dftrack(){ # Loop through the git file of tracked dotfiles, check to see if it exists and track it in the bare repo
-  untrack+=()
-  while IFS="" read -r p;
-    do 
-    if ! [[ -e $p ]]; then untrack+=("$p"); fi
-    if [[ -e $p ]]; then df add "$p"; fi
+  untrack+=()                                                               # initialize array to hold dir/files to be "untracked" and removed from .dotfiles.conf
+  while IFS="" read -r p; do                                                # loop through $HOME/.dotfiles.conf
+    if ! [[ -e $p ]]; then untrack+=("$p"); fi                              # if dir/file arg does not exist within fs, add to "untracked" array
+    if [[ -e $p ]]; then df add "$p"; fi                                    # if dir/file exists within fs, track it with "git add"
   done < "$HOME"/.dotfiles.conf
-  for i in "${untrack[@]}"; do sed -i "/$i/d" "$HOME"/.dotfiles.conf; done
-  unset untrack
+  for i in "${untrack[@]}"; do sed -i "/$i/d" "$HOME"/.dotfiles.conf && df rm --cached "$i"; done # remove dir/files from .dotfiles.conf that are in array and untrack from git with "git rm --cached"
+  
+  unset untrack                                                             # unset "untracked" variable to keep consecutive runs clean
 }
 
-dfadd(){ # Add file(s) to the git file of tracked dotfiles (Add check to make sure file isn't alredy there)
-  for i in "$@"; do printf '%s\n' "$i" >> "$HOME"/.dotfiles.conf; done; 
+dfadd(){ # Add file(s) to tracked dotfiles ( properly implement new line in printf statement"
+  for i in "$@"; do                                                                                                     # Loop through tracked dotfiles (.dotfiles.conf)
+    if [[ -e $i ]]; then                                                                                                     
+      if grep -q "$i" "$HOME"/.dotfiles.conf; then printf "dir/file already exists within tracked file, skipping."; fi; # if dir/file arg exists and is already in tracked file, do nothing. 
+      if ! grep -q "$i" "$HOME"/.dotfiles.conf; then printf '%s\n' "$i" >> "$HOME"/.dotfiles.conf; fi; fi;              # if dir/file arg exists but is not in file, add it.
+    if ! [[ -e $i ]]; then printf '%s' "The dir/file " "'$i'" " cannot be located. Skipping."; fi                       # if dir/file arg does not exist, skip and do nothing.
+  done;     
 }
   
 alias trim='sudo fstrim -av'  
