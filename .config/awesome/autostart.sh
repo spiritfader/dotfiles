@@ -12,6 +12,7 @@ run picom -b --config "$HOME"/.config/picom/picom.conf
 run nm-applet
 run pasystray -g --volume-max=100 --volume-inc=1 --notify=sink_default --notify=source_default
 run cbatticon
+#run firewall-applet
 #run blueman-applet
 #run arch-audit-gtk
 run variety
