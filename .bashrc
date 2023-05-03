@@ -167,10 +167,6 @@ alias scrubstart='sudo btrfs scrub start'
 alias scrubstatus='sudo btrfs scrub status'
 alias scrublive='sudo btrfs scrub start /; watch -n 1 sudo btrfs scrub status /'
 
-alias balancestart='sudo btrfs balance start'
-alias balancestatus='sudo btrfs balance status'
-alias balancelive='sudo btrfs balance status /; watch -n 1 sudo btrfs balance status /'
-
 alias largesthome='btrfs fi du ~/ | sort -h'
 alias largestroot='sudo btrfs fi du / | sort -h'
 
@@ -188,7 +184,7 @@ alias dfs='df status'
 dftrack(){ # Loop through the git file of tracked dotfiles, check to see if it exists and track it in the bare repo
   untrack+=()                                      # initialize array to hold dir/files to be "untracked" and removed from .dotfiles.conf
   while IFS="" read -r p || [ -n "$p" ]; do        # loop through $HOME/.dotfiles.conf
-    if ! [[ -e $p ]]; then untrack+=("$p"); fi     # if dir/file arg does not exist within fs, add to "untracked" array
+    if ! [[ -e $p ]]; then untrack+=("$p"); fi     # if dir/file does not exist within fs, add to "untracked" array
     if [[ -e $p ]]; then df add "$p"; fi           # if dir/file exists within fs, track it with "git add"
   done < "$HOME"/.dotfiles.conf
   for i in "${untrack[@]}"; do sed -i "/$i/d" "$HOME"/.dotfiles.conf && df rm --cached "$i"; done # remove dir/files from .dotfiles.conf that are in array and untrack from git with "git rm --cached"
@@ -199,8 +195,8 @@ dfadd(){ # Add file(s) to tracked dotfiles ( properly implement new line in prin
   for i in "$@"; do                                                                                                     # Loop through tracked dotfiles (.dotfiles.conf)
     if [[ -e $i ]]; then                                                                                                     
       if grep -q "$i" "$HOME"/.dotfiles.conf; then printf "dir/file already exists within tracked file, skipping."; fi; # if dir/file arg exists and is already in tracked file, do nothing. 
-      if ! grep -q "$i" "$HOME"/.dotfiles.conf; then printf '%s\n' "$i" >> "$HOME"/.dotfiles.conf; fi; fi;              # if dir/file arg exists but is not in file, add it.
-    if ! [[ -e $i ]]; then printf '%s' "The dir/file " "'$i'" " cannot be located. Skipping."; fi                       # if dir/file arg does not exist, skip and do nothing.
+      if ! grep -q "$i" "$HOME"/.dotfiles.conf; then printf '%s' "$i" >> "$HOME"/.dotfiles.conf; fi; fi;              # if dir/file arg exists but is not in file, add it.
+    if ! [[ -e $i ]]; then printf '%s\n' "The dir/file " "'$i'" " cannot be located. Skipping."; fi                       # if dir/file arg does not exist, skip and do nothing.
   done;     
 }
   
@@ -633,7 +629,7 @@ filegen() { # Generate a file of randomized data and certain size - Usage: fileg
 export EDITOR=nvim
 export VISUAL=code-oss
 export LD_PRELOAD=""
-export HISTSIZE=2500
+export HISTSIZE=8192
 export HISTCONTROL=ignorespace
 #export HISTCONTROL=ignoreboth:erasedups:ignorespace
 export MANPAGER="less -R --use-color -Dd+r -Du+b"
