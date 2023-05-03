@@ -11,7 +11,6 @@ ruled = require("ruled")
 hotkeys_popup = require("awful.hotkeys_popup")
 
 --require("awful.hotkeys_popup.keys") -- Enable hotkeys help widget for VIM and other apps when client with a matching name is opened:
-
 require "awful.hotkeys_popup.keys.vim"
 require "awful.hotkeys_popup.keys.firefox"
 --require "awful.hotkeys_popup.keys.tmux"
