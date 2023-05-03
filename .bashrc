@@ -196,7 +196,7 @@ dfadd(){ # Add file(s) to tracked dotfiles ( properly implement new line in prin
     if [[ -e $i ]]; then                                                                                                     
       if grep -q "$i" "$HOME"/.dotfiles.conf; then printf "dir/file already exists within tracked file, skipping."; fi; # if dir/file arg exists and is already in tracked file, do nothing. 
       if ! grep -q "$i" "$HOME"/.dotfiles.conf; then printf '%s' "$i" >> "$HOME"/.dotfiles.conf; fi; fi;              # if dir/file arg exists but is not in file, add it.
-    if ! [[ -e $i ]]; then printf '%s\n' "The dir/file " "'$i'" " cannot be located. Skipping."; fi                       # if dir/file arg does not exist, skip and do nothing.
+    if ! [[ -e $i ]]; then printf '%s\n' "The dir/file '$i' cannot be located. Skipping."; fi                       # if dir/file arg does not exist, skip and do nothing.
   done;     
 }
   
