@@ -17,6 +17,10 @@ require "awful.hotkeys_popup.keys.firefox"
 --require "awful.hotkeys_popup.keys.qutebrowser"
 --require "awful.hotkeys_popup.keys.termite"
 
+-- custom hotkeys
+require "awful.hotkeys_popup.keys.nvim"
+require "awful.hotkeys_popup.keys.sysrq"
+
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to another config (This code will only ever execute for the fallback config)
 -- naughty.connect_signal("request::display_error", function(message, startup)

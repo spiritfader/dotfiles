@@ -13,6 +13,8 @@ local keys = {
   tmux = require("awful.hotkeys_popup.keys.tmux"),
   qutebrowser = require("awful.hotkeys_popup.keys.qutebrowser"),
   termite = require("awful.hotkeys_popup.keys.termite"),
+  nvim = require("awful.hotkeys_popup.keys.nvim"),
+  sysrq = require("awful.hotkeys_popup.keys.sysrq"),
 }
 return keys
 
