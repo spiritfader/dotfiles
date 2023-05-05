@@ -11,7 +11,7 @@ local themes_path   = ("~/.config/awesome/themes/")
 
 local theme = {}
 --theme.font          = "Liberation Sans 9"
-theme.font          = "Terminus 8"
+theme.font          = "Terminess Nerd Font Propo 12"
 
 -- Set Theme Colors
 theme.bg_normal                = "#000000" --original value #222222

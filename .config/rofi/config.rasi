@@ -1,6 +1,6 @@
 configuration {
 	modes: "drun,run,window,ssh";
-  	font: "Terminus 10";
+  	font: "Terminess Nerd Font 12";
 /* font: "Liberation Sans 11"; */
 	location: 0;
 	yoffset: 0;

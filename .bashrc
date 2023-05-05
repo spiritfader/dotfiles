@@ -159,6 +159,7 @@ alias upd='sudo pacman -Syu && paru -Syu'
 alias empty_trash='rm -rf ~/.local/share/Trash/*'
 alias infgears='vblank_mode=0 glxgears'
 alias updaterepo='sudo reflector --verbose -c "United States" --latest 30 --fastest 30 --score 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist'
+alias fwupd='fwupdmgr get-updates'
 
 alias awesomeerr='tail -f .cache/awesome/stderr'
 alias awesomeout='tail -f .cache/awesome/stdout'

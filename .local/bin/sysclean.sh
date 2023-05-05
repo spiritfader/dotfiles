@@ -8,3 +8,4 @@ printf "\nUpgrading local Pacman database..." && sudo pacman-db-upgrade # upgrad
 printf "\n\nCleaning Pacman cache..." && yes | sudo pacman -Scc         # Remove all files and unused repositories from pacman cache without prompt
 printf "\nCleaning AUR cache...\n" && yes | paru -Scc                   # Remove all files and unused repositories from pacman cache without prompt
 sync                                                                    # syncronize cached writes to persistent storage
+

@@ -120,20 +120,20 @@ font:
     #   - (macOS) Menlo
     #   - (Linux/BSD) monospace
     #   - (Windows) Consolas
-    family: Liberation Mono
+    family: LiterationMono Nerd Font Mono
     style: Regular
 
   # Bold font face
   bold:
-    family: Liberation Mono
+    family: LiterationMono Nerd Font Mono
     style: Bold
-
+  
   italic:
-    family: Liberation Mono
+    family: LiterationMono Nerd Font Mono
     style: Italic
 
   bold_italic:
-    family: Liberation Mono
+    family: LiterationMono Nerd Font Mono
     style: Bold Italic
 
   # Point size
