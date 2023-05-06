@@ -84,6 +84,8 @@ awful.keyboard.append_global_keybindings({
     end,
         {description = "toggle wibox", group = "awesome"}),
 
+
+        
 -- Lain Keybinds
 
         -- Dynamic tagging
