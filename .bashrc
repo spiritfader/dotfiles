@@ -13,8 +13,6 @@ source /usr/share/git/git-prompt.sh
 # Set ksh93 visual editing mode:
 if [ "$SHELL" = "/bin/ksh" ]; then
   VISUAL=emacs
-#  VISUAL=gmacs
-#  VISUAL=vi
 fi
 
 # Check for user private bin $HOME/.local/bin and add to path if it exists and is not already in path
@@ -161,8 +159,6 @@ alias infgears='vblank_mode=0 glxgears'
 alias updaterepo='sudo reflector --verbose -c "United States" --latest 30 --fastest 30 --score 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist'
 alias fwupd='fwupdmgr get-updates'
 
-
-
 alias awesomeerr='tail -f .cache/awesome/stderr'
 alias awesomeout='tail -f .cache/awesome/stdout'
 
@@ -194,7 +190,7 @@ dftrack(){ # Loop through the git file of tracked dotfiles, check to see if it e
   unset untrack                                    # unset "untracked" variable to keep consecutive runs clean
 }
 
-dfadd(){ # Add file(s) to tracked dotfiles ( properly implement new line in printf statement"
+dfadd(){ # Add file(s) to tracked dotfiles"
   for i in "$@"; do                                                                                                     # Loop through tracked dotfiles (.dotfiles.conf)
     if [[ -e $i ]]; then                                                                                                     
       if grep -q "$i" "$HOME"/.dotfiles.conf; then printf "dir/file already exists within tracked file, skipping."; fi; # if dir/file arg exists and is already in tracked file, do nothing. 
@@ -218,6 +214,10 @@ alias intercept="sudo strace -ff -e trace=write -e write=1,2 -p" #given a PID, i
 alias psg="ps aux | grep -v grep | grep -i -e VSZ -e" # search processes (find PID easily)
 alias psf="ps auxfww" # show all processes
 alias localip='ifconfig | sed -rn "s/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p"' # Show local primary IP address
+
+ffs (){ # Search for text in firefox with pre-configured search engine
+  firefox -search "$*";exit 
+}
 
 # Add an "alert" alias for long running commands.  Use like so: sleep 10; alert
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
@@ -358,7 +358,7 @@ ex() {
       *.bz2)       bunzip2 "$1"   ;;
       *.rar)       unrar x "$1"   ;;
       *.gz)        gunzip "$1"    ;;
-      *.tar)       tar xf "$1"    ;;
+      *.tar)       mkdir "${1%.tar}"; tar -xvf "$1" -C "${1%.tar}";;
       *.tbz2)      tar xjf "$1"   ;;
       *.tgz)       tar xzf "$1"   ;;
       *.zip)       7z x -o"${1%.zip}" "$1" ;; 
@@ -632,8 +632,7 @@ filegen() { # Generate a file of randomized data and certain size - Usage: fileg
   ls -alh "${f}"
 }
 
-# animated gifs from any video
-# from alex sexton   gist.github.com/SlexAxton/4989674
+# animated gifs from any video - gist.github.com/SlexAxton/4989674
 gifify() {
   if [[ -n "$1" ]]; then
     if [[ $2 == '--good' ]]; then
@@ -648,7 +647,6 @@ gifify() {
   fi
 }
 
-
 # remove/replace tags in video
 tag_remove_usage() {
 	echo "Examples of usage:"
@@ -656,7 +654,7 @@ tag_remove_usage() {
 	echo -e "\t tag_remove -t [--tag] <path_to_file> <title> <comment>"
 }
 
-console() {
+usbmodem() {
   modem=$(for i in /dev/cu.*; do grep -vi bluetooth | tail -1; done)
   baud=${1:-9600}
   if [ -n "$modem" ]; then
@@ -756,11 +754,6 @@ towebp() {
 
 tree_size() {
 	du -a ./* | sort -r -n | head -20
-}
-
-sheet() {
-  # all arguments in $@
-  cht.sh "$@"
 }
 
 git_update_all() {
