@@ -193,8 +193,8 @@ dftrack(){ # Loop through the git file of tracked dotfiles, check to see if it e
 dfadd(){ # Add file(s) to tracked dotfiles"
   for i in "$@"; do                                                                                                     # Loop through tracked dotfiles (.dotfiles.conf)
     if [[ -e $i ]]; then                                                                                                     
-      if grep -q "$i" "$HOME"/.dotfiles.conf; then printf "dir/file already exists within tracked file, skipping."; fi; # if dir/file arg exists and is already in tracked file, do nothing. 
-      if ! grep -q "$i" "$HOME"/.dotfiles.conf; then printf '%s' "$i" >> "$HOME"/.dotfiles.conf; fi; fi;              # if dir/file arg exists but is not in file, add it.
+      if grep -q "^$i$" "$HOME"/.dotfiles.conf; then printf "dir/file already exists within tracked file, skipping."; fi; # if dir/file arg exists and is already in tracked file, do nothing. 
+      if ! grep -q "^$i$" "$HOME"/.dotfiles.conf; then printf '%s' "$i" >> "$HOME"/.dotfiles.conf; fi; fi;              # if dir/file arg exists but is not in file, add it.
     if ! [[ -e $i ]]; then printf '%s\n' "The dir/file '$i' cannot be located. Skipping."; fi                       # if dir/file arg does not exist, skip and do nothing.
   done;     
 }
@@ -632,7 +632,7 @@ filegen() { # Generate a file of randomized data and certain size - Usage: fileg
   ls -alh "${f}"
 }
 
-# animated gifs from any video - gist.github.com/SlexAxton/4989674
+# animated gifs from any video - https://gist.github.com/SlexAxton/4989674
 gifify() {
   if [[ -n "$1" ]]; then
     if [[ $2 == '--good' ]]; then
@@ -660,7 +660,7 @@ usbmodem() {
   if [ -n "$modem" ]; then
     minicom -D "$modem"  -b "$baud"
   else
-    echo "No USB modem device found in /dev"
+    printf "No USB modem device found in /dev"
   fi
 }
 

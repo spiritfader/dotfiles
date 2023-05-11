@@ -1,5 +1,5 @@
 configuration {
-	modes: "drun,run,window,ssh,power:~/.local/bin/rofi-power-menu";
+	modes: "drun,run,window,ssh";
   	font: "Terminess Nerd Font 12";
 	location: 0;
 	yoffset: 0;
