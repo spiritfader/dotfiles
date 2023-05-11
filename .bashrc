@@ -173,6 +173,15 @@ alias threads='ps --no-headers -Leo user | sort | uniq --count'
 alias setuid='find /usr/bin -perm "/u=s,g=s"'
 alias smart='sudo smartctl -a /dev/nvme0'
 
+alias gadd='git add'
+alias gpush='git push'
+alias gshow='git ls-tree --full-tree -r --name-only HEAD'
+alias gcom='git commit -am'
+alias gstat='git status'
+alias gclone='git clone'
+alias gpull='git pull'
+alias gfetch='git fetch'
+
 # Dotfile Management
 alias df='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 alias dfpush='df push origin'
@@ -180,22 +189,22 @@ alias dfshow='df ls-tree --full-tree -r --name-only HEAD'
 alias dfc='df commit -am'
 alias dfs='df status'
 
-dftrack(){ # Loop through the git file of tracked dotfiles, check to see if it exists and track it in the bare repo
-  untrack+=()                                      # initialize array to hold dir/files to be "untracked" and removed from .dotfiles.conf
-  while IFS="" read -r p || [ -n "$p" ]; do        # loop through $HOME/.dotfiles.conf
-    if ! [[ -e $p ]]; then untrack+=("$p"); fi     # if dir/file does not exist within fs, add to "untracked" array
-    if [[ -e $p ]]; then df add "$p"; fi           # if dir/file exists within fs, track it with "git add"
+dftrack(){   # Loop through the git file of tracked dotfiles, check to see if it exists and track it in the bare repo
+  untrack+=()                                                                                        # initialize array to hold dir/files to be "untracked" and removed from .dotfiles.conf
+  while IFS="" read -r p || [ -n "$p" ]; do                                                          # loop through $HOME/.dotfiles.conf
+    if ! [[ -e $p ]]; then untrack+=("$p"); fi                                                       # if dir/file does not exist within fs, add to "untracked" array
+    if [[ -e $p ]]; then df add "$p"; fi                                                             # if dir/file exists within fs, track it with "git add"
   done < "$HOME"/.dotfiles.conf
   for i in "${untrack[@]}"; do sed -i '/$i/d' "$HOME"/.dotfiles.conf && df rm -r --cached "$i"; done # remove dir/files from .dotfiles.conf that are in array and untrack from git with "git rm --cached"
-  unset untrack                                    # unset "untracked" variable to keep consecutive runs clean
+  unset untrack                                                                                      # unset "untracked" variable to keep consecutive runs clean
 }
 
 dfadd(){ # Add file(s) to tracked dotfiles"
-  for i in "$@"; do                                                                                                     # Loop through tracked dotfiles (.dotfiles.conf)
+  for i in "$@"; do                                                                                                       # Loop through tracked dotfiles (.dotfiles.conf)
     if [[ -e $i ]]; then                                                                                                     
       if grep -q "^$i$" "$HOME"/.dotfiles.conf; then printf "dir/file already exists within tracked file, skipping."; fi; # if dir/file exists and is already in tracked file, do nothing. 
-      if ! grep -q "^$i$" "$HOME"/.dotfiles.conf; then printf '%s' "$i" >> "$HOME"/.dotfiles.conf; fi; fi;              # if dir/file exists but is not in file, add it.
-    if ! [[ -e $i ]]; then printf '%s\n' "The dir/file '$i' cannot be located. Skipping."; fi                           # if dir/file does not exist, skip and do nothing.
+      if ! grep -q "^$i$" "$HOME"/.dotfiles.conf; then printf '%s' "$i" >> "$HOME"/.dotfiles.conf; fi; fi;                # if dir/file exists but is not in file, add it.
+    if ! [[ -e $i ]]; then printf '%s\n' "The dir/file '$i' cannot be located. Skipping."; fi                             # if dir/file does not exist, skip and do nothing.
   done;     
 }
   
