@@ -186,16 +186,16 @@ dftrack(){ # Loop through the git file of tracked dotfiles, check to see if it e
     if ! [[ -e $p ]]; then untrack+=("$p"); fi     # if dir/file does not exist within fs, add to "untracked" array
     if [[ -e $p ]]; then df add "$p"; fi           # if dir/file exists within fs, track it with "git add"
   done < "$HOME"/.dotfiles.conf
-  for i in "${untrack[@]}"; do sed -i "/$i/d" "$HOME"/.dotfiles.conf && df rm --cached "$i"; done # remove dir/files from .dotfiles.conf that are in array and untrack from git with "git rm --cached"
+  for i in "${untrack[@]}"; do sed -i '/$i/d' "$HOME"/.dotfiles.conf && df rm -r --cached "$i"; done # remove dir/files from .dotfiles.conf that are in array and untrack from git with "git rm --cached"
   unset untrack                                    # unset "untracked" variable to keep consecutive runs clean
 }
 
 dfadd(){ # Add file(s) to tracked dotfiles"
   for i in "$@"; do                                                                                                     # Loop through tracked dotfiles (.dotfiles.conf)
     if [[ -e $i ]]; then                                                                                                     
-      if grep -q "^$i$" "$HOME"/.dotfiles.conf; then printf "dir/file already exists within tracked file, skipping."; fi; # if dir/file arg exists and is already in tracked file, do nothing. 
-      if ! grep -q "^$i$" "$HOME"/.dotfiles.conf; then printf '%s' "$i" >> "$HOME"/.dotfiles.conf; fi; fi;              # if dir/file arg exists but is not in file, add it.
-    if ! [[ -e $i ]]; then printf '%s\n' "The dir/file '$i' cannot be located. Skipping."; fi                       # if dir/file arg does not exist, skip and do nothing.
+      if grep -q "^$i$" "$HOME"/.dotfiles.conf; then printf "dir/file already exists within tracked file, skipping."; fi; # if dir/file exists and is already in tracked file, do nothing. 
+      if ! grep -q "^$i$" "$HOME"/.dotfiles.conf; then printf '%s' "$i" >> "$HOME"/.dotfiles.conf; fi; fi;              # if dir/file exists but is not in file, add it.
+    if ! [[ -e $i ]]; then printf '%s\n' "The dir/file '$i' cannot be located. Skipping."; fi                           # if dir/file does not exist, skip and do nothing.
   done;     
 }
   
