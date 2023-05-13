@@ -194,17 +194,17 @@ dftrack(){   # Loop through the git file of tracked dotfiles, check to see if it
   while IFS="" read -r p || [ -n "$p" ]; do                                                          # loop through $HOME/.dotfiles.conf
     if ! [[ -e $p ]]; then untrack+=("$p"); fi                                                       # if dir/file does not exist within fs, add to "untracked" array
     if [[ -e $p ]]; then df add "$p"; fi                                                             # if dir/file exists within fs, track it with "git add"
-  done < "$HOME"/.dotfiles.conf
-  for i in "${untrack[@]}"; do sed -i "\:$i:d" "$HOME"/.dotfiles.conf && df rm --cached "$i"; done # remove dir & files from .dotfiles.conf that are in array and untrack from git with "git rm --cached"
+  done < "$HOME"/.dotfiles.conf                                                                      # remove dir & files from .dotfiles.conf that are in array and untrack from git with "git rm --cached"
+  for i in "${untrack[@]}"; do sed -i "\:$i:d" "$HOME"/.dotfiles.conf && if [[ -e $i ]]; then df rm -r --cached "$i"; fi; done 
   unset untrack                                                                                      # unset "untracked" variable to keep consecutive runs clean
 }
 
 dfadd(){ # Add file(s) to tracked dotfiles"
-  for i in "$@"; do                                                                                                       # Loop through tracked dotfiles (.dotfiles.conf)
+  for i in "$@"; do                                                                                                              # Loop through tracked dotfiles (.dotfiles.conf)
     if [[ -e $i ]]; then                                                                                                     
       if grep -q "^$i$" "$HOME"/.dotfiles.conf; then printf '%s\n' "dir/file already exists within tracked file, skipping."; fi; # if dir/file exists and is already in tracked file, do nothing. 
-      if ! grep -q "^$i$" "$HOME"/.dotfiles.conf; then printf '%s\n' "$i" >> "$HOME"/.dotfiles.conf; fi; fi;                # if dir/file exists but is not in file, add it.
-    if ! [[ -e $i ]]; then printf '%s\n' "The dir/file '$i' cannot be located. Skipping."; fi                             # if dir/file does not exist, skip and do nothing.
+      if ! grep -q "^$i$" "$HOME"/.dotfiles.conf; then printf '%s\n' "$i" >> "$HOME"/.dotfiles.conf; fi; fi;                     # if dir/file exists but is not in file, add it.
+    if ! [[ -e $i ]]; then printf '%s\n' "The dir/file '$i' cannot be located. Skipping."; fi                                    # if dir/file does not exist, skip and do nothing.
   done;     
 }
   
