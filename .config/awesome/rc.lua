@@ -46,8 +46,6 @@ browser      = "firefox"
 
 require("tag-layout")
 
-require("wibox-widgets")-- widgets 
-
 require("wibox-bar") --renders top wibox bar
 
 -- No borders when rearranging only 1 non-floating or maximized client

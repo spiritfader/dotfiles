@@ -3,7 +3,7 @@ select=$(echo "Lock Screen
 Exit Session
 Log Out
 Suspend
-Hibernate
+Hibernate 
 Reboot
 Power Off" | rofi -dmenu -p "Powermenu")
 

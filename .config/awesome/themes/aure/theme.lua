@@ -10,7 +10,6 @@ local gfs           = require("gears.filesystem")
 local themes_path   = ("~/.config/awesome/themes/")
 
 local theme = {}
---theme.font          = "Liberation Sans 9"
 theme.font          = "Terminess Nerd Font Propo 12"
 
 -- Set Theme Colors

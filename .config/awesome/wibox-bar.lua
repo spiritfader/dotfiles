@@ -1,3 +1,48 @@
+-- Widget Definitions
+local lain  = require("lain")
+local wibox = require("wibox")
+
+local seperator = wibox.widget.textbox("|")
+seperator.font = "Terminess Nerd Font 30"
+
+-- Keyboard map indicator and switcher
+mykeyboardlayout = awful.widget.keyboardlayout()
+
+-- Create a textclock widget
+mytextclock = wibox.widget.textclock("%l:%M %p")
+
+cal = lain.widget.cal({
+    attach_to = { mytextclock },
+    notification_preset = {
+        font = "Terminess Nerd Font Propo 12",
+        fg   = "#ffffff",
+        bg   = "#000000"
+    }
+})
+
+
+---- MEM
+local mem = lain.widget.mem({
+    settings = function()
+        widget:set_markup(mem_now.used .. "MB")
+    end
+})
+
+-- CPU
+local cpu = lain.widget.cpu({
+    settings = function()
+        widget:set_markup(cpu_now.usage .. "%")
+    end
+})
+
+-- Coretemp
+local temp = lain.widget.temp({
+    settings = function()
+        widget:set_markup(coretemp_now .. "°C")
+    end
+})
+
+
 screen.connect_signal("request::desktop_decoration", function(s)
     -- Each screen has its own tag table.
     awful.tag({ "1", "2", "3", "4", "5", "6", "7", "8", "9" }, s, awful.layout.layouts[2])
@@ -69,9 +114,19 @@ screen.connect_signal("request::desktop_decoration", function(s)
             s.mytasklist, -- Middle widget
             { -- Right widgets
                 layout = wibox.layout.fixed.horizontal,
+                --seperator,
                 mykeyboardlayout,
+                seperator,
+                cpu,
+                seperator,
+                temp,
+                seperator,
+                mem,
+                seperator,
                 wibox.widget.systray(),
+                seperator,
                 mytextclock,
+                seperator,
                 s.mylayoutbox,
             },
         }
