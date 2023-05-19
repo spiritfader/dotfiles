@@ -7,8 +7,49 @@
 
 source /usr/share/git/git-prompt.sh
 
+# truenas scale commands 
+
 # Default umask.  A umask of 022 prevents new files from being created group and world writable.
+# file permissions: rwxr-xr-x
+#
 # umask 022
+
+# Enable the builtin emacs(1) command line editor in sh(1),
+# e.g. C-a -> beginning-of-line.
+#set -o emacs
+
+# Uncomment this and comment the above to enable the builtin vi(1) command
+# line editor in sh(1), e.g. ESC to go into visual mode.
+# set -o vi
+
+
+# some useful aliases
+alias h='fc -l'
+alias j=jobs
+alias m=$PAGER
+#alias ll='ls -laFo'
+#alias l='ls -l'
+#alias g='egrep -i'
+ 
+# # be paranoid
+# alias cp='cp -ip'
+# alias mv='mv -i'
+# alias rm='rm -i'
+
+# # set prompt: ``username@hostname$ '' 
+# PS1="`whoami`@`hostname | sed 's/\..*//'`"
+# case `id -u` in
+#       0) PS1="${PS1}# ";;
+#       *) PS1="${PS1}$ ";;
+# esac
+
+# search path for cd(1)
+# CDPATH=:$HOME
+
+# Decrease likelihood of filesystem metadata corruption on [CF,SD,USB]
+# persistent media by setting '-o noatime'.
+alias mountrw='mount -o noatime -uw'
+
 
 # Set ksh93 visual editing mode:
 if [ "$SHELL" = "/bin/ksh" ]; then
@@ -158,6 +199,7 @@ alias empty_trash='rm -rf ~/.local/share/Trash/*'
 alias infgears='vblank_mode=0 glxgears'
 alias updaterepo='sudo reflector --verbose -c "United States" --latest 30 --fastest 30 --score 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist'
 alias fwupd='fwupdmgr get-updates'
+alias logout='pkill -9 -u $(whoami)'
 
 alias awesomeerr='tail -f .cache/awesome/stderr'
 alias awesomeout='tail -f .cache/awesome/stdout'

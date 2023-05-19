@@ -20,7 +20,6 @@ cal = lain.widget.cal({
     }
 })
 
-
 ---- MEM
 local mem = lain.widget.mem({
     settings = function()
