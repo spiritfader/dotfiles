@@ -201,6 +201,15 @@ alias updaterepo='sudo reflector --verbose -c "United States" --latest 30 --fast
 alias fwupd='fwupdmgr get-updates'
 alias logout='pkill -9 -u $(whoami)'
 
+# Proxmox
+alias cpuvuln='for f in /sys/devices/system/cpu/vulnerabilities/*; do printf "${f##*/} -" $(cat "$f"); done'
+hugepage() {
+  grep -e AnonHugePages  /proc/*/smaps | awk  '{ if($2>4) print $0} ' |  awk -F "/"  '{printf $0; system("ps -fp " $3)} '
+}
+alias iommugroup='find /sys/kernel/iommu_groups/ -type l | sort -V'
+alias iommusupport='sudo dmesg | grep -e DMAR -e IOMMU -e AMD-Vi'
+alias pcidsupport="grep ' pcid ' /proc/cpuinfo"
+
 alias awesomeerr='tail -f .cache/awesome/stderr'
 alias awesomeout='tail -f .cache/awesome/stdout'
 
