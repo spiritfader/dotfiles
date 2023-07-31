@@ -200,6 +200,7 @@ alias infgears='vblank_mode=0 glxgears'
 alias updaterepo='sudo reflector --verbose -c "United States" --latest 30 --fastest 30 --score 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist'
 alias fwupd='fwupdmgr get-updates'
 alias logout='pkill -9 -u $(whoami)'
+alias gif='ffmpeg -i "input.mkv" -vf "fps=10,scale=320:-1:flags=lanczos" -c:v pam -f image2pipe - | convert -delay 10 - -loop 0 -layers optimize output.gif'
 
 # Proxmox
 alias cpuvuln='for f in /sys/devices/system/cpu/vulnerabilities/*; do printf "${f##*/} -" $(cat "$f"); done'
@@ -525,6 +526,8 @@ ansicolortest() {
     done
     echo ""
 }
+
+
 
 # prints xterm 256 colors
 256colortest() {
