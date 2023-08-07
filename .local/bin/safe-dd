@@ -1,7 +1,6 @@
 #!/bin/bash
 
-# This script invokes the dd command to copy a file. It first checks to make sure
-# the target file (of) is not mounted.
+# This script invokes the dd command to copy a file. It first checks to make sure the target file (of) is not mounted.
 # Warning, this may not work with device names containing a space. Distrowatch.com Script
 
 if [ $# -lt 2 ]

@@ -23,31 +23,7 @@ source /usr/share/git/git-prompt.sh
 # set -o vi
 
 
-# some useful aliases
-alias h='fc -l'
-alias j=jobs
-alias m=$PAGER
-#alias ll='ls -laFo'
-#alias l='ls -l'
-#alias g='egrep -i'
- 
-# # be paranoid
-# alias cp='cp -ip'
-# alias mv='mv -i'
-# alias rm='rm -i'
-
-# # set prompt: ``username@hostname$ '' 
-# PS1="`whoami`@`hostname | sed 's/\..*//'`"
-# case `id -u` in
-#       0) PS1="${PS1}# ";;
-#       *) PS1="${PS1}$ ";;
-# esac
-
-# search path for cd(1)
-# CDPATH=:$HOME
-
-# Decrease likelihood of filesystem metadata corruption on [CF,SD,USB]
-# persistent media by setting '-o noatime'.
+# Decrease likelihood of filesystem metadata corruption on [CF,SD,USB] persistent media by setting '-o noatime'.
 alias mountrw='mount -o noatime -uw'
 
 
@@ -200,6 +176,9 @@ alias infgears='vblank_mode=0 glxgears'
 alias updaterepo='sudo reflector --verbose -c "United States" --latest 30 --fastest 30 --score 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist'
 alias fwupd='fwupdmgr get-updates'
 alias logout='pkill -9 -u $(whoami)'
+alias h='fc -l'
+alias j=jobs
+alias m="\$PAGER"
 alias gif='ffmpeg -i "input.mkv" -vf "fps=10,scale=320:-1:flags=lanczos" -c:v pam -f image2pipe - | convert -delay 10 - -loop 0 -layers optimize output.gif'
 
 # Proxmox
@@ -241,6 +220,7 @@ alias dfshow='df ls-tree --full-tree -r --name-only HEAD'
 alias dfc='df commit -am'
 alias dfs='df status'
 
+
 dftrack(){   # Loop through the git file of tracked dotfiles, check to see if it exists and track it in the bare repo
   untrack+=()                                                                                        # initialize array to hold dir/files to be "untracked" and removed from .dotfiles.conf
   while IFS="" read -r p || [ -n "$p" ]; do                                                          # loop through $HOME/.dotfiles.conf
@@ -275,6 +255,22 @@ alias intercept="sudo strace -ff -e trace=write -e write=1,2 -p" #given a PID, i
 alias psg="ps aux | grep -v grep | grep -i -e VSZ -e" # search processes (find PID easily)
 alias psf="ps auxfww" # show all processes
 alias localip='ifconfig | sed -rn "s/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p"' # Show local primary IP address
+
+flacverify() { # verify flac files for corruption - flacverify [dir]
+  find -L "$1" -type f -name '.flac' -print0 | while IFS= read -r -d '' file
+  do printf '%3d %s\n' "$?" "$(tput sgr0)checking $(realpath "$file")" && flac -wst "$file" 2>/dev/null || printf '%3d %s\n' "$?" "$(tput setaf 1; realpath "$file") is corrupt $(tput sgr0)" | tee -a ~/corruptedFlacsList.txt
+  done
+}
+
+appendPagination() { # read file in and append pagenumbers to each line 
+  while IFS="" read -r p || [ -n "$p" ]
+  do
+    for i in {2..50}
+    do
+      echo "$p$i" >> appended-"$1".txt
+    done
+  done < "$1"
+}
 
 ffs (){ # Search for text in firefox with pre-configured search engine
   firefox -search "$*";exit 
@@ -871,7 +867,6 @@ videotag () {
 		fi
   fi
 }
-
 
 # Set Environment Variables
 export EDITOR=nvim
