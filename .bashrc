@@ -23,10 +23,6 @@ source /usr/share/git/git-prompt.sh
 # set -o vi
 
 
-# Decrease likelihood of filesystem metadata corruption on [CF,SD,USB] persistent media by setting '-o noatime'.
-alias mountrw='mount -o noatime -uw'
-
-
 # Set ksh93 visual editing mode:
 if [ "$SHELL" = "/bin/ksh" ]; then
   VISUAL=emacs
@@ -177,15 +173,19 @@ alias updaterepo='sudo reflector --verbose -c "United States" --latest 30 --fast
 alias fwupd='fwupdmgr get-updates'
 alias logout='pkill -9 -u $(whoami)'
 alias h='fc -l'
-alias j=jobs
+alias j='jobs'
 alias m="\$PAGER"
 alias gif='ffmpeg -i "input.mkv" -vf "fps=10,scale=320:-1:flags=lanczos" -c:v pam -f image2pipe - | convert -delay 10 - -loop 0 -layers optimize output.gif'
+
+# Decrease likelihood of filesystem metadata corruption on [CF,SD,USB] persistent media by setting '-o noatime'.
+alias mountrw='mount -o noatime -uw'
 
 # Proxmox
 alias cpuvuln='for f in /sys/devices/system/cpu/vulnerabilities/*; do printf "${f##*/} -" $(cat "$f"); done'
 hugepage() {
   grep -e AnonHugePages  /proc/*/smaps | awk  '{ if($2>4) print $0} ' |  awk -F "/"  '{printf $0; system("ps -fp " $3)} '
 }
+
 alias iommugroup='find /sys/kernel/iommu_groups/ -type l | sort -V'
 alias iommusupport='sudo dmesg | grep -e DMAR -e IOMMU -e AMD-Vi'
 alias pcidsupport="grep ' pcid ' /proc/cpuinfo"
@@ -256,6 +256,10 @@ alias psg="ps aux | grep -v grep | grep -i -e VSZ -e" # search processes (find P
 alias psf="ps auxfww" # show all processes
 alias localip='ifconfig | sed -rn "s/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p"' # Show local primary IP address
 
+# Add an "alert" alias for long running commands.  Use like so: sleep 10; alert
+alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+
+
 flacverify() { # verify flac files for corruption - flacverify [dir]
   find -L "$1" -type f -name '.flac' -print0 | while IFS= read -r -d '' file
   do printf '%3d %s\n' "$?" "$(tput sgr0)checking $(realpath "$file")" && flac -wst "$file" 2>/dev/null || printf '%3d %s\n' "$?" "$(tput setaf 1; realpath "$file") is corrupt $(tput sgr0)" | tee -a ~/corruptedFlacsList.txt
@@ -275,9 +279,6 @@ appendPagination() { # read file in and append pagenumbers to each line
 ffs (){ # Search for text in firefox with pre-configured search engine
   firefox -search "$*";exit 
 }
-
-# Add an "alert" alias for long running commands.  Use like so: sleep 10; alert
-alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
 pskill() { # kill a given process by name
     pgrep "$1" | grep -v grep | awk '{ print $1 }' | xargs kill
@@ -474,11 +475,11 @@ smush() { # Usage "smush <file> <tar.gz.>"
     esac
 }
 
-buffer_clean() {
+buffer_clean() { # frees ram buffer
 	free -h && sudo sh -c 'echo 1 > /proc/sys/vm/drop_caches' && free -h
 }
 
-calc() { # Calculate the input string using bc command
+calc() { # Calculate the input string using bc command (it's a calculator)
   echo "$*" | bc;
 }
 
@@ -522,8 +523,6 @@ ansicolortest() {
     done
     echo ""
 }
-
-
 
 # prints xterm 256 colors
 256colortest() {
@@ -691,8 +690,7 @@ filegen() { # Generate a file of randomized data and certain size - Usage: fileg
   ls -alh "${f}"
 }
 
-# animated gifs from any video - https://gist.github.com/SlexAxton/4989674
-gifify() {
+gifify() { #  animated gifs from any video - https://gist.github.com/SlexAxton/4989674
   if [[ -n "$1" ]]; then
     if [[ $2 == '--good' ]]; then
       ffmpeg -i "$1" -r 10 -vcodec png out-static-%05d.png
@@ -706,13 +704,6 @@ gifify() {
   fi
 }
 
-# remove/replace tags in video
-tag_remove_usage() {
-	echo "Examples of usage:"
-	echo -e "\t tag_remove <path_to_file> - remove all tags from video"
-	echo -e "\t tag_remove -t [--tag] <path_to_file> <title> <comment>"
-}
-
 usbmodem() {
   modem=$(for i in /dev/cu.*; do grep -vi bluetooth | tail -1; done)
   baud=${1:-9600}
@@ -721,94 +712,6 @@ usbmodem() {
   else
     printf "No USB modem device found in /dev"
   fi
-}
-
-mts2mp4() {
-	ffmpeg -i "$1" -c:v copy -c:a aac -strict experimental -b:a 128k "$1.mp4"
-}
-
-mp4tomp3(){
-	ffmpeg -i "$1" -b:a 192K -vn "$2"
-}
-
-video_all_x264() {
-	for i in $1; do ffmpeg -i "$i" -c:a aac -b:a 128k -c:v libx264 -crf 20 "${i%.}_x264.mp4"; done
-}
-
-video_all_x265() {
-	for i in $1; do ffmpeg -i "$i" -map_metadata -1 -vsync 0 -c:v libx265 -crf 20 -b:v 15M -vtag hvc1 -movflags +faststart -c:a aac -b:a 192k -pix_fmt yuv420p "${i%.}_x265.mp4"; done
-}
-
-video_all_hevc() {
-	for i in $1; do ffmpeg -i "$i" -map_metadata -1 -c:a aac_at -c:v libx265 -crf 20 -pix_fmt yuv420p -vf "scale=trun c(iw/2)*2:trunc(ih/2)*2" -strict experimental "${i%.}_hevc.mp4"; done
-}
-
-videoto_x265() {
-	ffmpeg -i "$1" -map_metadata -1 -vsync 0 -c:v libx265 -crf 20 -b:v 15M -vtag hvc1 -movflags +faststart -c:a aac -b:a 192k -metadata title="$2" -pix_fmt yuv420p "$2.x265.mp4"
-}
-
-videoto_av1() {
-	# mapping between H.264 -> AV1
-	# 19 -> 27
-	# 23 -> 33
-	# 27 -> 39
-	# 31 -> 45
-	# 35 -> 51
-	# 39 -> 57
-	
-	ffmpeg -i "$1" -map_metadata -1 -c:a libopus -c:v libaom-av1 -crf 30 -b:v 0 -pix_fmt yuv420p -vf 'scale=trunc(iw/2)*2:trunc(ih/2)*2' -strict experimental "$2.av1.mp4"
-}
-
-videoto_hevc() {
-	ffmpeg -i "$1" -map_metadata -1 -c:a aac_at -c:v libx265 -crf 20 -pix_fmt yuv420p -vf 'scale=trun    c(iw/2)*2:trunc(ih/2)*2' -strict experimental "$2.hevc.mp4"
-}
-
-videoto_h264() {
-	ffmpeg -i "$1" -map_metadata -1 -c:a aac_at -c:v libx264 -crf 18 -profile:v main -pix_fmt yuv420p -vf 'scale=trunc(iw/2)*2:trunc(ih/2)*2' "$2.h264.mp4"
-}
-
-allmtsto_x265() {
-	IFS=$(echo -en '\n\b'); for i in *.MTS; do ffmpeg -i "$i" -vsync 0 -c:v libx265 -crf 18 -b:v 15M -vtag hvc1 -c:a aac_at -b:a 192k -pix_fmt yuv420p "$i.mp4"; done;
-}
-
-allmtsto_h264() {
-	IFS=$(echo -en '\n\b'); for i in *.MTS; do ffmpeg -i "$i" -vsync 0 -c:v h264_videotoolbox -crf 20 -c:a aac_at -b:a 192k -pix_fmt yuv420p "$i.mp4"; done;
-}
-
-
-videoto_x264() {
-	ffmpeg -i "$1" -vsync 0 -c:v h264_videotoolbox -b:v 20M -allow_sw 1 -map_metadata -1 -vsync 0 -c:a aac_at -b:a 192k -profile:v main -pix_fmt yuv420p -vf 'scale=trunc(iw/2)*2:trunc(ih/2)*2' "$2.x264.mp4"
-}
-
-videoto_xhevc() {
-	ffmpeg -i "$1" -vsync 0 -c:v hevc_videotoolbox -crf 30 -allow_sw 1 -map_metadata -1 -vsync 0 -c:a aac_at -b:a 192k -profile:v main -pix_fmt yuv420p -vf 'scale=trunc(iw/2)*2:trunc(ih/2)*2' "$2.xhevc.mp4"
-}
-
-
-video_cut() {
-  # example: video_cut <input_video.mp4> <time_in_seconds> <output_file_without_extension>
-  ffmpeg -i "$1" -c:v libx264 -segment_time "$2" -g 9 -sc_threshold 0 -force_key_frames "expr:gte(t,n_forced*9)" -f segment -reset_timestamps 1 "$3_%03d.mp4"
-}
-
-youtube_mp3() {
-	yt-dlp -x 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio' --audio-format mp3 "$1"
-}
-
-youtube_mp4() {
-	yt-dlp -F "$1"
-	yt-dlp -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio' --buffer-size 5M "$1"
-}
-
-youtube_info() {
-	yt-dlp -F "$1"
-}
-
-webptojpg() {
-	dwebp "$1" -o "$1".jpg
-}
-
-towebp() {
-	cwebp -q 80 "$1" -o "$1".webp
 }
 
 tree_size() {
@@ -822,7 +725,7 @@ git_update_all() {
 	find . -maxdepth 1 -print0 | xargs -P10 -I{} git -C {} pull
 }
 
-# Apple Protection ON/OFF
+# Apple Protection On/Off (only available on mac running bash, outdated)
 protectionON() {
   sudo spctl --master-enable
 }
@@ -832,24 +735,28 @@ protectionOFF() {
 }
 
 videotag () {
-   if [ $# -lt 1 ]; then
-	  tag_remove_usage
-   fi
+  echo "Examples of usage:"
+	echo -e "\t tag_remove <path_to_file> - remove all tags from video"
+	echo -e "\t tag_remove -t [--tag] <path_to_file> <title> <comment>"
 
-   if [[ "$1" == "-h" || "$1" == "--help" ]]; then
-	  tag_remove_usage
-   fi
+  if [ $# -lt 1 ]; then
+	 tag_remove_usage
+  fi
+
+  if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+	 tag_remove_usage
+  fi
 
 
   if [[ "$1" == "-t" || "$1" == "--tag" ]]; then
-      if [ "$#" -ne 4 ]; then
-		    tag_remove_usage
-	    else	
+    if [ "$#" -ne 4 ]; then
+	    tag_remove_usage
+	  else	
 
-        FILEFULL=$2
-        FILE="${FILEFULL%.*}"
-        EXT="${FILEFULL##*.}"
-        OUTPUT="$FILE.$$.$EXT"
+    FILEFULL=$2
+    FILE="${FILEFULL%.*}"
+    EXT="${FILEFULL##*.}"
+    OUTPUT="$FILE.$$.$EXT"
 
 		ffmpeg -i "$FILEFULL" -vcodec copy -acodec copy -map_metadata -1 -metadata title="$3" -metadata comment="$4" "$OUTPUT"
       fi
