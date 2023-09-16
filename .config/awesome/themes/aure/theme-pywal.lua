@@ -10,7 +10,7 @@ local xrdb          = xresources.get_current_theme() -- for xresource pywal
 local gfs           = require("gears.filesystem")
 local themes_path   = ("~/.config/awesome/themes/")
 local theme = {}
-theme.font          = "Liberation Sans 9"
+theme.font          = "Terminess Nerd Font Propo 12"
 
 -- Set Colors from pywal generated xresource theme 
 theme.bg_normal                = xrdb.background

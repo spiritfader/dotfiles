@@ -1,25 +1,24 @@
+#!/bin/bash
 #
 # ~/.bashrc: executed by bash(1) for non-login shells.
 #
+
 
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
 source /usr/share/git/git-prompt.sh
 
-# truenas scale commands 
-
-# Default umask.  A umask of 022 prevents new files from being created group and world writable.
+# Default umask. A umask of 022 prevents new files from being created group and world writable.
 # file permissions: rwxr-xr-x
 #
-# umask 022
+umask 022
 
-# Enable the builtin emacs(1) command line editor in sh(1),
-# e.g. C-a -> beginning-of-line.
-#set -o emacs
 
-# Uncomment this and comment the above to enable the builtin vi(1) command
-# line editor in sh(1), e.g. ESC to go into visual mode.
+# Enable the builtin emacs(1) command line editor in sh(1), e.g. C-a -> beginning-of-line.
+set -o emacs
+
+# Enable the builtin vi(1) command line editor in sh(1), e.g. ESC to go into visual mode.
 # set -o vi
 
 
@@ -735,22 +734,24 @@ protectionOFF() {
 }
 
 videotag () {
-  echo "Examples of usage:"
-	echo -e "\t tag_remove <path_to_file> - remove all tags from video"
-	echo -e "\t tag_remove -t [--tag] <path_to_file> <title> <comment>"
-
   if [ $# -lt 1 ]; then
-	 tag_remove_usage
+    echo "Examples of usage:"
+	  echo -e "\t tag_remove <path_to_file> - remove all tags from video"
+	  echo -e "\t tag_remove -t [--tag] <path_to_file> <title> <comment>"
   fi
 
   if [[ "$1" == "-h" || "$1" == "--help" ]]; then
-	 tag_remove_usage
+    echo "Examples of usage:"
+	  echo -e "\t tag_remove <path_to_file> - remove all tags from video"
+	  echo -e "\t tag_remove -t [--tag] <path_to_file> <title> <comment>"
   fi
 
 
   if [[ "$1" == "-t" || "$1" == "--tag" ]]; then
     if [ "$#" -ne 4 ]; then
-	    tag_remove_usage
+      echo "Examples of usage:"
+	    echo -e "\t tag_remove <path_to_file> - remove all tags from video"
+	    echo -e "\t tag_remove -t [--tag] <path_to_file> <title> <comment>"
 	  else	
 
     FILEFULL=$2

@@ -1,3 +1,5 @@
+#!/bin/bash
+
 mts2mp4() {
 	ffmpeg -i "$1" -c:v copy -c:a aac -strict experimental -b:a 128k "$1.mp4"
 }
@@ -5,20 +7,19 @@ mts2mp4() {
 mp4tomp3(){
 	ffmpeg -i "$1" -b:a 192K -vn "$2"
 }
-allvidconvert() {
 
-      video_all_x264() {
-      	for i in $1; do ffmpeg -i "$i" -c:a aac -b:a 128k -c:v libx264 -crf 20 "${i%.}_x264.mp4"; done
-      }
-      
-      video_all_x265() {
-      	for i in $1; do ffmpeg -i "$i" -map_metadata -1 -vsync 0 -c:v libx265 -crf 20 -b:v 15M -vtag hvc1 -movflags +faststart -c:a aac -b:a 192k -pix_fmt yuv420p "${i%.}_x265.mp4"; done
-      }
-      
-      video_all_hevc() {
-      	for i in $1; do ffmpeg -i "$i" -map_metadata -1 -c:a aac_at -c:v libx265 -crf 20 -pix_fmt yuv420p -vf "scale=trun c(iw/2)*2:trunc(ih/2)*2" -strict experimental "${i%.}_hevc.mp4"; done
-      }
-      }
+video_all_x264() {
+	for i in $1; do ffmpeg -i "$i" -c:a aac -b:a 128k -c:v libx264 -crf 20 "${i%.}_x264.mp4"; done
+}
+
+video_all_x265() {
+	for i in $1; do ffmpeg -i "$i" -map_metadata -1 -vsync 0 -c:v libx265 -crf 20 -b:v 15M -vtag hvc1 -movflags +faststart -c:a aac -b:a 192k -pix_fmt yuv420p "${i%.}_x265.mp4"; done
+}
+
+video_all_hevc() {
+	for i in $1; do ffmpeg -i "$i" -map_metadata -1 -c:a aac_at -c:v libx265 -crf 20 -pix_fmt yuv420p -vf "scale=trun c(iw/2)*2:trunc(ih/2)*2" -strict experimental "${i%.}_hevc.mp4"; done
+}
+
 videoto_x265() {
 	ffmpeg -i "$1" -map_metadata -1 -vsync 0 -c:v libx265 -crf 20 -b:v 15M -vtag hvc1 -movflags +faststart -c:a aac -b:a 192k -metadata title="$2" -pix_fmt yuv420p "$2.x265.mp4"
 }
@@ -65,7 +66,6 @@ video_cut() {
   # example: video_cut <input_video.mp4> <time_in_seconds> <output_file_without_extension>
   ffmpeg -i "$1" -c:v libx264 -segment_time "$2" -g 9 -sc_threshold 0 -force_key_frames "expr:gte(t,n_forced*9)" -f segment -reset_timestamps 1 "$3_%03d.mp4"
 }
-youtube() {
 
 youtube_mp3() {
 	yt-dlp -x 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio' --audio-format mp3 "$1"
