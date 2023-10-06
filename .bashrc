@@ -223,13 +223,15 @@ alias dfs='df status'
 dftrack(){   # Loop through the git file of tracked dotfiles, check to see if it exists and track it in the bare repo
   untrack+=()                                                                                        # initialize array to hold dir/files to be "untracked" and removed from .dotfiles.conf
   while IFS="" read -r p || [ -n "$p" ]; do                                                          # loop through $HOME/.dotfiles.conf
-    if ! [[ -e $p ]]; then untrack+=("$p"); fi                                                       # if dir/file does not exist within fs, add to "untracked" array
+    if ! [[ -e "$p" ]]; then untrack+=("$p"); fi                                                       # if dir/file does not exist within fs, add to "untracked" array
     if [[ -e $p ]]; then df add "$p"; fi                                                             # if dir/file exists within fs, track it with "git add"
   done < "$HOME"/.dotfiles.conf                                                                      # remove dir & files from .dotfiles.conf that are in array and untrack from git with "git rm --cached"
+  #for i in "${untrack[@]}"; do printf '%s' "$p"; done 
   for i in "${untrack[@]}"; do sed -i "\:$i:d" "$HOME"/.dotfiles.conf && if [[ -e $i ]]; then df rm -r --cached "$i"; fi; done 
   unset untrack                                                                                      # unset "untracked" variable to keep consecutive runs clean
 }
 
+#REWRITE TO INCLUDE ABSOLUTE FULL PATH INSTEAD OF WHATEVER TEXT IS ENTEReD
 dfadd(){ # Add file(s) to tracked dotfiles"
   for i in "$@"; do                                                                                                              # Loop through tracked dotfiles (.dotfiles.conf)
     if [[ -e $i ]]; then                                                                                                     
