@@ -40,11 +40,11 @@ icons[cancel]="\Uf0156"
 declare -A actions
 actions[lockscreen]="ff-lock.sh"
 #actions[switchuser]="???"
-actions[logout]="loginctl terminate-session ${XDG_SESSION_ID-}"
-actions[suspend]="systemctl suspend"
-actions[hibernate]="systemctl hibernate"
-actions[reboot]="systemctl reboot"
-actions[shutdown]="systemctl poweroff"
+actions[logout]="terminate-session ${XDG_SESSION_ID-}"
+actions[suspend]="suspend"
+actions[hibernate]="hibernate"
+actions[reboot]="reboot"
+actions[shutdown]="poweroff"
 
 # By default, ask for confirmation for actions that are irreversible
 confirmations=(reboot shutdown logout)
