@@ -210,20 +210,20 @@ alias gpull='git pull'
 alias gfetch='git fetch'
 
 # Dotfile Management
-alias df='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
-alias dfpush='df push origin'
-alias dfshow='df ls-tree --full-tree -r --name-only HEAD'
-alias dfc='df commit -am'
-alias dfs='df status'
+alias dtf='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
+alias dfpush='dtf push origin'
+alias dfshow='dtf ls-tree --full-tree -r --name-only HEAD'
+alias dfc='dtf commit -am'
+alias dfs='dtf status'
 
 dftrack(){   # Loop through ".$HOME/.dotfiles.conf" of files, check to see if file within exists and track it in the bare repo
   untrack+=();
   wdir=$(pwd | sed "s|$HOME|\$HOME|");                          # initialize array to hold dir/files to be "untracked" and removed from .dotfiles.conf
   while IFS="" read -r p || [ -n "$p" ]; do                     # loop through $HOME/.dotfiles.conf
     if ! [[ -e "$wdir/$p" ]]; then untrack+=("$wdir/$p"); fi    # if dir/file does not exist within fs, add to "untracked" array
-    if [[ -e "$wdir/$p" ]]; then df add "$wdir/$p"; fi          # if dir/file exists within fs, track it with "git add"
+    if [[ -e "$wdir/$p" ]]; then dtf add "$wdir/$p"; fi          # if dir/file exists within fs, track it with "git add"
   done < "$HOME/.dotfiles.conf"                                 # remove dir & files from .dotfiles.conf that are in array and untrack from git with "git rm --cached"
-  for i in "${untrack[@]}"; do sed -i "\:$wdir/$i:d" "$HOME/.dotfiles.conf" && if [[ -e "$wdir/$i" ]]; then df rm -r --cached "$wdir/$i"; fi; done 
+  for i in "${untrack[@]}"; do sed -i "\:$wdir/$i:d" "$HOME/.dotfiles.conf" && if [[ -e "$wdir/$i" ]]; then dtf rm -r --cached "$wdir/$i"; fi; done 
   unset untrack                                                 # unset "untracked" variable to keep consecutive runs clean
   sort -o "$HOME/.dotfiles.conf" "$HOME/.dotfiles.conf"
 }
