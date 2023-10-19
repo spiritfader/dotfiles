@@ -9,18 +9,20 @@
 
 source /usr/share/git/git-prompt.sh
 
+
 # Default umask. A umask of 022 prevents new files from being created group and world writable.
 # file permissions: rwxr-xr-x
 #
 umask 022
 
+# search path for cd(1)
+CDPATH=:$HOME
 
 # Enable the builtin emacs(1) command line editor in sh(1), e.g. C-a -> beginning-of-line.
 set -o emacs
 
 # Enable the builtin vi(1) command line editor in sh(1), e.g. ESC to go into visual mode.
 # set -o vi
-
 
 # Set ksh93 visual editing mode:
 if [ "$SHELL" = "/bin/ksh" ]; then
@@ -174,13 +176,10 @@ alias logout='pkill -9 -u $(whoami)'
 alias h='fc -l'
 alias j='jobs'
 alias m="\$PAGER"
+alias g='egrep -i'
 alias gif='ffmpeg -i "input.mkv" -vf "fps=10,scale=320:-1:flags=lanczos" -c:v pam -f image2pipe - | convert -delay 10 - -loop 0 -layers optimize output.gif'
+alias mountrw='mount -o noatime -uw' # Decrease likelihood of filesystem metadata corruption on [CF,SD,USB] persistent media by setting '-o noatime'.
 
-# Decrease likelihood of filesystem metadata corruption on [CF,SD,USB] persistent media by setting '-o noatime'.
-alias mountrw='mount -o noatime -uw'
-
-# Proxmox
-alias cpuvuln='for f in /sys/devices/system/cpu/vulnerabilities/*; do printf "${f##*/} -" $(cat "$f"); done'
 hugepage() {
   grep -e AnonHugePages  /proc/*/smaps | awk  '{ if($2>4) print $0} ' |  awk -F "/"  '{printf $0; system("ps -fp " $3)} '
 }
@@ -188,20 +187,18 @@ hugepage() {
 alias iommugroup='find /sys/kernel/iommu_groups/ -type l | sort -V'
 alias iommusupport='sudo dmesg | grep -e DMAR -e IOMMU -e AMD-Vi'
 alias pcidsupport="grep ' pcid ' /proc/cpuinfo"
+alias cpuvuln='for f in /sys/devices/system/cpu/vulnerabilities/*; do printf "${f##*/} -" $(cat "$f"); done'
 
 alias awesomeerr='tail -f .cache/awesome/stderr'
 alias awesomeout='tail -f .cache/awesome/stdout'
-
 alias scrubstart='sudo btrfs scrub start'
 alias scrubstatus='sudo btrfs scrub status'
 alias scrublive='sudo btrfs scrub start /; watch -n 1 sudo btrfs scrub status /'
-
 alias largesthome='btrfs fi du ~/ | sort -h'
 alias largestroot='sudo btrfs fi du / | sort -h'
-
 alias threads='ps --no-headers -Leo user | sort | uniq --count'
 alias setuid='find /usr/bin -perm "/u=s,g=s"'
-alias smart='sudo smartctl -a /dev/nvme0'
+alias smart='sudo smartctl -a $(sudo fdisk -l | grep "Disk /dev/" | cut -d " " -f2 | tr -d ":")'
 
 alias gadd='git add'
 alias gpush='git push'
@@ -219,8 +216,7 @@ alias dfshow='df ls-tree --full-tree -r --name-only HEAD'
 alias dfc='df commit -am'
 alias dfs='df status'
 
-
-dftrack(){   # Loop through the git file of tracked dotfiles, check to see if it exists and track it in the bare repo
+dftrack(){   # Loop through ".$HOME/.dotfiles.conf" of files, check to see if file within exists and track it in the bare repo
   untrack+=();
   wdir=$(pwd | sed "s|$HOME|\$HOME|");                          # initialize array to hold dir/files to be "untracked" and removed from .dotfiles.conf
   while IFS="" read -r p || [ -n "$p" ]; do                     # loop through $HOME/.dotfiles.conf
@@ -242,7 +238,7 @@ dfadd(){ # Add file(s) to tracked dotfiles"
   done;
   sort -o "$HOME/.dotfiles.conf" "$HOME/.dotfiles.conf"      
 }
-  
+alias c='clear'
 alias trim='sudo fstrim -av'  
 alias rsync='rsync -P'
 alias free="free -mth"
