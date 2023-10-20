@@ -304,7 +304,6 @@ utime() { # Convert unix time to human readable - Usage: utime unixtime "utime 2
 }
 
 quote() { # Pulls quote
-	echo
 	curl -s https://favqs.com/api/qotd | jq -r '[.quote.body, .quote.author] | "\(.[0]) \n~\(.[1])\n"'
 }
 
@@ -319,26 +318,25 @@ repeat() { # Repeat n times command. Usage: "repeat 20 ls"
 # check top ten commands executed
 top10() { 
     all=$(history | awk '{print $2}' | awk 'BEGIN {FS="|"}{print $1}') 
-    echo "$all" | sort | uniq -c | sort -n | tail | sort -nr
+    printf '%s\n' "$all" | sort | uniq -c | sort -n | tail | sort -nr
 }
 
 # returns a bunch of information about the current host, useful when jumping around hosts a lot
 ii() {
-    echo -e "\nYou are logged on to $HOSTNAME"
-    echo -e "\nAdditional information: " ; uname -a
-    echo -e "\nUsers logged on: " ; PROCPS_USERLEN=32 w -hs | cut -d " " -f1 | sort | uniq
-    echo -e "\nCurrent date : " ; date
-    echo -e "\nMachine stats : " ; uptime
-    echo -e "\nMemory stats : " ; free
-    echo -e "\nDiskspace : " ; df / "$HOME"
-    echo -e "\nLocal IP Address :" ; ip -4 addr | grep -v 127.0.0.1 | grep -v secondary | grep "inet" | awk '{print $2}' ; ip -6 addr | grep -v ::1 | grep -v secondary | grep "inet" | awk '{print $2}'
-    echo ''
+    printf '%s\n\n' "You are logged on to $HOSTNAME"
+    printf '%s\n%5s\n\n' "Kernel information: " "$(uname -a)"
+    printf '%s\n%5s\n\n' "Users logged on: " "$(PROCPS_USERLEN=32 w -hs | cut -d " " -f1 | sort | uniq)"
+    printf '%s\n%50s\n\n' "Current date: " "$(date)"
+    printf '%s\n%5s\n\n' "Machine stats: " "uptime is $(uptime | awk /'up/ {print $3,$4,$5,$6,$7,$8,$9,$10}')"
+    printf '%s\n%5s\n\n' "Memory stats: " "$(free)"
+    printf '%s\n%5s\n\n' "Diskspace: " "$(df / "$HOME")"
+    printf '%s\n%5s\n\n' "Local IP Address:" "$(ip -4 addr | grep -v 127.0.0.1 | grep -v secondary | grep "inet" | awk '{print $2}' ; ip -6 addr | grep -v ::1 | grep -v secondary | grep "inet" | awk '{print $2}')"
+    #printf '%s\n' ""
 }
 
 # print uptime, host name, number of users, and average load
 upinfo() {
-    echo -ne "$HOSTNAME uptime is ";
-    uptime | awk /'up/ {print $3,$4,$5,$6,$7,$8,$9,$10}'
+  printf '%s\n' "$HOSTNAME uptime is $(uptime | awk /'up/ {print $3,$4,$5,$6,$7,$8,$9,$10}')"
 }
 
 # swap the names/contents of two files
@@ -405,31 +403,31 @@ virev() {
 }
 
 # ex = extracts archives into folders - usage: ex <file>
-ex() {
+exfold() {
   SAVEIFS=$IFS
   IFS="$(printf '\n\t')"
   if [ -f "$1" ] ; then
     case $1 in
-      *.tar.bz2)   tar xjf "$1"   ;;
-      *.tar.gz)    tar xzf "$1"   ;;
-      *.bz2)       bunzip2 "$1"   ;;
-      *.rar)       unrar x "$1"   ;;
-      *.gz)        gunzip "$1"    ;;
+      *.tar.bz2)   tar xjf "$1"                                   ;;
+      *.tar.gz)    tar xzf "$1"                                   ;;
+      *.bz2)       bunzip2 "$1"                                   ;;
+      *.rar)       unrar x "$1"                                   ;;
+      *.gz)        gunzip "$1"                                    ;;
       *.tar)       mkdir "${1%.tar}"; tar -xvf "$1" -C "${1%.tar}";;
-      *.tbz2)      tar xjf "$1"   ;;
-      *.tgz)       tar xzf "$1"   ;;
-      *.zip)       7z x -o"${1%.zip}" "$1" ;; 
-      *.Z)         uncompress "$1";;
-      *.7z)        7z x -o"${1%.7z}" "$1"  ;;
-      *.iso)       7z x -o"${1%.iso}" "$1" ;;
-      *.lzm)       7z x -o"${1%.lzm}" "$1" ;;
-      *.deb)       ar x "$1"      ;;
-      *.tar.xz)    tar xf "$1"    ;;
-      *.tar.zst)   tar xf "$1"    ;;
-      *)           echo "'$1' cannot be extracted via ex()" ;;
+      *.tbz2)      tar xjf "$1"                                   ;;
+      *.tgz)       tar xzf "$1"                                   ;;
+      *.zip)       7z x -o"${1%.zip}" "$1"                        ;; 
+      *.Z)         uncompress "$1"                                ;;
+      *.7z)        7z x -o"${1%.7z}" "$1"                         ;;
+      *.iso)       7z x -o"${1%.iso}" "$1"                        ;;
+      *.lzm)       7z x -o"${1%.lzm}" "$1"                        ;;
+      *.deb)       ar x "$1"                                      ;;
+      *.tar.xz)    tar xf "$1"                                    ;;
+      *.tar.zst)   tar xf "$1"                                    ;;
+      *)           printf "%s" "$1 cannot be extracted"           ;;
     esac
   else
-    echo "'$1' is not a valid file"
+    printf '%s' "$1 is not a valid file"
   fi
   IFS=$SAVEIFS
 }
@@ -440,24 +438,24 @@ exhere() {
   IFS="$(printf '\n\t')"
   if [ -f "$1" ] ; then
     case $1 in
-      *.tar.bz2)        tar xjf "$1"   ;;
-      *.tar.gz)         tar xzf "$1"   ;;
-      *.bz2)            bunzip2 "$1"   ;;
-      *.rar)            unrar x "$1"   ;;
-      *.gz)             gunzip "$1"    ;;
-      *.tar)            tar xf "$1"    ;;
-      *.tbz2)           tar xjf "$1"   ;;
-      *.tgz)            tar xzf "$1"   ;;
-      *.zip)            unzip "$1"     ;;
-      *.Z)              uncompress "$1";;
-      *.7z|*.iso|.lzm)  7z x "$1"      ;;
-      *.deb)            ar x "$1"      ;;
-      *.tar.xz)         tar xf "$1"    ;;
-      *.tar.zst)        tar xf "$1"    ;;
-      *)                echo "'$1' cannot be extracted via ex()" ;;
+      *.tar.bz2)        tar xjf "$1"                         ;;
+      *.tar.gz)         tar xzf "$1"                         ;;
+      *.bz2)            bunzip2 "$1"                         ;;
+      *.rar)            unrar x "$1"                         ;;
+      *.gz)             gunzip "$1"                          ;;
+      *.tar)            tar xf "$1"                          ;;
+      *.tbz2)           tar xjf "$1"                         ;;
+      *.tgz)            tar xzf "$1"                         ;;
+      *.zip)            unzip "$1"                           ;;
+      *.Z)              uncompress "$1"                      ;;
+      *.7z|*.iso|.lzm)  7z x "$1"                            ;;
+      *.deb)            ar x "$1"                            ;;
+      *.tar.xz)         tar xf "$1"                          ;;
+      *.tar.zst)        tar xf "$1"                          ;;
+      *)                printf "%s" "$1 cannot be extracted" ;;
     esac
   else
-    echo "'$1' is not a valid file"
+    printf '%s' "$1 is not a valid file"
   fi
   IFS=$SAVEIFS
 }
@@ -465,11 +463,11 @@ exhere() {
 smush() { # Usage "smush <file> <tar.gz.>"
     FILE=$1
     case $FILE in
-        *.tar.bz2)   shift && tar cjf "$FILE" "$1" ;;
-        *.tar.gz)    shift && tar czf "$FILE" "$1" ;;
-        *.tgz)       shift && tar czf "$FILE" "$1" ;;
-        *.zip)       shift && 7z a -tzip "$FILE" "$1" ;;
-        *.rar)       shift && rar "$FILE" "$1" ;;
+        *.tar.bz2)   shift && tar cjf "$FILE" "$1"                                     ;;
+        *.tar.gz)    shift && tar czf "$FILE" "$1"                                     ;;
+        *.tgz)       shift && tar czf "$FILE" "$1"                                     ;;
+        *.zip)       shift && 7z a -tzip "$FILE" "$1"                                  ;;
+        *.rar)       shift && rar "$FILE" "$1"                                         ;;
         *.7z)        shift && 7z a -t7z -m0=lzma2 -mx=9 -mfb=64 -md=64m -ms=on "$FILE" ;;
     esac
 }
@@ -479,7 +477,7 @@ buffer_clean() { # frees ram buffer
 }
 
 calc() { # Calculate the input string using bc command (it's a calculator)
-  echo "$*" | bc;
+  printf '%s' "$*" | bc;
 }
 
 mktargz() { 
@@ -487,11 +485,11 @@ mktargz() {
 }
 
 mkown() { # take ownership of file
-  sudo chown -R "${USER}" "${1:-.}"; 
+  sudo chown -R "$(whoami)" "${1:-.}"; 
 }
 
 mkgrp() { # change ownership of group on file to self
-  sudo chgrp -R "${USER}" "${1:-.}"; 
+  sudo chgrp -R "$(whoami)" "${1:-.}"; 
 }
 
 mkmv() { # make directory and move file into it - Usage: "mkmv filetobemoved.txt NewDirectory"
@@ -652,8 +650,7 @@ pingdrops() { # Detect frame drops using `ping` - Usage: pingdrops 192.168.122.1
 urltest() { # Use Curl to check URL connection performance - urltest https://google.com
   URL="$*"
   if [ -n "${URL[0]}" ]; then
-    curl -L --write-out "URL,DNS,conn,time,speed,size\n
-%{url_effective},%{time_namelookup} (s),%{time_connect} (s),%{time_total} (s),%{speed_download} (bps),%{size_download} (bytes)\n" \
+    curl -L --write-out "URL,DNS,conn,time,speed,size\n%{url_effective},%{time_namelookup} (s),%{time_connect} (s),%{time_total} (s),%{speed_download} (bps),%{size_download} (bytes)\n" \
 -o/dev/null -s "${URL[0]}" | column -s, -t
   fi
 }
@@ -709,7 +706,7 @@ usbmodem() {
   if [ -n "$modem" ]; then
     minicom -D "$modem"  -b "$baud"
   else
-    printf "No USB modem device found in /dev"
+    printf '%s' "No USB modem device found in /dev"
   fi
 }
 
@@ -725,12 +722,12 @@ git_update_all() {
 }
 
 # Apple Protection On/Off (only available on mac running bash, outdated)
-protectionON() {
-  sudo spctl --master-enable
-}
-
-protectionOFF() {
-  sudo spctl --master-disable
+appleProtection() {
+  case "$1" in
+     on)       sudo spctl --master-enable ;;
+    off)       sudo spctl --master-disable ;;
+      *)       printf '%s' "Must input on or off; exiting" ;;
+  esac
 }
 
 videotag () {
