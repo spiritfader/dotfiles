@@ -254,6 +254,8 @@ alias intercept="sudo strace -ff -e trace=write -e write=1,2 -p" #given a PID, i
 alias psg="ps aux | grep -v grep | grep -i -e VSZ -e" # search processes (find PID easily)
 alias psf="ps auxfww" # show all processes
 alias localip='ifconfig | sed -rn "s/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p"' # Show local primary IP address
+alias rng='watch -n 1 cat /proc/sys/kernel/random/entropy_avail'
+alias scheduler='grep "" /sys/block/*/queue/scheduler'
 
 # Add an "alert" alias for long running commands.  Use like so: sleep 10; alert
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
@@ -273,6 +275,11 @@ appendPagination() { # read file in and append pagenumbers to each line
       echo "$p$i" >> appended-"$1".txt
     done
   done < "$1"
+}
+
+packetDrop() {
+  printf '%s\n' "netstat -s | grep segments retransmitted" "$(netstat -s | grep "segments retransmitted")"
+  printf '%s\n' "ifconfig -a | grep X errors" "$(ifconfig -a | grep "X errors")"
 }
 
 ffs (){ # Search for text in firefox with pre-configured search engine
@@ -721,8 +728,7 @@ git_update_all() {
 	find . -maxdepth 1 -print0 | xargs -P10 -I{} git -C {} pull
 }
 
-# Apple Protection On/Off (only available on mac running bash, outdated)
-appleProtection() {
+appleProtection() { # Apple Protection On/Off (only available on mac running bash, outdated)
   case "$1" in
      on)       sudo spctl --master-enable ;;
     off)       sudo spctl --master-disable ;;
@@ -730,7 +736,7 @@ appleProtection() {
   esac
 }
 
-videotag () {
+videotag() {
   if [ $# -lt 1 ]; then
     echo "Examples of usage:"
 	  echo -e "\t tag_remove <path_to_file> - remove all tags from video"
