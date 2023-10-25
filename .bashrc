@@ -208,6 +208,14 @@ alias gstat='git status'
 alias gclone='git clone'
 alias gpull='git pull'
 alias gfetch='git fetch'
+alias branch='git branch -a'
+
+git_update_all() {
+	# ls | xargs -I{} git -C {} pull
+  # for i in */.git; do ( echo $i; cd $i/..; git pull; ); done
+
+	find . -maxdepth 1 -print0 | xargs -P10 -I{} git -C {} pull
+}
 
 # Dotfile Management
 alias dtf='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
@@ -238,6 +246,7 @@ dfadd(){ # Add file(s) to tracked dotfiles"
   done;
   sort -o "$HOME/.dotfiles.conf" "$HOME/.dotfiles.conf"      
 }
+
 alias c='clear'
 alias trim='sudo fstrim -av'  
 alias rsync='rsync -P'
@@ -616,7 +625,7 @@ _showcolor256_bg() {
     echo -ne "\033[0m"
 }
 
-# Scan subnet for active systems - Usage: subnetscan 192.168.122.1/24
+# Scan subnet for active systems (arp scan) - Usage: subnetscan 192.168.122.1/24
 subnetscan() {
   nmap -v -sn "${1}" -oG - | awk '$4=="Status:" && $5=="Up" {print $2}'
 }
@@ -626,9 +635,14 @@ subnetfree() {
   nmap -v -sn -n "${1}" -oG - | awk '/Status: Down/{print $2}'
 }
 
-# Quick network port scan of an IP - Usage: portscan 192.168.122.37 - FIX
-portscan() {
-  nmap -T4 -F "${1}" -oG - | grep "\bopen\b"
+# network port scan of an IP, quick scan - Usage: quickportscan 192.168.122.37
+quickportscan() {
+  nmap -T4 -F "${1}" | grep "open"
+}
+
+# network port scan of an IP, all ports - Usage: allportscan 192.168.122.37
+allportscan() {
+  nmap -T4 -p 1-65535 "${1}" | grep "open"
 }
 
 # trace a packet on a single IP - Usage "tracepacket 192.168.1.1"
@@ -719,13 +733,6 @@ usbmodem() {
 
 tree_size() {
 	du -a ./* | sort -r -n | head -20
-}
-
-git_update_all() {
-	# ls | xargs -I{} git -C {} pull
-  # for i in */.git; do ( echo $i; cd $i/..; git pull; ); done
-
-	find . -maxdepth 1 -print0 | xargs -P10 -I{} git -C {} pull
 }
 
 appleProtection() { # Apple Protection On/Off (only available on mac running bash, outdated)
