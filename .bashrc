@@ -199,6 +199,7 @@ alias largestroot='sudo btrfs fi du / | sort -h'
 alias threads='ps --no-headers -Leo user | sort | uniq --count'
 alias setuid='find /usr/bin -perm "/u=s,g=s"'
 alias smart='sudo smartctl -a $(sudo fdisk -l | grep "Disk /dev/" | cut -d " " -f2 | tr -d ":")'
+alias services='systemctl --type=service --state=running'
 
 alias gadd='git add'
 alias gpush='git push'
