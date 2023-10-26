@@ -23,7 +23,7 @@ cal = lain.widget.cal({
 ---- MEM
 local mem = lain.widget.mem({
     settings = function()
-        widget:set_markup(mem_now.used .. "MB")
+        widget:set_markup(mem_now.used .. " MB")
     end
 })
 
@@ -115,10 +115,6 @@ screen.connect_signal("request::desktop_decoration", function(s)
                 layout = wibox.layout.fixed.horizontal,
                 --seperator,
                 mykeyboardlayout,
-                seperator,
-                cpu,
-                seperator,
-                temp,
                 seperator,
                 mem,
                 seperator,
