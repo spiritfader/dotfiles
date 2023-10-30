@@ -489,12 +489,23 @@ smush() { # Usage "smush <file> <tar.gz.>"
     esac
 }
 
+encryptwholeerase() { # Encrypt and overwrite drive with encrypted cipher for secure erase - Usage: encryptwholeerase "/dev/sdX"
+  DEVICE="$1"; PASS=$(tr -cd '[:alnum:]' < /dev/urandom | head -c 1024)
+  openssl enc -aes-256-ctr -pass pass:"$PASS" -nosalt < /dev/zero | dd obs=64K ibs=4K of="$DEVICE" oflag=direct status=progress
+}
+
+encryptfreeerase() { # Encrypt and overwrite free space with encrypted cipher for secure erase - Usage: encryptfreeerase
+  PASS=$(tr -cd '[:alnum:]' < /dev/urandom | head -c 1024)
+  openssl enc -pbkdf2 -pass pass:"$PASS" -nosalt < /dev/zero | dd obs=128K ibs=4K of="Eraser" oflag=direct status=progress
+  rm -f "Eraser"
+}
+
 buffer_clean() { # frees ram buffer
 	free -h && sudo sh -c 'echo 1 > /proc/sys/vm/drop_caches' && free -h
 }
 
 calc() { # Calculate the input string using bc command (it's a calculator)
-  printf '%s' "$*" | bc;
+  echo "$*" | bc;
 }
 
 mktargz() { 
