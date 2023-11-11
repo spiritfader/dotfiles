@@ -20,14 +20,14 @@ cal = lain.widget.cal({
     }
 })
 
----- MEM
+-- MEM
 local mem = lain.widget.mem({
     settings = function()
         widget:set_markup(mem_now.used .. " MB")
     end
 })
 
-----CPU
+-- CPU
 local cpu = lain.widget.cpu({
     settings = function()
         widget:set_markup(cpu_now.usage .. "%")
