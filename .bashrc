@@ -107,9 +107,9 @@ gitPrompt () {
 # Set PS1 prompt display
 if ${use_color} ; then 
 	if [[ ${EUID} == 0 ]] ; then # set root PS1
-    PS1+='\[\033[01;34m\]\w\[\033[01;33m\]$(gitPrompt)\[\033[01;34m\] \$\[\033[00m\] ' # custom with inline git branch status
+    PS1+='\T \[\033[01;34m\]\w\[\033[01;33m\]$(gitPrompt)\[\033[01;34m\] \$\[\033[00m\]$(if ! [ $(jobs | wc -l) -eq 0 ]; then jobs | wc -l;fi) ' # custom with inline git branch status
 	else # set user PS1
-    PS1+='\[\033[01;34m\]\w\[\033[01;33m\]$(gitPrompt)\[\033[01;34m\] \$\[\033[00m\] ' # custom with inline git branch status
+    PS1+='\T \[\033[01;34m\]\w\[\033[01;33m\]$(gitPrompt)\[\033[01;34m\] \$\[\033[00m\]$(if ! [ $(jobs | wc -l) -eq 0 ]; then jobs | wc -l;fi) ' # custom with inline git branch status
   fi
 	#BSD#@export CLICOLOR=1
   alias ls='ls --color=auto'

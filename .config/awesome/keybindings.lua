@@ -74,7 +74,7 @@ awful.keyboard.append_global_keybindings({
     awful.key({ modkey }, "p", function() awful.spawn.with_shell("picomtoggle.sh") end,                         -- disable/enale compositor
               {description = "Toggle compositor", group = "hotkeys"}),
 
-        -- Show/hide wibox
+              -- Show/hide wibox
     awful.key({ modkey }, "b", function () for s in screen do
         s.mywibox.visible = not s.mywibox.visible
             if s.mybottomwibox then
@@ -83,7 +83,6 @@ awful.keyboard.append_global_keybindings({
         end
     end,
         {description = "toggle wibox", group = "awesome"}),
-
 
         
 -- Lain Keybinds

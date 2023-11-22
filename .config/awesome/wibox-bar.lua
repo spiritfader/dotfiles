@@ -5,42 +5,119 @@ local wibox = require("wibox")
 local seperator = wibox.widget.textbox("|")
 seperator.font = "Terminess Nerd Font 30"
 
+
+-- Default widgets
 -- Keyboard map indicator and switcher
 mykeyboardlayout = awful.widget.keyboardlayout()
 
 -- Create a textclock widget
 mytextclock = wibox.widget.textclock("%l:%M %p")
 
-cal = lain.widget.cal({
-    attach_to = { mytextclock },
-    notification_preset = {
-        font = "Terminess Nerd Font Propo 12",
-        fg   = "#ffffff",
-        bg   = "#000000"
-    }
+-- StreetTurtle Widgets
+local st_cpu_widget = require("awesome-wm-widgets.cpu-widget.cpu-widget") ({
+    width = 70,
+    step_width = 2,
+    step_spacing = 0,
+    color = '#434c5e'
 })
 
--- MEM
-local mem = lain.widget.mem({
+local st_brightness_widget = require("awesome-wm-widgets.brightness-widget.brightness") ({
+    type = 'icon_and_text',
+    program = 'brightnessctl',
+    step = '5',
+    base = 20,
+    path_to_icon = "/usr/share/icons/Arc/status/symbolic/display-brightness-symbolic.svg",
+    font = beautiful.font,
+    timeout	= 1,
+    tooltip	= true,
+    percentage = false,
+    rmb_set_max	= false,
+})
+
+local st_battery_widget = require("awesome-wm-widgets.battery-widget.battery") ({
+    font = beautiful.font,
+    path_to_icons = "/usr/share/icons/Arc/status/symbolic/",
+    show_current_level = true,
+    margin_right = 0,
+    margin_left = 0,
+    display_notification = false,
+    notification_position = top_right,
+    timeout	= 10,
+    warning_msg_title = "Houston, we have a problem",
+    warning_msg_text = "Battery is dying",
+    warning_msg_position = bottom_right,
+    warning_msg_icon = "~/.config/awesome/awesome-wm-widgets/battery-widget/spaceman.jpg",
+    enable_battery_warning = true,
+})
+
+local st_fs_widget = require("awesome-wm-widgets.fs-widget.fs-widget") ({
+    mounts = { '/' },
+    timeout = '60'
+})
+
+local st_ram_widget = require("awesome-wm-widgets.ram-widget.ram-widget") ({
+    color_used = beautiful.bg_urgent,
+    color_free = beautiful.fg_normal,
+    color_buf = beautiful.border_color_active,
+    widget_height = 25,
+    widget_width = 25,
+    widget_show_buf	= true,
+    timeout = 1,
+})
+
+local st_logout_menu_widget = require("awesome-wm-widgets.logout-menu-widget.logout-menu") ({
+    font = beautiful.font,
+    onlogout = function() awesome.quit() end,
+    onlock = function() awful.spawn.with_shell("ff-lock.sh") end,
+    onreboot = function() awful.spawn.with_shell("reboot") end,
+    onsuspend =	function() awful.spawn.with_shell("systemctl suspend") end,
+    onpoweroff =function() awful.spawn.with_shell("poweroff") end,
+})
+
+-- local st_calendar_widget = require("awesome-wm-widgets.calendar-widget.calendar") ({
+--     theme = 'outrun',
+--     placement = 'top_right',
+--     start_sunday = true,
+--     radius = 8,
+--     previous_month_button = 4,
+--     next_month_button = 5,
+-- })
+
+-- mytextclock:connect_signal("button::press",
+--     function(_, _, _, button)
+--         if button == 1 then st_calendar_widget.toggle() end
+--     end)
+
+-- -- Lain widgets
+-- lain_cal = lain.widget.cal({
+--     attach_to = { mytextclock },
+--     notification_preset = {
+--         font = "Terminess Nerd Font Propo 12",
+--         fg   = "#ffffff",
+--         bg   = "#000000"
+--     }
+-- })
+
+-- Lain RAM usage indicator
+local lain_ram = lain.widget.mem({
     settings = function()
-        widget:set_markup(mem_now.used .. " MB")
+        widget:set_markup("RAM: " .. mem_now.used .. " MB")
     end
 })
 
--- CPU
-local cpu = lain.widget.cpu({
+-- Lain CPU usage indicator
+local lain_cpu_usage = lain.widget.cpu({
     settings = function()
-        widget:set_markup(cpu_now.usage .. "%")
+        widget:set_markup("CPU: " .. cpu_now.usage .. "%")
     end
 })
 
 -- Coretemp
-local temp = lain.widget.temp({
-    settings = function()
-        widget:set_markup(coretemp_now .. "°C")
-    end
-})
-
+--local temp = lain.widget.temp({
+--    settings = function()
+--        widget:set_markup(coretemp_now .. "°C")
+--    end
+--})
 
 screen.connect_signal("request::desktop_decoration", function(s)
     -- Each screen has its own tag table.
@@ -113,10 +190,19 @@ screen.connect_signal("request::desktop_decoration", function(s)
             s.mytasklist, -- Middle widget
             { -- Right widgets
                 layout = wibox.layout.fixed.horizontal,
-                --seperator,
                 mykeyboardlayout,
                 seperator,
-                mem,
+                st_logout_menu_widget,
+                seperator,
+                st_brightness_widget,
+                seperator,
+                st_battery_widget,
+                --seperator,
+                --st_fs_widget,
+                seperator,
+                lain_ram,
+                --seperator,
+                --lain_cpu_usage,
                 seperator,
                 wibox.widget.systray(),
                 seperator,
