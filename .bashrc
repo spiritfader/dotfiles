@@ -187,7 +187,8 @@ hugepage() {
 alias iommugroup='find /sys/kernel/iommu_groups/ -type l | sort -V'
 alias iommusupport='sudo dmesg | grep -e DMAR -e IOMMU -e AMD-Vi'
 alias pcidsupport="grep ' pcid ' /proc/cpuinfo"
-alias cpuvuln='for f in /sys/devices/system/cpu/vulnerabilities/*; do printf "${f##*/} -" $(cat "$f"); done'
+#alias cpuvuln='for f in /sys/devices/system/cpu/vulnerabilities/*; do printf '%n%s' "${f##*/} -" $(cat "$f"); done'
+alias cpuvuln='for f in /sys/devices/system/cpu/vulnerabilities/*; do printf '%n%s' "${f##*/}" $(cat "$f"); done'
 
 alias awesomeerr='tail -f .cache/awesome/stderr'
 alias awesomeout='tail -f .cache/awesome/stdout'
