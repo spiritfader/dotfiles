@@ -29,15 +29,43 @@ if [ "$SHELL" = "/bin/ksh" ]; then
   VISUAL=emacs
 fi
 
-# Check for user private bin $HOME/.local/bin and add to path if it exists and is not already in path
+# Check for user bin $HOME/.local/bin and add to path if it exists and isnt in path
 if [ -d "$HOME/.local/bin" ] && [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
-    PATH="$HOME/.local/bin${PATH:+":$PATH"}"
+  PATH="$HOME/.local/bin${PATH:+":$PATH"}"
 fi
 
-## Check for user private bin $HOME/bin and add to path if it exists and is not already in path
+## Check for user bin $HOME/bin and add to path if it exists and isnt in path
 if [ -d "$HOME/bin" ] && [[ ":$PATH:" != *":$HOME/bin:"* ]]; then
-    PATH="$HOME/bin${PATH:+":$PATH"}"
+  PATH="$HOME/bin${PATH:+":$PATH"}"
 fi
+
+## check for PSPDEV toolchain and add to path if exists
+if [ -d "$HOME/pspdev" ]; then
+  export PSPDEV=~/pspdev
+  PATH="$HOME/$PSPDEV/bin${PATH:+":$PATH"}"
+fi
+
+# Set Environment Variables
+export EDITOR=nvim
+export VISUAL=code-oss
+export LD_PRELOAD=""
+export HISTSIZE=8192
+export HISTCONTROL=ignorespace
+#export HISTCONTROL=ignoreboth:erasedups:ignorespace
+export MANPAGER="less -R --use-color -Dd+r -Du+b"
+export RANGER_LOAD_DEFAULT_RC=FALSE
+#export PAGER='less'
+
+# if ! pgrep -u "$USER" ssh-agent > /dev/null; then
+#     ssh-agent -t 1h > "$XDG_RUNTIME_DIR/ssh-agent.env"
+# fi
+# if [[ ! -f "$SSH_AUTH_SOCK" ]]; then
+#     source "$XDG_RUNTIME_DIR/ssh-agent.env" >/dev/null
+# fi
+
+for sh in /etc/bash/bashrc.d/* ; do
+	[[ -r ${sh} ]] && source "${sh}"
+done
 
 shopt -s autocd # Enable auto cd when typing directories 
 shopt -s checkwinsize # check the terminal size when it regains control - check winsize when resize
@@ -187,7 +215,6 @@ hugepage() {
 alias iommugroup='find /sys/kernel/iommu_groups/ -type l | sort -V'
 alias iommusupport='sudo dmesg | grep -e DMAR -e IOMMU -e AMD-Vi'
 alias pcidsupport="grep ' pcid ' /proc/cpuinfo"
-#alias cpuvuln='for f in /sys/devices/system/cpu/vulnerabilities/*; do printf '%n%s' "${f##*/} -" $(cat "$f"); done'
 alias cpuvuln='for f in /sys/devices/system/cpu/vulnerabilities/*; do printf '%n%s' "${f##*/}" $(cat "$f"); done'
 
 alias awesomeerr='tail -f .cache/awesome/stderr'
