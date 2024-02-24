@@ -39,11 +39,28 @@ if [ -d "$HOME/bin" ] && [[ ":$PATH:" != *":$HOME/bin:"* ]]; then
   PATH="$HOME/bin${PATH:+":$PATH"}"
 fi
 
-## check for PSPDEV toolchain and add to path if exists
-if [ -d "$HOME/pspdev" ]; then
-  export PSPDEV=~/pspdev
-  PATH="$HOME/$PSPDEV/bin${PATH:+":$PATH"}"
-fi
+#### check for pspdev toolchain and add to path if exists
+##if [ -d "$HOME/pspdev" ] && [[ ":$PATH:" != *":$HOME/$PSPDEV/bin$:"* ]]; then
+##  export PSPDEV=~/pspdev
+##  PATH="$HOME/$PSPDEV/bin${PATH:+":$PATH"}"
+##fi
+##
+#### Check for openjdk and add to env variable
+##if [ -f /etc/profile.d/jre.sh ] && [[ ":$PATH:" != *":/usr/lib/jvm/default/bin$:"* ]]; then
+##  PATH="/usr/lib/jvm/default/bin${PATH:+":$PATH"}"
+##fi
+##
+#### check for ruby gems & add ruby gems to path
+##if [ -d "$(gem env user_gemhome)" ] && [[ ":$PATH:" != *":$GEM_HOME/bin$:"* ]]; then
+##  GEM_HOME="$(gem env user_gemhome)"
+##  export GEM_HOME
+##  PATH="$GEM_HOME/bin${PATH:+":$PATH"}"
+##fi
+##
+#### Check for go bin and add to path
+##if [ -d "$(go env GOPATH)" ] && [[ ":$PATH:" != *":$(go env GOBIN):$(go env GOPATH)/bin$:"* ]]; then
+##  PATH="$(go env GOBIN):$(go env GOPATH)/bin${PATH:+":$PATH"}"
+##fi
 
 # Set Environment Variables
 export EDITOR=nvim
@@ -456,7 +473,7 @@ exfold() {
       *.tar.bz2)   tar xjf "$1"                                   ;;
       *.tar.gz)    tar xzf "$1"                                   ;;
       *.bz2)       bunzip2 "$1"                                   ;;
-      *.rar)       unrar x "$1"                                   ;;
+      *.rar)       7z x -o"${1%.rar}" "$1"                         ;;
       *.gz)        gunzip "$1"                                    ;;
       *.tar)       mkdir "${1%.tar}"; tar -xvf "$1" -C "${1%.tar}";;
       *.tbz2)      tar xjf "$1"                                   ;;
