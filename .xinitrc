@@ -33,5 +33,13 @@ if [ -d /etc/X11/xinit/xinitrc.d ] ; then
 fi
 
 xcalib -d :0 .color/icc_profile
-#exec awesome
-exec awesome >> ~/.cache/awesome/stdout 2>> ~/.cache/awesome/stderr
+
+wm1=awesome
+
+if ! [ -e "$HOME/.cache/wm-logs" ]; then
+    mkdir "$HOME/.cache/wm-logs"
+    touch stderr stdout
+fi
+
+exec $wm1 >> "$HOME"/.cache/wm-logs/stdout 2>> "$HOME"/.cache/wm-logs/stderr
+

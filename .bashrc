@@ -212,7 +212,6 @@ alias shred="shred -zf"
 alias wget="wget -U 'noleak'"
 alias curl="curl --user-agent 'noleak'"
 alias count='find . -type f | wc -l'
-alias upd='sudo pacman -Syu && paru -Syu'
 alias empty_trash='rm -rf ~/.local/share/Trash/*'
 alias infgears='vblank_mode=0 glxgears'
 alias updaterepo='sudo reflector --verbose -c "United States" --latest 30 --fastest 30 --score 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist'
@@ -224,18 +223,8 @@ alias m="\$PAGER"
 alias g='egrep -i'
 alias gif='ffmpeg -i "input.mkv" -vf "fps=10,scale=320:-1:flags=lanczos" -c:v pam -f image2pipe - | convert -delay 10 - -loop 0 -layers optimize output.gif'
 alias mountrw='mount -o noatime -uw' # Decrease likelihood of filesystem metadata corruption on [CF,SD,USB] persistent media by setting '-o noatime'.
-
-hugepage() {
-  grep -e AnonHugePages  /proc/*/smaps | awk  '{ if($2>4) print $0} ' |  awk -F "/"  '{printf $0; system("ps -fp " $3)} '
-}
-
-alias iommugroup='find /sys/kernel/iommu_groups/ -type l | sort -V'
-alias iommusupport='sudo dmesg | grep -e DMAR -e IOMMU -e AMD-Vi'
-alias pcidsupport="grep ' pcid ' /proc/cpuinfo"
-alias cpuvuln='for f in /sys/devices/system/cpu/vulnerabilities/*; do printf '%n%s' "${f##*/}" $(cat "$f"); done'
-
-alias awesomeerr='tail -f .cache/awesome/stderr'
-alias awesomeout='tail -f .cache/awesome/stdout'
+alias wmstderr='tail -f $HOME/.cache/wm-logs/stderr'
+alias wmstdout='tail -f $HOME/.cache/wm-logs/stdout'
 alias scrubstart='sudo btrfs scrub start'
 alias scrubstatus='sudo btrfs scrub status'
 alias scrublive='sudo btrfs scrub start /; watch -n 1 sudo btrfs scrub status /'
@@ -245,7 +234,41 @@ alias threads='ps --no-headers -Leo user | sort | uniq --count'
 alias setuid='find /usr/bin -perm "/u=s,g=s"'
 alias smart='sudo smartctl -a $(sudo fdisk -l | grep "Disk /dev/" | cut -d " " -f2 | tr -d ":")'
 alias services='systemctl --type=service --state=running'
+alias c='clear'
+alias trim='sudo fstrim -av'  
+alias rsync='rsync -P'
+alias free="free -mth"
+alias da='date "+%Y-%m-%d %A    %T %Z"'
+alias sb='source ~/.bashrc'
+alias xlx='xrdb -load $HOME/.Xresources'
+alias errorlog='journalctl -p 3 -b'
+alias brokensym='sudo find / -xtype l -print'
+alias portcheck='nc -v -i1 -w1' # Test port connection - Usage: portcheck 192.168.122.137 22
+alias ports='netstat -nape --inet'
+alias ns='netstat -alnp --protocol=inet | grep -v CLOSE_WAIT | cut -c-6,21-94 | tail +2'
+alias intercept="sudo strace -ff -e trace=write -e write=1,2 -p" #given a PID, intercept the stdout and stderr
+alias psg="ps aux | grep -v grep | grep -i -e VSZ -e" # search processes (find PID easily)
+alias psf="ps auxfww" # show all processes
+alias localip='ifconfig | sed -rn "s/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p"' # Show local primary IP address
+alias rng='watch -n 1 cat /proc/sys/kernel/random/entropy_avail'
+alias scheduler='grep "" /sys/block/*/queue/scheduler'
 
+# pkg manager tools
+alias upd='sudo pacman -Syu && paru -Syu'
+alias aurlist='sudo pacman -Qqe'
+alias paclist='sudo pacman -Qqm'
+
+# proxmox tools
+hugepage() {
+  grep -e AnonHugePages  /proc/*/smaps | awk  '{ if($2>4) print $0} ' |  awk -F "/"  '{printf $0; system("ps -fp " $3)} '
+}
+
+alias iommugroup='find /sys/kernel/iommu_groups/ -type l | sort -V'
+alias iommusupport='sudo dmesg | grep -e DMAR -e IOMMU -e AMD-Vi'
+alias pcidsupport="grep ' pcid ' /proc/cpuinfo"
+alias cpuvuln='for f in /sys/devices/system/cpu/vulnerabilities/*; do printf '%n%s' "${f##*/}" $(cat "$f"); done'
+
+# git tools
 alias gadd='git add'
 alias gpush='git push'
 alias gshow='git ls-tree --full-tree -r --name-only HEAD'
@@ -293,28 +316,8 @@ dfadd(){ # Add file(s) to tracked dotfiles"
   sort -o "$HOME/.dotfiles.conf" "$HOME/.dotfiles.conf"      
 }
 
-alias c='clear'
-alias trim='sudo fstrim -av'  
-alias rsync='rsync -P'
-alias free="free -mth"
-alias da='date "+%Y-%m-%d %A    %T %Z"'
-alias sb='source ~/.bashrc'
-alias xlx='xrdb -load $HOME/.Xresources'
-alias errorlog='journalctl -p 3 -b'
-alias brokensym='sudo find / -xtype l -print'
-alias portcheck='nc -v -i1 -w1' # Test port connection - Usage: portcheck 192.168.122.137 22
-alias ports='netstat -nape --inet'
-alias ns='netstat -alnp --protocol=inet | grep -v CLOSE_WAIT | cut -c-6,21-94 | tail +2'
-alias intercept="sudo strace -ff -e trace=write -e write=1,2 -p" #given a PID, intercept the stdout and stderr
-alias psg="ps aux | grep -v grep | grep -i -e VSZ -e" # search processes (find PID easily)
-alias psf="ps auxfww" # show all processes
-alias localip='ifconfig | sed -rn "s/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p"' # Show local primary IP address
-alias rng='watch -n 1 cat /proc/sys/kernel/random/entropy_avail'
-alias scheduler='grep "" /sys/block/*/queue/scheduler'
-
 # Add an "alert" alias for long running commands.  Use like so: sleep 10; alert
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
-
 
 flacverify() { # verify flac files for corruption - flacverify [dir]
   find -L "$1" -type f -name '.flac' -print0 | while IFS= read -r -d '' file
