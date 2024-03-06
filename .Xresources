@@ -79,6 +79,7 @@ UXTerm*VT100.Translations: #override \
 !                  URxvt settings
 URxvt.termName:                       xterm-256color
 URxvt.geometry:                       400x400
+URxvt.internalBorder:                 8
 URxvt.reverseVideo:                   false
 URxvt.loginShell:                     false
 URxvt.multiClickTime:                 false
@@ -136,7 +137,7 @@ URxvt.url-launcher:                   /usr/bin/xdg-open
 aterm*tintColor:                      red
 aterm*background:                     black
 aterm*foreground:                     green
-aterm*internalBorder:                 0
+aterm*internalBorder:                 4
 aterm*scrollstyle:                    false
 aterm*scrollBar:                      false
 aterm*saveLines:                      8192

@@ -258,6 +258,11 @@ alias upd='sudo pacman -Syu && paru -Syu'
 alias aurlist='sudo pacman -Qqe'
 alias paclist='sudo pacman -Qqm'
 
+# dfir
+alias loginsh='cat /etc/passwd | grep sh$'
+alias allcron='for user in $(cat /etc/passwd | grep sh$ | cut -f1 -d: ); do echo $user; sudo crontab -u $user -l; done'
+alias loginshcron='for user in $(cat /etc/passwd | grep sh$ | cut -f1 -d: ); do echo $user; sudo crontab -u $user -l; done'
+
 # proxmox tools
 hugepage() {
   grep -e AnonHugePages  /proc/*/smaps | awk  '{ if($2>4) print $0} ' |  awk -F "/"  '{printf $0; system("ps -fp " $3)} '
@@ -278,6 +283,10 @@ alias gclone='git clone'
 alias gpull='git pull'
 alias gfetch='git fetch'
 alias branch='git branch -a'
+
+pgit(){ # usage pgit https://github.com/username/repo - converts regular github repo link to private link that can be cloned
+  git clone "${1/#https:\/\/github.com/git@github.com:}"
+}
 
 git_update_all() {
 	# ls | xargs -I{} git -C {} pull
