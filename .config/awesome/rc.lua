@@ -36,6 +36,7 @@ beautiful.init("~/.config/awesome/themes/aure/theme.lua")       -- Use regular h
 --beautiful.init("~/.config/awesome/themes/aure/theme-pywal.lua")     -- Use pywal generated theme
 
 terminal = "alacritty"
+--terminal = "st"
 editor = os.getenv("EDITOR") or "nvim"
 editor_cmd = terminal .. " -e " .. editor
 modkey       = "Mod4"

@@ -306,8 +306,8 @@ dftrack(){   # Loop through ".$HOME/.dotfiles.conf" of files, check to see if fi
   untrack+=();
   wdir=$(pwd | sed "s|$HOME|\$HOME|");                          # initialize array to hold dir/files to be "untracked" and removed from .dotfiles.conf
   while IFS="" read -r p || [ -n "$p" ]; do                     # loop through $HOME/.dotfiles.conf
-    if ! [[ -e "$wdir/$p" ]]; then untrack+=("$wdir/$p"); fi    # if dir/file does not exist within fs, add to "untracked" array
-    if [[ -e "$wdir/$p" ]]; then dtf add "$wdir/$p"; fi          # if dir/file exists within fs, track it with "git add"
+    if ! [[ -e $p ]]; then untrack+=("$p"); fi    # if dir/file does not exist within fs, add to "untracked" array
+    if [[ -e $p ]]; then dtf add "$p"; fi          # if dir/file exists within fs, track it with "git add"
   done < "$HOME/.dotfiles.conf"                                 # remove dir & files from .dotfiles.conf that are in array and untrack from git with "git rm --cached"
   for i in "${untrack[@]}"; do sed -i "\:$wdir/$i:d" "$HOME/.dotfiles.conf" && if [[ -e "$wdir/$i" ]]; then dtf rm -r --cached "$wdir/$i"; fi; done 
   unset untrack                                                 # unset "untracked" variable to keep consecutive runs clean
@@ -317,10 +317,10 @@ dftrack(){   # Loop through ".$HOME/.dotfiles.conf" of files, check to see if fi
 dfadd(){ # Add file(s) to tracked dotfiles"
   wdir=$(pwd | sed "s|$HOME|\$HOME|");
   for i in "$@"; do                                                                                                                    # Loop through tracked dotfiles (.dotfiles.conf)
-    if [[ -e "$wdir/$i" ]]; then                                                                                                     
+    if [[ -e "$(pwd)/$i" ]]; then                                                                                                     
       if grep -q "^$wdir/$i$" "$HOME"/.dotfiles.conf; then printf '%s\n' "dir/file already exists within tracked file, skipping."; fi; # if dir/file exists and is already in tracked file, do nothing. 
       if ! grep -q "^$wdir/$i$" "$HOME"/.dotfiles.conf; then printf '%s\n' "$wdir/$i" >> "$HOME"/.dotfiles.conf; fi; fi;               # if dir/file exists but is not in file, add it.
-    if ! [[ -e $wdir/$i ]]; then printf '%s\n' "The dir/file $wdir/$i cannot be located. Skipping."; fi                                # if dir/file does not exist, skip and do nothing.
+    if ! [[ -e "$(pwd)/$i" ]]; then printf '%s\n' "The dir/file $wdir/$i cannot be located. Skipping."; fi                                # if dir/file does not exist, skip and do nothing.
   done;
   sort -o "$HOME/.dotfiles.conf" "$HOME/.dotfiles.conf"      
 }

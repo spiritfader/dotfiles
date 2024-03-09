@@ -71,7 +71,7 @@ awful.keyboard.append_global_keybindings({
               {description = "Pywal Wallpaper previous", group = "hotkeys"}),
     awful.key({ modkey, "Ctrl" }, "l", function () awful.spawn.with_shell("ff-lock.sh") end,                    -- lock screen with i3lock script
               {description = "run i3lock script", group = "hotkeys"}),              
-    awful.key({ modkey }, "p", function() awful.spawn.with_shell("picomtoggle.sh") end,                         -- disable/enale compositor
+    awful.key({ modkey }, "p", function() awful.spawn.with_shell("picomtoggle.sh") end,                         -- disable/enable compositor
               {description = "Toggle compositor", group = "hotkeys"}),
 
               -- Show/hide wibox
