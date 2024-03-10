@@ -304,13 +304,13 @@ alias dfs='dtf status'
 
 dftrack(){   # Loop through ".$HOME/.dotfiles.conf" of files, check to see if file within exists and track it in the bare repo
   untrack+=();
-  wdir=$(pwd | sed "s|$HOME|\$HOME|");                          # initialize array to hold dir/files to be "untracked" and removed from .dotfiles.conf
-  while IFS="" read -r p || [ -n "$p" ]; do                     # loop through $HOME/.dotfiles.conf
-    if ! [[ -e $p ]]; then untrack+=("$p"); fi    # if dir/file does not exist within fs, add to "untracked" array
-    if [[ -e $p ]]; then dtf add "$p"; fi          # if dir/file exists within fs, track it with "git add"
-  done < "$HOME/.dotfiles.conf"                                 # remove dir & files from .dotfiles.conf that are in array and untrack from git with "git rm --cached"
-  for i in "${untrack[@]}"; do sed -i "\:$wdir/$i:d" "$HOME/.dotfiles.conf" && if [[ -e "$wdir/$i" ]]; then dtf rm -r --cached "$wdir/$i"; fi; done 
-  unset untrack                                                 # unset "untracked" variable to keep consecutive runs clean
+  wdir=$(pwd | sed "s|$HOME|\$HOME|");                                            # initialize array to hold dir/files to be "untracked" and removed from .dotfiles.conf
+  while IFS="" read -r p || [ -n "$p" ]; do                                       # loop through $HOME/.dotfiles.conf
+    if ! [[ -e "$(pwd)${p##\$HOME}" ]]; then untrack+=("$p"); fi                  # if dir/file does not exist within fs, add to "untracked" array
+    if [[ -e "$(pwd)${p##\$HOME}" ]]; then dtf add "$(pwd)${p##\$HOME}"; fi       # if dir/file exists within fs, track it with "git add"
+  done < "$HOME/.dotfiles.conf"                                                   # remove dir & files from .dotfiles.conf that are in array and untrack from git with "git rm --cached"
+  for i in "${untrack[@]}"; do sed -i "\:$i:d" "$HOME/.dotfiles.conf" && if [[ -e "$(pwd)${i##\$HOME}" ]]; then dtf rm -r --cached "$i"; fi; done 
+  unset untrack                                                                   # unset "untracked" variable to keep consecutive runs clean
   sort -o "$HOME/.dotfiles.conf" "$HOME/.dotfiles.conf"
 }
 
@@ -320,7 +320,7 @@ dfadd(){ # Add file(s) to tracked dotfiles"
     if [[ -e "$(pwd)/$i" ]]; then                                                                                                     
       if grep -q "^$wdir/$i$" "$HOME"/.dotfiles.conf; then printf '%s\n' "dir/file already exists within tracked file, skipping."; fi; # if dir/file exists and is already in tracked file, do nothing. 
       if ! grep -q "^$wdir/$i$" "$HOME"/.dotfiles.conf; then printf '%s\n' "$wdir/$i" >> "$HOME"/.dotfiles.conf; fi; fi;               # if dir/file exists but is not in file, add it.
-    if ! [[ -e "$(pwd)/$i" ]]; then printf '%s\n' "The dir/file $wdir/$i cannot be located. Skipping."; fi                                # if dir/file does not exist, skip and do nothing.
+    if ! [[ -e "$(pwd)/$i" ]]; then printf '%s\n' "The dir/file $wdir/$i cannot be located. Skipping."; fi                             # if dir/file does not exist, skip and do nothing.
   done;
   sort -o "$HOME/.dotfiles.conf" "$HOME/.dotfiles.conf"      
 }

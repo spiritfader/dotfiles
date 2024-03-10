@@ -1,7 +1,8 @@
 #!/bin/sh
 
-cd ~
+cd ~ || exit
 
+export ELECTRON_OZONE_PLATFORM_HINT=wayland
 export _JAVA_AWT_WM_NONREPARENTING=1
 export XCURSOR_SIZE=24
 
