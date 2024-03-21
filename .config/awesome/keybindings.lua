@@ -33,7 +33,7 @@ awful.keyboard.append_global_keybindings({
               {description = "start rofi launcher", group = "launcher"}),
     awful.key({ modkey }, "r", function () awful.spawn.with_shell("rofi -show run -theme dmenu") end,            -- spawn rofi in dmenu mode
                {description = "start rofi dmenu launcher", group = "launcher"}),
-    awful.key({ modkey }, "i", function () awful.spawn.with_shell("fixtouchpad.sh") end,                      -- Toggle touchpad on/off
+    awful.key({ modkey }, "i", function () awful.spawn.with_shell("fixtouchpad.sh") end,                         -- Toggle touchpad on/off
               {description = "toggle touchpad on/off", group = "hotkeys"}),
     awful.key({ }, "XF86MonBrightnessUp", function () awful.spawn.with_shell("brightnessctl set +10%") end,      -- Increase Brightness by 10%
               {description = "+10%", group = "hotkeys"}),
