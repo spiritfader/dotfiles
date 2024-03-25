@@ -8,7 +8,6 @@
     "modules-left": ["hyprland/workspaces"], //"hyprland/mode", "hyprland/scratchpad", ],
     "modules-center": ["hyprland/window", "custom/media"],
     "modules-right": ["idle_inhibitor", "pulseaudio", "network", "bluetooth", "cpu", "temperature", "memory", "custom/gpu-usage", "backlight", "keyboard-state", "battery", "tray", "clock"],
-    //"modules-right": ["idle_inhibitor", "pulseaudio", "network", "cpu", "memory", "temperature", "backlight", "keyboard-state", "hyprland/language", "battery", "battery#bat2", "tray", "clock",],
     //Modules configuration
     "hyprland/workspaces": {
         "disable-scroll": true,
@@ -49,6 +48,18 @@
         "format-icons": ["", ""],
         "tooltip": true,
         "tooltip-format": "{app}: {title}"
+    },
+    "hyprland/window": {
+        "format": "{class}",
+        "rewrite": {
+            "(.*) — Mozilla Firefox": " $1",
+            "firefox": " $1",
+            "(.*) - bash": " [$1]",
+            "(.*) - vim": " $1",
+            "(.*) - emacs": " $1",
+            "(.*) - code-oss": " $1"
+        },
+        "separate-outputs": true
     },
     "mpd": {
         "format": "{stateIcon} {consumeIcon}{randomIcon}{repeatIcon}{singleIcon}{artist} - {album} - {title} ({elapsedTime:%M:%S}/{totalTime:%M:%S}) ⸨{songPosition}|{queueLength}⸩ {volume}% ",
