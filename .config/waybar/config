@@ -7,7 +7,7 @@
     // Choose the order of the modules
     "modules-left": ["hyprland/workspaces"], //"hyprland/mode", "hyprland/scratchpad", ],
     "modules-center": ["hyprland/window", "custom/media"],
-    "modules-right": ["idle_inhibitor", "pulseaudio", "network", "bluetooth", "cpu", "temperature", "memory", "custom/gpu-usage", "backlight", "keyboard-state", "battery", "tray", "clock"],
+    "modules-right": ["idle_inhibitor", "pulseaudio", "network", "bluetooth", "cpu", "temperature", "memory", "backlight", "keyboard-state", "battery", "tray", "clock"],
     //Modules configuration
     "hyprland/workspaces": {
         "disable-scroll": true,
@@ -179,6 +179,12 @@
         },
         "on-click": "pavucontrol"
     },
+    "custom/gpu-usage": {
+        "exec": "cat /sys/class/hwmon/hwmon5/device/gpu_busy_percent",
+        "format": "{}% ",
+        "return-type": "",
+        "interval": 10
+    },
     "custom/media": {
         "format": "{icon} {}",
         "return-type": "json",
@@ -196,12 +202,6 @@
         //"on-scroll-down": "playerctl previous",
         "exec": "$HOME/.config/waybar/mediaplayer.py 2> /dev/null" // Script in resources folder
         // "exec": "$HOME/.config/waybar/mediaplayer.py --player spotify 2> /dev/null" // Filter player based on name
-    },
-    "custom/gpu-usage": {
-        "exec": "cat /sys/class/hwmon/hwmon5/device/gpu_busy_percent",
-        "format": "{}% ",
-        "return-type": "",
-        "interval": 10
     }
 }
 
