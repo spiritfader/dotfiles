@@ -476,8 +476,8 @@ virev() {
   nvim -p "${toOpen}"
 }
 
-# ex = extracts archives into folders - usage: ex <file>
-exfold() {
+# [e]xtract to [f]older = extracts archives into folders - usage: ex <file>
+ef() {
   SAVEIFS=$IFS
   IFS="$(printf '\n\t')"
   if [ -f "$1" ] ; then
@@ -506,8 +506,8 @@ exfold() {
   IFS=$SAVEIFS
 }
 
-# exhere = extracts files loosely into directory - usage: exhere <file>
-exhere() {
+# [e]tract[h]ere = extracts files loosely into directory - usage: exhere <file>
+eh() {
   SAVEIFS=$IFS
   IFS="$(printf '\n\t')"
   if [ -f "$1" ] ; then
