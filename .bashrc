@@ -252,9 +252,28 @@ alias psf="ps auxfww" # show all processes
 alias localip='ifconfig | sed -rn "s/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p"' # Show local primary IP address
 alias rng='watch -n 1 cat /proc/sys/kernel/random/entropy_avail'
 alias scheduler='grep "" /sys/block/*/queue/scheduler'
+alias upde='sudo pacman -Syu && paru -Syu'
 
 # pkg manager tools
-alias upd='sudo pacman -Syu && paru -Syu'
+upd() { # update all system programs
+  tput setaf 2; printf '%s\n' "Arch Official Repos (pacman -Syu):"; tput sgr0
+  sudo pacman -Syu
+   tput setaf 2; printf '\n%s\n' "Arch User Repository (paru -Syu):"; tput sgr0
+  paru -Syu
+  if command -v flatpak &> /dev/null; then  tput setaf 2; printf '\n%s\n' "Flatpak (flatpak --user update):"; tput sgr0 ; flatpak --user update; fi
+  tput setaf 2; printf '\n%s\n' "Update locate/plocate database..."; tput sgr0
+  sudo updatedb                    # update the locate/plocate database
+  tput setaf 2; printf '\n%s\n' "Update pkgfile database (pkgfile -u):"; tput sgr0
+  sudo pkgfile -u                  # update the pkgfile database
+  tput setaf 2; printf '\n%s\n' "Update pacman file database (pacman -Fy):"; tput sgr0
+  sudo pacman -Fy                 # update the pacman file database
+  tput setaf 2; printf '\n%s\n' "Upgrade pacman database"; tput sgr0
+  sudo pacman-db-upgrade           # upgrade the local pacman db to a newer format
+  #tput setaf 2; printf '\n%s' "Clear pacman cache:"; tput sgr0
+  #yes | sudo pacman -Scc
+  #yes | paru -Scc         # Remove all files and unused repositories from pacman cache without prompt
+  sync #&& printf '\n'
+}
 alias aurlist='sudo pacman -Qqe'
 alias paclist='sudo pacman -Qqm'
 
@@ -865,6 +884,10 @@ export HISTCONTROL=ignorespace
 export MANPAGER="less -R --use-color -Dd+r -Du+b"
 export RANGER_LOAD_DEFAULT_RC=FALSE
 #export PAGER='less'
+export LIBVA_DRIVER_NAME=radeonsi
+export VDPAU_DRIVER=radeonsi
+
+
 
 # if ! pgrep -u "$USER" ssh-agent > /dev/null; then
 #     ssh-agent -t 1h > "$XDG_RUNTIME_DIR/ssh-agent.env"
