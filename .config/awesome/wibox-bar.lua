@@ -13,57 +13,6 @@ mykeyboardlayout = awful.widget.keyboardlayout()
 -- Create a textclock widget
 mytextclock = wibox.widget.textclock("%l:%M %p")
 
--- StreetTurtle Widgets
-local st_cpu_widget = require("awesome-wm-widgets.cpu-widget.cpu-widget") ({
-    width = 70,
-    step_width = 2,
-    step_spacing = 0,
-    color = '#434c5e'
-})
-
-local st_brightness_widget = require("awesome-wm-widgets.brightness-widget.brightness") ({
-    type = 'icon_and_text',
-    program = 'brightnessctl',
-    step = '5',
-    base = 20,
-    path_to_icon = "/usr/share/icons/Arc/status/symbolic/display-brightness-symbolic.svg",
-    font = beautiful.font,
-    timeout	= 1,
-    tooltip	= true,
-    percentage = false,
-    rmb_set_max	= false,
-})
-
-local st_battery_widget = require("awesome-wm-widgets.battery-widget.battery") ({
-    font = beautiful.font,
-    path_to_icons = "/usr/share/icons/Arc/status/symbolic/",
-    show_current_level = true,
-    margin_right = 0,
-    margin_left = 0,
-    display_notification = false,
-    notification_position = top_right,
-    timeout	= 10,
-    warning_msg_title = "Houston, we have a problem",
-    warning_msg_text = "Battery is dying",
-    warning_msg_position = bottom_right,
-    warning_msg_icon = "~/.config/awesome/awesome-wm-widgets/battery-widget/spaceman.jpg",
-    enable_battery_warning = true,
-})
-
-local st_fs_widget = require("awesome-wm-widgets.fs-widget.fs-widget") ({
-    mounts = { '/' },
-    timeout = '60'
-})
-
-local st_ram_widget = require("awesome-wm-widgets.ram-widget.ram-widget") ({
-    color_used = beautiful.bg_urgent,
-    color_free = beautiful.fg_normal,
-    color_buf = beautiful.border_color_active,
-    widget_height = 25,
-    widget_width = 25,
-    widget_show_buf	= true,
-    timeout = 1,
-})
 
 local st_logout_menu_widget = require("awesome-wm-widgets.logout-menu-widget.logout-menu") ({
     font = beautiful.font,
@@ -73,20 +22,6 @@ local st_logout_menu_widget = require("awesome-wm-widgets.logout-menu-widget.log
     onsuspend =	function() awful.spawn.with_shell("systemctl suspend") end,
     onpoweroff =function() awful.spawn.with_shell("poweroff") end,
 })
-
--- local st_calendar_widget = require("awesome-wm-widgets.calendar-widget.calendar") ({
---     theme = 'outrun',
---     placement = 'top_right',
---     start_sunday = true,
---     radius = 8,
---     previous_month_button = 4,
---     next_month_button = 5,
--- })
-
--- mytextclock:connect_signal("button::press",
---     function(_, _, _, button)
---         if button == 1 then st_calendar_widget.toggle() end
---     end)
 
 -- -- Lain widgets
 -- lain_cal = lain.widget.cal({
