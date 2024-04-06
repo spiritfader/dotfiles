@@ -72,17 +72,8 @@ export HISTCONTROL=ignorespace
 export MANPAGER="less -R --use-color -Dd+r -Du+b"
 export RANGER_LOAD_DEFAULT_RC=FALSE
 #export PAGER='less'
-
-# if ! pgrep -u "$USER" ssh-agent > /dev/null; then
-#     ssh-agent -t 1h > "$XDG_RUNTIME_DIR/ssh-agent.env"
-# fi
-# if [[ ! -f "$SSH_AUTH_SOCK" ]]; then
-#     source "$XDG_RUNTIME_DIR/ssh-agent.env" >/dev/null
-# fi
-
-for sh in /etc/bash/bashrc.d/* ; do
-	[[ -r ${sh} ]] && source "${sh}"
-done
+export LIBVA_DRIVER_NAME=radeonsi
+export VDPAU_DRIVER=radeonsi
 
 shopt -s autocd # Enable auto cd when typing directories 
 shopt -s checkwinsize # check the terminal size when it regains control - check winsize when resize
@@ -279,8 +270,8 @@ alias paclist='sudo pacman -Qqm'
 
 # dfir
 alias loginsh='cat /etc/passwd | grep sh$'
-alias allcron='for user in $(cat /etc/passwd | grep sh$ | cut -f1 -d: ); do echo $user; sudo crontab -u $user -l; done'
-alias loginshcron='for user in $(cat /etc/passwd | grep sh$ | cut -f1 -d: ); do echo $user; sudo crontab -u $user -l; done'
+alias allcron='for i in $(cat /etc/passwd | grep sh$ | cut -f1 -d: ); do echo $i; sudo crontab -u $i -l; done'
+alias loginshcron='for i in $(cat /etc/passwd | grep sh$ | cut -f1 -d: ); do echo $i; sudo crontab -u $i -l; done'
 
 # proxmox tools
 hugepage() {
@@ -325,21 +316,37 @@ dftrack(){   # Loop through ".$HOME/.dotfiles.conf" of files, check to see if fi
   untrack+=();
   wdir=$(pwd | sed "s|$HOME|\$HOME|");                                            # initialize array to hold dir/files to be "untracked" and removed from .dotfiles.conf
   while IFS="" read -r p || [ -n "$p" ]; do                                       # loop through $HOME/.dotfiles.conf
-    if ! [[ -e "$(pwd)${p##\$HOME}" ]]; then untrack+=("$p"); fi                  # if dir/file does not exist within fs, add to "untracked" array
-    if [[ -e "$(pwd)${p##\$HOME}" ]]; then dtf add "$(pwd)${p##\$HOME}"; fi       # if dir/file exists within fs, track it with "git add"
+    if ! [[ -e "$(pwd)${p##\$HOME}" ]]; then 
+      untrack+=("$p"); 
+    fi                                                                            # if dir/file does not exist within fs, add to "untracked" array
+    if [[ -e "$(pwd)${p##\$HOME}" ]]; then 
+      dtf add "$(pwd)${p##\$HOME}"; 
+    fi                                                                            # if dir/file exists within fs, track it with "git add"
   done < "$HOME/.dotfiles.conf"                                                   # remove dir & files from .dotfiles.conf that are in array and untrack from git with "git rm --cached"
-  for i in "${untrack[@]}"; do sed -i "\:$i:d" "$HOME/.dotfiles.conf" && if [[ -e "$(pwd)${i##\$HOME}" ]]; then dtf rm -r --cached "$i"; fi; done 
+  for i in "${untrack[@]}"; do 
+    sed -i "\:$i:d" "$HOME/.dotfiles.conf"
+    if [[ -e "$(pwd)${i##\$HOME}" ]]; then 
+      dtf rm -r --cached "$i"; 
+    fi; 
+  done 
   unset untrack                                                                   # unset "untracked" variable to keep consecutive runs clean
   sort -o "$HOME/.dotfiles.conf" "$HOME/.dotfiles.conf"
 }
 
 dfadd(){ # Add file(s) to tracked dotfiles"
   wdir=$(pwd | sed "s|$HOME|\$HOME|");
-  for i in "$@"; do                                                                                                                    # Loop through tracked dotfiles (.dotfiles.conf)
+  for i in "$@"; do                                                               # Loop through tracked dotfiles (.dotfiles.conf)
     if [[ -e "$(pwd)/$i" ]]; then                                                                                                     
-      if grep -q "^$wdir/$i$" "$HOME"/.dotfiles.conf; then printf '%s\n' "dir/file already exists within tracked file, skipping."; fi; # if dir/file exists and is already in tracked file, do nothing. 
-      if ! grep -q "^$wdir/$i$" "$HOME"/.dotfiles.conf; then printf '%s\n' "$wdir/$i" >> "$HOME"/.dotfiles.conf; fi; fi;               # if dir/file exists but is not in file, add it.
-    if ! [[ -e "$(pwd)/$i" ]]; then printf '%s\n' "The dir/file $wdir/$i cannot be located. Skipping."; fi                             # if dir/file does not exist, skip and do nothing.
+      if grep -q "^$wdir/$i$" "$HOME"/.dotfiles.conf; then 
+        printf '%s\n' "dir/file already exists within tracked file, skipping.";
+      fi;                                                                         # if dir/file exists and is already in tracked file, do nothing. 
+      if ! grep -q "^$wdir/$i$" "$HOME"/.dotfiles.conf; then 
+        printf '%s\n' "$wdir/$i" >> "$HOME"/.dotfiles.conf; 
+      fi; 
+    fi;                                                                           # if dir/file exists but is not in file, add it.
+    if ! [[ -e "$(pwd)/$i" ]]; then 
+      printf '%s\n' "The dir/file $wdir/$i cannot be located. Skipping.";
+    fi                                                                            # if dir/file does not exist, skip and do nothing.
   done;
   sort -o "$HOME/.dotfiles.conf" "$HOME/.dotfiles.conf"      
 }
@@ -873,21 +880,6 @@ videotag() {
 		fi
   fi
 }
-
-# Set Environment Variables
-export EDITOR=nvim
-export VISUAL=code-oss
-export LD_PRELOAD=""
-export HISTSIZE=8192
-export HISTCONTROL=ignorespace
-#export HISTCONTROL=ignoreboth:erasedups:ignorespace
-export MANPAGER="less -R --use-color -Dd+r -Du+b"
-export RANGER_LOAD_DEFAULT_RC=FALSE
-#export PAGER='less'
-export LIBVA_DRIVER_NAME=radeonsi
-export VDPAU_DRIVER=radeonsi
-
-
 
 # if ! pgrep -u "$USER" ssh-agent > /dev/null; then
 #     ssh-agent -t 1h > "$XDG_RUNTIME_DIR/ssh-agent.env"
