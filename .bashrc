@@ -247,24 +247,31 @@ alias upde='sudo pacman -Syu && paru -Syu'
 
 # pkg manager tools
 upd() { # update all system programs
-  tput setaf 2; printf '%s\n' "Arch Official Repos (pacman -Syu):"; tput sgr0
-  sudo pacman -Syu
-   tput setaf 2; printf '\n%s\n' "Arch User Repository (paru -Syu):"; tput sgr0
-  paru -Syu
-  if command -v flatpak &> /dev/null; then  tput setaf 2; printf '\n%s\n' "Flatpak (flatpak --user update):"; tput sgr0 ; flatpak --user update; fi
-  tput setaf 2; printf '\n%s\n' "Update locate/plocate database..."; tput sgr0
-  sudo updatedb                    # update the locate/plocate database
-  tput setaf 2; printf '\n%s\n' "Update pkgfile database (pkgfile -u):"; tput sgr0
-  sudo pkgfile -u                  # update the pkgfile database
-  tput setaf 2; printf '\n%s\n' "Update pacman file database (pacman -Fy):"; tput sgr0
-  sudo pacman -Fy                 # update the pacman file database
-  tput setaf 2; printf '\n%s\n' "Upgrade pacman database"; tput sgr0
-  sudo pacman-db-upgrade           # upgrade the local pacman db to a newer format
-  #tput setaf 2; printf '\n%s' "Clear pacman cache:"; tput sgr0
-  #yes | sudo pacman -Scc
-  #yes | paru -Scc         # Remove all files and unused repositories from pacman cache without prompt
-  sync #&& printf '\n'
+  if command -v pacman &> /dev/null; then  tput setaf 2; tput setaf 2; printf '%s\n' "Arch Official Repos (pacman -Syu):"; tput sgr0; sudo pacman -Syu; fi
+  
+  if command -v paru &> /dev/null; then  tput setaf 2; printf '\n%s\n' "Arch User Repository (paru -Syu):"; tput sgr0; paru -Syu; fi
+  if command -v yay &> /dev/null; then  tput setaf 2; printf '\n%s\n' "Arch User Repository (paru -Syu):"; tput sgr0; yay -Syua; fi
+  # add other aur helper?
+
+  if command -v flatpak &> /dev/null; then  tput setaf 2; printf '\n%s\n' "Flatpak (flatpak --user update):"; tput sgr0; flatpak --user update; fi
+  # add line for snap
+  # add line for app image
+
+  if command -v updatedb &> /dev/null; then tput setaf 2; printf '\n%s\n' "Update locate/plocate database..."; tput sgr0; sudo updatedb; fi # update the locate/plocate database
+  if command -v pkgfile &> /dev/null; then tput setaf 2; printf '\n%s\n' "Update pkgfile database (pkgfile -u):"; tput sgr0; sudo pkgfile -u; fi # update the pkgfile database
+  
+  if command -v pacman &> /dev/null; then  tput setaf 2; printf '\n%s\n' "Update pacman file database (pacman -Fy):"; tput sgr0; sudo pacman -Fy; fi # update the pacman file database
+  if command -v pacman-db-upgrade &> /dev/null; then tput setaf 2; printf '\n%s\n' "Upgrade pacman database"; tput sgr0; sudo pacman-db-upgrade; fi # upgrade the local pacman db to a newer format
+  
+  if command -v pacman &> /dev/null; then tput setaf 2; printf '\n%s' "Clear pacman cache:"; tput sgr0; # Remove all files and unused repositories from pacman cache without prompt
+    yes | sudo pacman -Scc; 
+    if command -v paru &> /dev/null; then yes | paru -Scc; fi; 
+    if command -v yay &> /dev/null; then yes | yay -Scc; fi; 
+  fi 
+
+  sync && printf '\n'
 }
+
 alias aurlist='sudo pacman -Qqe'
 alias paclist='sudo pacman -Qqm'
 
