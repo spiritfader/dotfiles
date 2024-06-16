@@ -1,7 +1,7 @@
 * {
     /* `otf-font-awesome` is required to be installed for icons */
     font-family: FontAwesome, Roboto, Helvetica, Arial, sans-serif;
-    font-size: 15px;
+    font-size: 14px;
 }
 
 window#waybar {
@@ -76,6 +76,7 @@ button:hover {
 #battery,
 #cpu,
 #custom-gpu-usage,
+#custom-x-wayland,
 #memory,
 #disk,
 #temperature,
@@ -228,8 +229,8 @@ label:focus {
 }
 
 #idle_inhibitor.activated {
-    background: transparent;
-    color: #ffffff;
+    background: #efefef;
+    color: #0a0a0a;
 }
 
 #mpd {
@@ -259,7 +260,7 @@ label:focus {
 
 #keyboard-state {
     background: transparent;
-    color: #ffffff;     
+    color: #efefef;     
     padding: 0 0px;
     margin: 0 5px;
     min-width: 16px;
@@ -270,7 +271,8 @@ label:focus {
 }
 
 #keyboard-state > label.locked {
-    background: rgba(0, 0, 0, 0.2);
+    background: #efefef;
+    color: #0a0a0a; 
 }
 
 #scratchpad {

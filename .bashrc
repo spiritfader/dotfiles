@@ -279,14 +279,15 @@ upd() { # update all system programs
     if command -v pkg &> /dev/null; then  tput setaf 2; tput setaf 2; printf '\n%s\n' "Alpine Repos (pkg update/pkg upgrade):"; tput sgr0; sudo pkg update; sudo pkg upgrade; fi
   fi
 
-  if command -v flatpak &> /dev/null; then  tput setaf 2; printf '\n\n%s\n' "Flatpak (flatpak --user update):"; tput sgr0; flatpak --user update; fi
+  if command -v flatpak &> /dev/null; then  tput setaf 2; printf '\n\n%s\n' "Flatpak (flatpak --user update):"; tput sgr0; flatpak --user update; flatpak uninstall --unused;fi
   if command -v snap &> /dev/null; then  tput setaf 2; printf '\n%s\n' "Snap (snap refresh):"; tput sgr0; sudo snap refresh; fi
 
   sync && printf '\n'
 }
 
-alias aurlist='sudo pacman -Qqe'
-alias paclist='sudo pacman -Qqm'
+alias aurlist='sudo pacman -Qqm'
+alias paclist='sudo pacman -Qqe'
+alias packagereinstall='sudo pacman -Qqe > packages.txt; sudo pacman -S $(comm -12 <(pacman -Slq | sort) <(sort packages.txt)); rm packages.txt'
 
 # dfir
 alias loginsh='cat /etc/passwd | grep sh$'
