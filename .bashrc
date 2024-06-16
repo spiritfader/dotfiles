@@ -346,22 +346,29 @@ alias dfs='dtf status'
 
 dftrack(){   # Loop through ".$HOME/.dotfiles.conf" of files, check to see if file within exists and track it in the bare repo
   untrack+=();
+
   wdir=$(pwd | sed "s|$HOME|\$HOME|");                                            # initialize array to hold dir/files to be "untracked" and removed from .dotfiles.conf
+  
   while IFS="" read -r p || [ -n "$p" ]; do                                       # loop through $HOME/.dotfiles.conf
-    if ! [[ -e "$(pwd)${p##\$HOME}" ]]; then 
+    if ! [[ $p ]]; then
       untrack+=("$p"); 
+      #printf '%s%n' "${untrack[@]}" #for testing purposes
     fi                                                                            # if dir/file does not exist within fs, add to "untracked" array
-    if [[ -e "$(pwd)${p##\$HOME}" ]]; then 
-      dtf add "$(pwd)${p##\$HOME}"; 
+    if [[ $p ]]; then 
+      dtf -C "$HOME" add "${p##\$HOME/}"
     fi                                                                            # if dir/file exists within fs, track it with "git add"
-  done < "$HOME/.dotfiles.conf"                                                   # remove dir & files from .dotfiles.conf that are in array and untrack from git with "git rm --cached"
+  done < "$HOME/.dotfiles.conf"                    
+  
+    # remove dir & files from .dotfiles.conf that are in array and untrack from git with "git rm --cached"
   for i in "${untrack[@]}"; do 
     sed -i "\:$i:d" "$HOME/.dotfiles.conf"
-    if [[ -e "$(pwd)${i##\$HOME}" ]]; then 
+    if [[ -e "$p" ]]; then 
       dtf rm -r --cached "$i"; 
     fi; 
   done 
+
   unset untrack                                                                   # unset "untracked" variable to keep consecutive runs clean
+  
   sort -o "$HOME/.dotfiles.conf" "$HOME/.dotfiles.conf"
 }
 
