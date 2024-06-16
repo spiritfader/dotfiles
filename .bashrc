@@ -284,9 +284,9 @@ upd() { # update all system programs
 
   sync && printf '\n'
 }
-
+alias reinstall-packages='sudo pacman -Qqn | sudo pacman -S -'
 alias aurlist='sudo pacman -Qqm'
-alias paclist='sudo pacman -Qqe'
+alias paclist='sudo pacman -Qqn'
 alias packagereinstall='sudo pacman -Qqe > packages.txt; sudo pacman -S $(comm -12 <(pacman -Slq | sort) <(sort packages.txt)); rm packages.txt'
 
 # dfir

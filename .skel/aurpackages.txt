@@ -1,0 +1,10 @@
+awesome-git
+code-features
+code-marketplace
+electron25-bin
+electron26-bin
+moonlight-qt
+paru
+plexamp-appimage
+prismlauncher-qt5-bin
+xidlehook
