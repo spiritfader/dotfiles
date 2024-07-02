@@ -72,8 +72,6 @@ export HISTCONTROL=ignorespace
 export MANPAGER="less -R --use-color -Dd+r -Du+b"
 export RANGER_LOAD_DEFAULT_RC=FALSE
 #export PAGER='less'
-export LIBVA_DRIVER_NAME=radeonsi
-export VDPAU_DRIVER=radeonsi
 
 shopt -s autocd # Enable auto cd when typing directories 
 shopt -s checkwinsize # check the terminal size when it regains control - check winsize when resize

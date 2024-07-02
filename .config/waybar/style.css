@@ -73,7 +73,6 @@ button:hover {
 }
 
 #clock,
-#battery,
 #cpu,
 #custom-gpu-usage,
 #custom-x-wayland,
@@ -92,6 +91,13 @@ button:hover {
 #mpd {
     padding: 0 10px;
     color: #ffffff;
+}
+
+
+#battery {
+    padding: 0 10px;
+    color: #ffffff;
+    margin-left: 0;
 }
 
 #window,
@@ -114,8 +120,9 @@ button:hover {
 }
 
 #battery {
-    background-color: #ffffff;
-    color: #000000;
+    color: #ffffff;
+    /*background-color: #26A65B;*/
+    background-color: transparent;
 }
 
 #battery.charging, #battery.plugged {
