@@ -7,7 +7,7 @@ Hibernate
 Reboot
 Power Off" | rofi -dmenu -p "Powermenu")
 
-if [[ $select = "Lock Screen" ]]; then hyprlock fi
+if [[ $select = "Lock Screen" ]]; then hyprlock; fi
 if [[ $select = "Exit Session" ]]; then killall xinit; fi
 if [[ $select = "Log Out" ]]; then killall xinit && exit; fi
 if [[ $select = "Suspend" ]]; then systemctl suspend; fi

@@ -41,5 +41,8 @@ if ! [ -e "$HOME/.cache/wm-logs" ]; then
     touch stderr stdout
 fi
 
+export LIBVA_DRIVER_NAME=radeonsi 
+export VDPAU_DRIVER=radeonsi
+
 exec $wm1 >> "$HOME"/.cache/wm-logs/stdout 2>> "$HOME"/.cache/wm-logs/stderr
 

@@ -5,6 +5,7 @@ cd ~ || exit
 export ELECTRON_OZONE_PLATFORM_HINT=wayland
 export _JAVA_AWT_WM_NONREPARENTING=1
 export XCURSOR_SIZE=24
+export QT_QPA_PLATFORM,wayland
 export QT_XCB_GL_INTEGRATION=xcb_egl
 export LIBVA_DRIVER_NAME=radeonsi 
 export VDPAU_DRIVER=radeonsi
