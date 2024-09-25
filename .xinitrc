@@ -34,7 +34,7 @@ fi
 
 xcalib -d :0 .color/icc_profile
 
-wm1=awesome
+#wm1=awesome
 
 if ! [ -e "$HOME/.cache/wm-logs" ]; then
     mkdir "$HOME/.cache/wm-logs"
@@ -44,5 +44,8 @@ fi
 export LIBVA_DRIVER_NAME=radeonsi 
 export VDPAU_DRIVER=radeonsi
 
-exec $wm1 >> "$HOME"/.cache/wm-logs/stdout 2>> "$HOME"/.cache/wm-logs/stderr
+
+#exec openbox
+exec awesome
+#exec $wm1 >> "$HOME"/.cache/wm-logs/stdout 2>> "$HOME"/.cache/wm-logs/stderr
 
