@@ -40,27 +40,33 @@ if [ -d "$HOME/bin" ] && [[ ":$PATH:" != *":$HOME/bin:"* ]]; then
 fi
 
 #### check for pspdev toolchain and add to path if exists
-##if [ -d "$HOME/pspdev" ] && [[ ":$PATH:" != *":$HOME/$PSPDEV/bin$:"* ]]; then
-##  export PSPDEV=~/pspdev
-##  PATH="$HOME/$PSPDEV/bin${PATH:+":$PATH"}"
-##fi
-##
+if [ -d "$HOME/pspdev" ] && [[ ":$PATH:" != *":$HOME/$PSPDEV/bin:"* ]]; then
+  export PSPDEV=~/pspdev
+  PATH="$HOME/$PSPDEV/bin${PATH:+":$PATH"}"
+fi
+
 #### Check for openjdk and add to env variable
-##if [ -f /etc/profile.d/jre.sh ] && [[ ":$PATH:" != *":/usr/lib/jvm/default/bin$:"* ]]; then
-##  PATH="/usr/lib/jvm/default/bin${PATH:+":$PATH"}"
-##fi
-##
+if [ -f /etc/profile.d/jre.sh ] && [[ ":$PATH:" != *":/usr/lib/jvm/default/bin:"* ]]; then
+  PATH="/usr/lib/jvm/default/bin${PATH:+":$PATH"}"
+fi
+
 #### check for ruby gems & add ruby gems to path
-##if [ -d "$(gem env user_gemhome)" ] && [[ ":$PATH:" != *":$GEM_HOME/bin$:"* ]]; then
-##  GEM_HOME="$(gem env user_gemhome)"
-##  export GEM_HOME
-##  PATH="$GEM_HOME/bin${PATH:+":$PATH"}"
-##fi
-##
+if command -v gem &> /dev/null && [ -d "$(gem env user_gemhome)" ] && [[ ":$PATH:" != *":$GEM_HOME/bin:"* ]]; then
+  GEM_HOME="$(gem env user_gemhome)"
+  export GEM_HOME
+  PATH="$GEM_HOME/bin${PATH:+":$PATH"}"
+fi
+
 #### Check for go bin and add to path
-##if [ -d "$(go env GOPATH)" ] && [[ ":$PATH:" != *":$(go env GOBIN):$(go env GOPATH)/bin$:"* ]]; then
-##  PATH="$(go env GOBIN):$(go env GOPATH)/bin${PATH:+":$PATH"}"
-##fi
+if [ -d "$(go env GOPATH)" ] && [[ ":$PATH:" != *":$(go env GOBIN):$(go env GOPATH)/bin:"* ]]; then
+  PATH="$(go env GOBIN):$(go env GOPATH)/bin${PATH:+":$PATH"}"
+fi
+
+#### Check for dotnet and add to path
+if command -v dotnet &> /dev/null && [ -d "$HOME/.dotnet/tools"  ] && [[ ":$PATH:" != *":$HOME/.dotnet/tools:"* ]]; then
+  PATH="$HOME/.dotnet/tools${PATH:+":$PATH"}"
+  export DOTNET_CLI_TELEMETRY_OPTOUT=1
+fi
 
 # Set Environment Variables
 export EDITOR=nvim

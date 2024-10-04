@@ -14,14 +14,14 @@ mykeyboardlayout = awful.widget.keyboardlayout()
 mytextclock = wibox.widget.textclock("%l:%M %p")
 
 
-local st_logout_menu_widget = require("awesome-wm-widgets.logout-menu-widget.logout-menu") ({
-    font = beautiful.font,
-    onlogout = function() awesome.quit() end,
-    onlock = function() awful.spawn.with_shell("ff-lock.sh") end,
-    onreboot = function() awful.spawn.with_shell("reboot") end,
-    onsuspend =	function() awful.spawn.with_shell("systemctl suspend") end,
-    onpoweroff =function() awful.spawn.with_shell("poweroff") end,
-})
+--local st_logout_menu_widget = require("awesome-wm-widgets.logout-menu-widget.logout-menu") ({
+--    font = beautiful.font,
+--    onlogout = function() awesome.quit() end,
+ --   onlock = function() awful.spawn.with_shell("ff-lock.sh") end,
+ --   onreboot = function() awful.spawn.with_shell("reboot") end,
+ --   onsuspend =	function() awful.spawn.with_shell("systemctl suspend") end,
+ --   onpoweroff =function() awful.spawn.with_shell("poweroff") end,
+--})
 
 -- -- Lain widgets
 -- lain_cal = lain.widget.cal({
@@ -127,15 +127,15 @@ screen.connect_signal("request::desktop_decoration", function(s)
                 layout = wibox.layout.fixed.horizontal,
                 mykeyboardlayout,
                 seperator,
-                st_logout_menu_widget,
-                seperator,
-                st_brightness_widget,
-                seperator,
+                --st_logout_menu_widget,
+                --seperator,
+                --st_brightness_widget,
+                --seperator,
                 st_battery_widget,
                 --seperator,
                 --st_fs_widget,
-                seperator,
-                lain_ram,
+                --seperator,
+                --lain_ram,
                 --seperator,
                 --lain_cpu_usage,
                 seperator,
