@@ -64,7 +64,7 @@ fi
 
 #### Check for dotnet and add to path
 if command -v dotnet &> /dev/null && [ -d "$HOME/.dotnet/tools"  ] && [[ ":$PATH:" != *":$HOME/.dotnet/tools:"* ]]; then
-  PATH="$HOME/.dotnet/tools${PATH:+":$PATH"}"
+  PATH="$HOME/.dotnet/tools${PATH:+"$PATH"}"
   export DOTNET_CLI_TELEMETRY_OPTOUT=1
 fi
 
