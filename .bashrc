@@ -147,9 +147,9 @@ gitPrompt () {
 # Set PS1 prompt display
 if ${use_color} ; then 
 	if [[ ${EUID} == 0 ]] ; then # set root PS1
-    PS1+='\T \[\033[01;34m\]\w\[\033[01;33m\]$(gitPrompt)\[\033[01;34m\] \$\[\033[00m\]$(if ! [ $(jobs | wc -l) -eq 0 ]; then jobs | wc -l;fi) ' # custom with inline git branch status
+    PS1+='\[\033[01;32m\]\T \[\033[01;36m\]\w\[\033[01;33m\]$(gitPrompt)\[\033[01;34m\] \$\[\033[00m\]$(if ! [ $(jobs | wc -l) -eq 0 ]; then jobs | wc -l;fi) ' # custom with inline git branch status
 	else # set user PS1
-    PS1+='\T \[\033[01;34m\]\w\[\033[01;33m\]$(gitPrompt)\[\033[01;34m\] \$\[\033[00m\]$(if ! [ $(jobs | wc -l) -eq 0 ]; then jobs | wc -l;fi) ' # custom with inline git branch status
+    PS1+='\[\033[01;32m\]\T \[\033[01;36m\]\w\[\033[01;33m\]$(gitPrompt)\[\033[01;34m\] \$\[\033[00m\]$(if ! [ $(jobs | wc -l) -eq 0 ]; then jobs | wc -l;fi) ' # custom with inline git branch status
   fi
 	#BSD#@export CLICOLOR=1
   alias ls='ls --color=auto'
@@ -248,6 +248,11 @@ alias localip='ifconfig | sed -rn "s/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}
 alias rng='watch -n 1 cat /proc/sys/kernel/random/entropy_avail'
 alias scheduler='grep "" /sys/block/*/queue/scheduler'
 alias upde='sudo pacman -Syu && paru -Syu'
+alias xls='xlsclients'
+
+# flatpak aliases
+if command -v flatpak run org.winehq.Wine &> /dev/null && ! command -v wine &> /dev/null; then alias wine='flatpak run org.winehq.Wine'; fi
+if command -v com.openwall.John &> /dev/null && ! command -v john &> /dev/null; then alias john='com.openwall.John'; fi
 
 # pkg manager tools
 upd() { # update all system programs
@@ -335,7 +340,6 @@ pgit(){ # usage pgit https://github.com/username/repo - converts regular github 
 git_update_all() {
 	# ls | xargs -I{} git -C {} pull
   # for i in */.git; do ( echo $i; cd $i/..; git pull; ); done
-
 	find . -maxdepth 1 -print0 | xargs -P10 -I{} git -C {} pull
 }
 
