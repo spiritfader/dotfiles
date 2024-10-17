@@ -38,7 +38,7 @@ icons[shutdown]="\Uf0425"
 icons[cancel]="\Uf0156"
 
 declare -A actions
-actions[lockscreen]="ff-lock.sh"
+actions[lockscreen]="hyprlock"
 #actions[switchuser]="???"
 actions[logout]="terminate-session ${XDG_SESSION_ID-}"
 actions[suspend]="suspend"
@@ -69,7 +69,7 @@ function check_valid {
 
 # Parse command-line options
 parsed=$(getopt --options=h --longoptions=help,dry-run,confirm:,choices:,choose:,symbols,no-symbols,text,no-text,symbols-font: --name "$0" -- "$@")
-if [ $? -ne 0 ]; then
+if ! $@ ; then
     echo 'Terminating...' >&2
     exit 1
 fi

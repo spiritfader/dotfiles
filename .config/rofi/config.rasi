@@ -1,5 +1,5 @@
 configuration {
-	modes: "drun,run,window,ssh,Powermenu:~/.local/bin/rofi-power-modi.sh,Powermenu2:~/.local/bin/rofipower.sh";
+	modes: "drun,run,window,ssh,filebrowser,Powermenu:~/.local/bin/rofi-power-modi.sh";
   	font: "Terminess Nerd Font 12";
 	location: 0;
 	yoffset: 0;
@@ -14,15 +14,16 @@ configuration {
 	run-shell-command: "{terminal} -e bash -ic {cmd}";
 	window-command: "wmctrl -i -R {window}";
 	window-match-fields: "all";
+	window-thumbail: true;
 	icon-theme: "hicolor";
 	drun-match-fields: "name,generic,exec,categories,keywords";
-/* drun-categories: ; */
+    /* drun-categories: true; */
 /* drun-show-actions: false; */	
   	drun-display-format: "{name} [<span weight='light' size='small'><i>({generic})</i></span>]";
 	drun-url-launcher: "xdg-open";
 	disable-history: false;
 	ignored-prefixes: "";
-	sort: false;
+	sort: true;
 	sorting-method: "normal";
 	case-sensitive: false;
 	cycle: true;
