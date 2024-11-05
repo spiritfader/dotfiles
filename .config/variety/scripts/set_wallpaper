@@ -242,7 +242,7 @@ if [[ -n $SWAYSOCK || $XDG_CURRENT_DESKTOP == "Hyprland" ]] ; then
         #fi
     #else
     #    swaymsg output "*" bg "$WP" fill 2> /dev/null
-    #fi
+    fi
 fi
 
 

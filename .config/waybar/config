@@ -108,9 +108,9 @@
         "tooltip-format-enumerate-connected": "{device_alias}\t{device_address}"
     },
     "clock": {
-        "interval": 60,
+        "interval": 1,
         "tooltip": true,
-        "format": "{:%I:%M %p   }",
+        "format": "{:%I:%M:%S %p   }",
         "tooltip-format": "{:%Y-%m-%d}"
     },
     //"cpu": {
@@ -191,23 +191,23 @@
     //    "return-type": "",
     //    "interval": 10
     //},
-    "custom/media": {
-        "format": "{icon} {}",
-        "return-type": "json",
-        "max-length": 40,
-        "format-icons": {
-            "spotify": "",
-            "youtube": "",
-            "default": ""
-        },
-        "escape": true,
-        "on-click": "playerctl play-pause",
-        "on-click-right": "playerctl stop",
+    //"custom/media": {
+    //    "format": "{icon} {}",
+    //    "return-type": "json",
+    //    "max-length": 40,
+    //    "format-icons": {
+    //        "spotify": "",
+    //        "youtube": "",
+    //        "default": ""
+    //    },
+    //    "escape": true,
+    //    "on-click": "playerctl play-pause",
+    //    "on-click-right": "playerctl stop",
         //"smooth-scrolling-threshold": 10, // This value was tested using a trackpad, it should be lowered if using a mouse.
         //"on-scroll-up": "playerctl next",
         //"on-scroll-down": "playerctl previous",
-        "exec": "$HOME/.config/waybar/mediaplayer.py 2> /dev/null" // Script in resources folder
+        //"exec": "$HOME/.config/waybar/mediaplayer.py 2> /dev/null" // Script in resources folder
         // "exec": "$HOME/.config/waybar/mediaplayer.py --player spotify 2> /dev/null" // Filter player based on name
-    }
+    //}
 }
 
