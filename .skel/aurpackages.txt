@@ -1,10 +1,10 @@
-awesome-git
+auto-cpufreq
 code-features
 code-marketplace
-electron25-bin
-electron26-bin
 moonlight-qt
 paru
-plexamp-appimage
-prismlauncher-qt5-bin
-xidlehook
+paru-git-debug
+python-pywal16
+ranger-git
+xone-dlundqvist-dkms-git
+xone-dongle-firmware
