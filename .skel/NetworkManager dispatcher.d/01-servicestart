@@ -4,10 +4,8 @@ interface=$1 status=$2
 if [ "$CONNECTION_ID" = "SSID NAME" ]; then
   case $status in
     up)
-      systemctl start avahi-daemon.service
       ;;
     down)
-      systemctl stop avahi-daemon.service
       ;;
   esac
 fi

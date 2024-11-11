@@ -56,7 +56,7 @@ if command -v gem &> /dev/null && [ -d "$(gem env user_gemhome)" ] && [[ ":$PATH
 fi
 
 #### Check for go bin and add to path
-if [ -d "$(go env GOPATH)" ] && [[ ":$PATH:" != *":$(go env GOBIN):$(go env GOPATH)/bin:"* ]]; then
+if command -v go &> /dev/null && [ -d "$(go env GOPATH)" ] && [[ ":$PATH:" != *":$(go env GOBIN):$(go env GOPATH)/bin:"* ]]; then
   PATH="$(go env GOBIN):$(go env GOPATH)/bin${PATH:+":$PATH"}"
 fi
 
@@ -64,6 +64,11 @@ fi
 if command -v dotnet &> /dev/null && [ -d "$HOME/.dotnet/tools"  ] && [[ ":$PATH:" != *":$HOME/.dotnet/tools:"* ]]; then
   PATH="$HOME/.dotnet/tools${PATH:+"$PATH"}"
   export DOTNET_CLI_TELEMETRY_OPTOUT=1
+fi
+
+#### Check for ccache and add to path
+if command -v ccache &> /dev/null; then
+  export PATH="/usr/lib/ccache/bin:$PATH"
 fi
 
 # Set Environment Variables
