@@ -5,7 +5,7 @@
 }
 
 window#waybar {
-    background-color: rgba(43, 48, 59, 0.65);
+    background-color: rgba(43, 48, 59, 0.5);
     border-bottom: 0px solid rgba(100, 114, 125, 0.5);
     color: #ffffff;
     transition-property: background-color;
@@ -48,6 +48,11 @@ button:hover {
     box-shadow: inset 0 -3px #ffffff;
 }
 
+/* you can set a style on hover for any module like this */
+#pulseaudio:hover {
+    background-color: transparent;
+}
+
 #workspaces button {
     padding: 0 5px;
     background-color: transparent;
@@ -56,6 +61,11 @@ button:hover {
 
 #workspaces button:hover {
     background: rgba(0, 0, 0, 0.2);
+}
+
+#workspaces button.focused {
+    background-color: #64727D;
+    box-shadow: inset 0 -3px #ffffff;
 }
 
 #workspaces button.active {
@@ -69,13 +79,12 @@ button:hover {
 
 #mode {
     background-color: #64727D;
-    border-bottom: 3px solid #ffffff;
+    box-shadow: inset 0 -3px #ffffff;
 }
 
 #clock,
+#battery,
 #cpu,
-#custom-gpu-usage,
-#custom-x-wayland,
 #memory,
 #disk,
 #temperature,
@@ -88,16 +97,10 @@ button:hover {
 #mode,
 #idle_inhibitor,
 #scratchpad,
+#power-profiles-daemon,
 #mpd {
     padding: 0 10px;
     color: #ffffff;
-}
-
-
-#battery {
-    padding: 0 10px;
-    color: #ffffff;
-    margin-left: 0;
 }
 
 #window,
@@ -138,14 +141,34 @@ button:hover {
     }
 }
 
+/* Using steps() instead of linear as a timing function to limit cpu usage */
 #battery.critical:not(.charging) {
     background-color: #f53c3c;
     color: #ffffff;
     animation-name: blink;
     animation-duration: 0.5s;
-    animation-timing-function: linear;
+    animation-timing-function: steps(12);
     animation-iteration-count: infinite;
     animation-direction: alternate;
+}
+
+#power-profiles-daemon {
+    padding-right: 15px;
+}
+
+#power-profiles-daemon.performance {
+    background-color: #f53c3c;
+    color: #ffffff;
+}
+
+#power-profiles-daemon.balanced {
+    background-color: #2980b9;
+    color: #ffffff;
+}
+
+#power-profiles-daemon.power-saver {
+    background-color: #2ecc71;
+    color: #000000;
 }
 
 label:focus {
@@ -288,4 +311,24 @@ label:focus {
 
 #scratchpad.empty {
 	background-color: transparent;
+}
+#privacy {
+    padding: 0;
+}
+
+#privacy-item {
+    padding: 0 5px;
+    color: white;
+}
+
+#privacy-item.screenshare {
+    background-color: #cf5700;
+}
+
+#privacy-item.audio-in {
+    background-color: #1ca000;
+}
+
+#privacy-item.audio-out {
+    background-color: #0069d4;
 }
