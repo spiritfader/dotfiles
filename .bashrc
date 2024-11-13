@@ -6,6 +6,7 @@
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
+# source git-prompt for ps1 
 source /usr/share/git/git-prompt.sh
 
 # Default umask. A umask of 022 prevents new files from being created group and world writable.
@@ -17,15 +18,16 @@ umask 022
 CDPATH=:$HOME
 
 # Enable the builtin emacs(1) command line editor in sh(1), e.g. C-a -> beginning-of-line.
-set -o emacs
-
 # Enable the builtin vi(1) command line editor in sh(1), e.g. ESC to go into visual mode.
+set -o emacs
 # set -o vi
 
 # Set ksh93 visual editing mode:
 if [ "$SHELL" = "/bin/ksh" ]; then
   VISUAL=emacs
 fi
+
+# Set envrionment path________________________________________________________________________________
 
 # Check for user bin $HOME/.local/bin and add to path if it exists and isnt in path
 if [ -d "$HOME/.local/bin" ] && [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
@@ -62,16 +64,16 @@ fi
 
 #### Check for dotnet and add to path
 if command -v dotnet &> /dev/null && [ -d "$HOME/.dotnet/tools"  ] && [[ ":$PATH:" != *":$HOME/.dotnet/tools:"* ]]; then
-  PATH="$HOME/.dotnet/tools${PATH:+"$PATH"}"
+  PATH="$HOME/.dotnet/tools:$PATH"
   export DOTNET_CLI_TELEMETRY_OPTOUT=1
 fi
 
 #### Check for ccache and add to path
-if command -v ccache &> /dev/null; then
+if command -v ccache &> /dev/null && [ -d "/usr/lib/ccache/bin" ] && [[ ":$PATH:" != *":/usr/lib/ccache/bin:$PATH:"* ]]; then
   export PATH="/usr/lib/ccache/bin:$PATH"
 fi
 
-# Set Environment Variables
+# Set environment variables ____________________________________________________________________________
 export EDITOR=nvim
 export VISUAL=code-oss
 export LD_PRELOAD=""
@@ -253,64 +255,6 @@ alias scheduler='grep "" /sys/block/*/queue/scheduler'
 alias upde='sudo pacman -Syu && paru -Syu'
 alias xls='xlsclients'
 alias err='journalctl -b -p err'
-
-# flatpak aliases
-if command -v flatpak run org.winehq.Wine &> /dev/null && ! command -v wine &> /dev/null; then alias wine='flatpak run org.winehq.Wine'; fi
-if command -v com.openwall.John &> /dev/null && ! command -v john &> /dev/null; then alias john='com.openwall.John'; fi
-if command -v io.gitlab.librewolf-community &> /dev/null && ! command -v librewolf &> /dev/null; then alias librewolf='io.gitlab.librewolf-community'; fi
-
-# pkg manager tools
-upd() { # update all system programs
-  if command -v pacman &> /dev/null; then # if ARCH LINUX, WIN HUGE
-    
-    if command -v pacman &> /dev/null; then  tput setaf 2; tput setaf 2; printf '%s\n' "Arch Official Repos (pacman -Syu):"; tput sgr0; sudo pacman -Syu; fi
-    
-    if command -v paru &> /dev/null; then  tput setaf 2; printf '\n%s\n' "Arch User Repository (paru -Syu):"; tput sgr0; paru -Syu; fi
-    
-    if command -v yay &> /dev/null; then  tput setaf 2; printf '\n%s\n' "Arch User Repository (paru -Syu):"; tput sgr0; yay -Syua; fi
-    
-    # add other aur helper eventually for weirdos
-        
-    if command -v updatedb &> /dev/null; then tput setaf 2; printf '\n%s\n' "Update locate/plocate database..."; tput sgr0; sudo updatedb; fi # update the locate/plocate database
-    
-    if command -v pkgfile &> /dev/null; then tput setaf 2; printf '\n%s\n' "Update pkgfile database (pkgfile -u):"; tput sgr0; sudo pkgfile -u; fi # update the pkgfile database
-        
-    if command -v pacman &> /dev/null; then  tput setaf 2; printf '\n%s\n' "Update pacman file database (pacman -Fy):"; tput sgr0; sudo pacman -Fy; fi # update the pacman file database
-    
-    if command -v pacman-db-upgrade &> /dev/null; then tput setaf 2; printf '\n%s\n' "Upgrade pacman database"; tput sgr0; sudo pacman-db-upgrade; fi # upgrade the local pacman db to a newer format
-    
-    if command -v pacman &> /dev/null; then tput setaf 2; printf '\n%s\n' "Clear pacman cache:"; tput sgr0; # Remove all files and unused repositories from pacman cache without prompt
-      
-      yes | sudo pacman -Scc; 
-      
-      if command -v paru &> /dev/null; then yes | paru -Scc; fi; 
-      
-      if command -v yay &> /dev/null; then yes | yay -Scc; fi; 
-    fi 
-  fi
-  
-  if command -v zypper; then # if OpenSUSE (weird)
-    if command -v zypper &> /dev/null; then  tput setaf 2; tput setaf 2; printf '\n%s\n' "OpenSUSE Repos (zypper refresh/zypper dup):"; tput sgr0; sudo zypper refresh; sudo zypper dup; fi
-  fi  
-
-  if command -v apt; then # if Debian
-    if command -v apt &> /dev/null; then  tput setaf 2; tput setaf 2; printf '\n%s\n' "Debian Repos (apt update/apt upgrade):"; tput sgr0; sudo apt update; sudo apt upgrade; fi
-  fi
-
-  if command -v yum; then # if Fedora/RHEL
-    if command -v yum &> /dev/null; then  tput setaf 2; tput setaf 2; printf '\n%s\n' "RHEL/Fedora Repos (yum update/yum upgrade):"; tput sgr0; sudo yum update; sudo yum upgrade; fi
-  fi
-
-  if command -v pkg; then # Alpine Linux
-    if command -v pkg &> /dev/null; then  tput setaf 2; tput setaf 2; printf '\n%s\n' "Alpine Repos (pkg update/pkg upgrade):"; tput sgr0; sudo pkg update; sudo pkg upgrade; fi
-  fi
-
-  if command -v flatpak &> /dev/null; then  tput setaf 2; printf '\n\n%s\n' "Flatpak (flatpak --user update):"; tput sgr0; flatpak --user update; flatpak uninstall --unused;fi
-  
-  if command -v snap &> /dev/null; then  tput setaf 2; printf '\n%s\n' "Snap (snap refresh):"; tput sgr0; sudo snap refresh; fi
-
-  sync && printf '\n'
-}
 alias reinstall-packages='sudo pacman -Qqn | sudo pacman -S -'
 #alias aurlist='sudo pacman -Qqm'
 #alias paclist='sudo pacman -Qqn'
@@ -321,19 +265,6 @@ alias loginsh='cat /etc/passwd | grep sh$'
 alias allcron='for i in $(cat /etc/passwd | grep sh$ | cut -f1 -d: ); do echo $i; sudo crontab -u $i -l; done'
 alias loginshcron='for i in $(cat /etc/passwd | grep sh$ | cut -f1 -d: ); do echo $i; sudo crontab -u $i -l; done'
 
-clonedisk2disk() { # clone a hard disk to another, usage: 'clonedisk2disk /dev/sda /dev/sda' clonedisk2disk [source] [destination]
-  dd if="$1" of="$2" bs=64K conv=noerror,sync status=progress
-}
-
-imagedisk2file() { # image a hard disk to a compressed file, usage: 'imagedisk2file /dev/sda file_to_write_to.img' clonedisk2file [source-disk] [destination-file]
-  dd if="$1" conv=sync,noerror bs=64K | gzip -c  > "$2".img.gz
-  fdisk -l "$1" > "$2".info
-}
-
-# proxmox tools
-hugepage() {
-  grep -e AnonHugePages  /proc/*/smaps | awk  '{ if($2>4) print $0} ' |  awk -F "/"  '{printf $0; system("ps -fp " $3)} '
-}
 
 alias iommugroup='find /sys/kernel/iommu_groups/ -type l | sort -V'
 alias iommusupport='sudo dmesg | grep -e DMAR -e IOMMU -e AMD-Vi'
@@ -351,16 +282,15 @@ alias gpull='git pull'
 alias gfetch='git fetch'
 alias branch='git branch -a'
 
-pgit(){ # usage pgit https://github.com/username/repo - converts regular github repo link to private link that can be cloned
-  git clone "${1/#https:\/\/github.com/git@github.com:}"
-}
-
-git_update_all() {
-	# ls | xargs -I{} git -C {} pull OR for i in */.git; do ( echo $i; cd $i/..; git pull; ); done
-	find . -maxdepth 1 -print0 | xargs -P10 -I{} git -C {} pull
-}
+# flatpak aliases
+if command -v flatpak run org.winehq.Wine &> /dev/null && ! command -v wine &> /dev/null; then alias wine='flatpak run org.winehq.Wine'; fi
+if command -v com.openwall.John &> /dev/null && ! command -v john &> /dev/null; then alias john='com.openwall.John'; fi
+if command -v io.gitlab.librewolf-community &> /dev/null && ! command -v librewolf &> /dev/null; then alias librewolf='io.gitlab.librewolf-community'; fi
 
 alias sysdblame='systemd-analyze plot > $HOME/Pictures/boot.svg'
+
+# Add an "alert" alias for long running commands.  Use like so: sleep 10; alert
+alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
 # Dotfile Management
 alias dtf='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
@@ -415,8 +345,80 @@ dfadd(){ # Add file(s) to tracked dotfiles"
   sort -o "$HOME/.dotfiles.conf" "$HOME/.dotfiles.conf"      
 }
 
-# Add an "alert" alias for long running commands.  Use like so: sleep 10; alert
-alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+# pkg manager tools
+upd() { # update all system programs
+  if command -v pacman &> /dev/null; then # if ARCH LINUX, WIN HUGE
+    
+    if command -v pacman &> /dev/null; then  tput setaf 2; tput setaf 2; printf '%s\n' "Arch Official Repos (pacman -Syu):"; tput sgr0; sudo pacman -Syu; fi
+    
+    if command -v paru &> /dev/null; then  tput setaf 2; printf '\n%s\n' "Arch User Repository (paru -Syu):"; tput sgr0; paru -Syu; fi
+    
+    if command -v yay &> /dev/null; then  tput setaf 2; printf '\n%s\n' "Arch User Repository (paru -Syu):"; tput sgr0; yay -Syua; fi
+           
+    if command -v updatedb &> /dev/null; then tput setaf 2; printf '\n%s\n' "Update locate/plocate database..."; tput sgr0; sudo updatedb; fi # update the locate/plocate database
+    
+    if command -v pkgfile &> /dev/null; then tput setaf 2; printf '\n%s\n' "Update pkgfile database (pkgfile -u):"; tput sgr0; sudo pkgfile -u; fi # update the pkgfile database
+        
+    if command -v pacman &> /dev/null; then  tput setaf 2; printf '\n%s\n' "Update pacman file database (pacman -Fy):"; tput sgr0; sudo pacman -Fy; fi # update the pacman file database
+    
+    if command -v pacman-db-upgrade &> /dev/null; then tput setaf 2; printf '\n%s\n' "Upgrade pacman database"; tput sgr0; sudo pacman-db-upgrade; fi # upgrade the local pacman db to a newer format
+    
+    if command -v pacman &> /dev/null; then tput setaf 2; printf '\n%s\n' "Clear pacman cache:"; tput sgr0; # Remove all files and unused repositories from pacman cache without prompt
+      
+      yes | sudo pacman -Scc; 
+      
+      if command -v paru &> /dev/null; then yes | paru -Scc; fi; 
+      
+      if command -v yay &> /dev/null; then yes | yay -Scc; fi; 
+    fi 
+  fi
+  
+  if command -v zypper; then # if OpenSUSE (weird)
+    if command -v zypper &> /dev/null; then  tput setaf 2; tput setaf 2; printf '\n%s\n' "OpenSUSE Repos (zypper refresh/zypper dup):"; tput sgr0; sudo zypper refresh; sudo zypper dup; fi
+  fi  
+
+  if command -v apt; then # if Debian
+    if command -v apt &> /dev/null; then  tput setaf 2; tput setaf 2; printf '\n%s\n' "Debian Repos (apt update/apt upgrade):"; tput sgr0; sudo apt update; sudo apt upgrade; fi
+  fi
+
+  if command -v yum; then # if Fedora/RHEL
+    if command -v yum &> /dev/null; then  tput setaf 2; tput setaf 2; printf '\n%s\n' "RHEL/Fedora Repos (yum update/yum upgrade):"; tput sgr0; sudo yum update; sudo yum upgrade; fi
+  fi
+
+  if command -v pkg; then # Alpine Linux
+    if command -v pkg &> /dev/null; then  tput setaf 2; tput setaf 2; printf '\n%s\n' "Alpine Repos (pkg update/pkg upgrade):"; tput sgr0; sudo pkg update; sudo pkg upgrade; fi
+  fi
+
+  if command -v flatpak &> /dev/null; then  tput setaf 2; printf '\n\n%s\n' "Flatpak (flatpak --user update):"; tput sgr0; flatpak --user update; flatpak uninstall --unused;fi
+  
+  if command -v snap &> /dev/null; then  tput setaf 2; printf '\n%s\n' "Snap (snap refresh):"; tput sgr0; sudo snap refresh; fi
+
+  sync && printf '\n'
+}
+
+clonedisk2disk() { # clone a hard disk to another, usage: 'clonedisk2disk /dev/sda /dev/sda' clonedisk2disk [source] [destination]
+  dd if="$1" of="$2" bs=64K conv=noerror,sync status=progress
+}
+
+imagedisk2file() { # image a hard disk to a compressed file, usage: 'imagedisk2file /dev/sda file_to_write_to.img' clonedisk2file [source-disk] [destination-file]
+  dd if="$1" conv=sync,noerror bs=64K | gzip -c  > "$2".img.gz
+  fdisk -l "$1" > "$2".info
+}
+
+# proxmox tools
+hugepage() {
+  grep -e AnonHugePages  /proc/*/smaps | awk  '{ if($2>4) print $0} ' |  awk -F "/"  '{printf $0; system("ps -fp " $3)} '
+}
+
+pgit(){ # usage pgit https://github.com/username/repo - converts regular github repo link to private link that can be cloned
+  git clone "${1/#https:\/\/github.com/git@github.com:}"
+}
+
+git_update_all() {
+	# ls | xargs -I{} git -C {} pull OR for i in */.git; do ( echo $i; cd $i/..; git pull; ); done
+	find . -maxdepth 1 -print0 | xargs -P10 -I{} git -C {} pull
+}
+
 
 flacverify() { # verify flac files for corruption - flacverify [dir]
   find -L "$1" -type f -name '.flac' -print0 | while IFS= read -r -d '' file
