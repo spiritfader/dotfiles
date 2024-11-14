@@ -69,7 +69,7 @@ if [[ "$DESKTOP" == *"Enlightenment"* ]] || [[ "$DESKTOP" == *"Moksha"* ]]; then
 
     DIMENSION="$(identify -format "%w/%h" "$WP")"
 
-    if [ ! -z "$DIMENSION" ]; then
+    if [ -n "$DIMENSION" ]; then
         WIDTH="$(echo "$DIMENSION" | cut -d/ -f1)"
         HEIGHT="$(echo "$DIMENSION" | cut -d/ -f2)"
         IMAGE="$(echo "$WP" | sed 's/[^[:alnum:]_-]/\\&/g')"
@@ -229,22 +229,25 @@ if [[ " ${SIMPLE_WMS[*]} " = *" $XDG_CURRENT_DESKTOP "* || " ${SIMPLE_WMS[*]} " 
     fi
 fi
 
-if [[ -n $SWAYSOCK || $XDG_CURRENT_DESKTOP == "Hyprland" ]] ; then
-    # If swaybg is available, use it as prevents system freeze. See https://github.com/swaywm/sway/issues/5606
-    if command -v "swaybg" >/dev/null 2>&1; then
-        # Grey background flicker is prevented by killing old swaybg process after new one.
-        # See https://github.com/swaywm/swaybg/issues/17#issuecomment-851680720
-        PID=$(pidof swaybg)
-        swaybg -i "$WP" -m fill &
-        #if [ -n "$PID" ]; then
-        #    sleep 1
-        #    kill "$PID" 2>/dev/null
-        #fi
-    #else
-    #    swaymsg output "*" bg "$WP" fill 2> /dev/null
+# If swaybg is available, use it as prevents system freeze.
+# See https://github.com/swaywm/sway/issues/5606
+if command -v "swaybg" >/dev/null 2>&1 && [ "$XDG_CURRENT_DESKTOP" == "Sway" ]; then
+    # Grey background flicker is prevented by killing old swaybg process after new one.
+    # See https://github.com/swaywm/swaybg/issues/17#issuecomment-851680720
+    PID="$(pidof swaybg)"
+    swaybg -i "$WP" -m fill &
+    if [ -n "$PID" ]; then
+        sleep 1
+        kill "$PID" 2>/dev/null
     fi
+else
+    swaymsg output "*" bg "$WP" fill 2> /dev/null
 fi
 
+if command -v "hyprpaper" >/dev/null 2>&1 && [ "$XDG_CURRENT_DESKTOP" == "Hyprland" ]; then
+    hyprctl hyprpaper preload "$WP"
+    hyprctl hyprpaper wallpaper "eDP-1, $WP"
+fi
 
 # trinity
 if [ "$XDG_CURRENT_DESKTOP" == "Trinity" ]; then
