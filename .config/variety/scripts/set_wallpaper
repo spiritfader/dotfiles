@@ -247,6 +247,8 @@ fi
 if command -v "hyprpaper" >/dev/null 2>&1 && [ "$XDG_CURRENT_DESKTOP" == "Hyprland" ]; then
     hyprctl hyprpaper preload "$WP"
     hyprctl hyprpaper wallpaper "eDP-1, $WP"
+    #uncomment if you use pywall
+    wal -i "$(cat "$HOME"/.config/variety/wallpaper/wallpaper.jpg.txt)"& 
 fi
 
 # trinity
