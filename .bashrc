@@ -200,6 +200,7 @@ fi
 unset use_color sh
 
 # Set Aliases
+alias ssh='TERM=xterm-256color ssh'
 alias ll='ls -lh'
 alias la='ls -lha'
 alias l='ls -CF'
@@ -265,7 +266,7 @@ alias loginsh='cat /etc/passwd | grep sh$'
 alias allcron='for i in $(cat /etc/passwd | grep sh$ | cut -f1 -d: ); do echo $i; sudo crontab -u $i -l; done'
 alias loginshcron='for i in $(cat /etc/passwd | grep sh$ | cut -f1 -d: ); do echo $i; sudo crontab -u $i -l; done'
 
-
+# proxmox 
 alias iommugroup='find /sys/kernel/iommu_groups/ -type l | sort -V'
 alias iommusupport='sudo dmesg | grep -e DMAR -e IOMMU -e AMD-Vi'
 alias pcidsupport="grep ' pcid ' /proc/cpuinfo"
