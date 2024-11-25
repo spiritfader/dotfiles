@@ -74,8 +74,8 @@ if command -v ccache &> /dev/null && [ -d "/usr/lib/ccache/bin" ] && [[ ":$PATH:
 fi
 
 # Set environment variables ____________________________________________________________________________
-export EDITOR=nvim
-export VISUAL=code-oss
+export EDITOR="emacs -nw -Q"
+export VISUAL="emacs"
 export LD_PRELOAD=""
 export HISTSIZE=8192
 export HISTCONTROL=ignorespace
@@ -89,7 +89,7 @@ shopt -s checkwinsize # check the terminal size when it regains control - check 
 shopt -s histappend # append to the history file, don't overwrite it
 shopt -s globstar # the pattern "**" used in a pathname expansion context will match all files and zero or more directories and subdirectories.
 shopt -s promptvars # prompt strings undergo parameter expansion, command substitution, arithmetic expansion, and quote removal after being expanded.
-#shopt -s no_empty_cmd_completion # Disable completion when the input buffer is empty
+shopt -s no_empty_cmd_completion # Disable completion when the input buffer is empty
 
 bind "set completion-ignore-case on" #ignore upper and lowercase when TAB completion
 
@@ -201,6 +201,8 @@ unset use_color sh
 
 # Set Aliases
 alias ssh='TERM=xterm-256color ssh'
+alias em='emacs -nw'
+alias sudo='sudo '
 alias ll='ls -lh'
 alias la='ls -lha'
 alias l='ls -CF'
@@ -517,6 +519,12 @@ swapname() { # Swap 2 filenames around, if they exist (from Uzi's bashrc). - Usa
     mv "$1" $TMPFILE
     mv "$2" "$1"
     mv $TMPFILE "$2"
+}
+
+# disables ctrl+z for the wrapped command ($1) 
+nopause(){
+  trap "" 20
+  "$1"
 }
 
 # compare the md5 of a file to a known sum
