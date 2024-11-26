@@ -74,8 +74,9 @@ if command -v ccache &> /dev/null && [ -d "/usr/lib/ccache/bin" ] && [[ ":$PATH:
 fi
 
 # Set environment variables ____________________________________________________________________________
-export EDITOR="emacs -nw -Q"
-export VISUAL="emacs"
+#export EDITOR="emacs -nw -Q"
+export EDITOR="emacsclient -t"
+export VISUAL="emacsclient -c -a emacs"
 export LD_PRELOAD=""
 export HISTSIZE=8192
 export HISTCONTROL=ignorespace
@@ -201,7 +202,8 @@ unset use_color sh
 
 # Set Aliases
 alias ssh='TERM=xterm-256color ssh'
-alias em='emacs -nw'
+#alias em='emacs -nw'
+alias em='emacsclient -t'
 alias sudo='sudo '
 alias ll='ls -lh'
 alias la='ls -lha'
