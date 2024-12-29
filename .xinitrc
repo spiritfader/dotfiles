@@ -36,7 +36,3 @@ xcalib -d :0 .color/icc_profile
 
 export LIBVA_DRIVER_NAME=radeonsi 
 export VDPAU_DRIVER=radeonsi
-
-#exec openbox
-exec awesome
-

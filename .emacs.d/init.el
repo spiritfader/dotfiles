@@ -1,23 +1,48 @@
-;; Initialize melpa repo
+;; initialize melpa repo
 (require 'package)
 (setq package-enable-at-startup nil)
 (add-to-list 'package-archives
         '("melpa" . "https://melpa.org/packages/"))
 (package-initialize)
 
-;; Initialize use-package
+;; initialize use-package
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
 
+(use-package auto-package-update
+  :defer nil
+  :ensure t
+  :config
+  (setq auto-package-update-delete-old-versions t)
+  (setq auto-package-update-hide-results t)
+  (auto-package-update-maybe))
+
+;; initialize theme
+(use-package spacemacs-theme
+  :ensure t
+  :config
+  (load-theme 'spacemacs-dark t))
+
+;(use-package vscode-dark-plus-theme
+;  :ensure t
+;  :config
+;  (load-theme 'vscode-dark-plus t))
+
+;; set font
+(set-face-attribute 'default nil :family "DroidSansM Nerd Font Mono Regular" :height 130)
+
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 (add-hook 'text-mode-hook 'display-line-numbers-mode)
 
+;; set background transparency
 (set-frame-parameter nil 'alpha-background 90)
 (add-to-list 'default-frame-alist '(alpha-background . 90))
 
-(menu-bar-mode -1) 
+;; disable menu and toolbar
+(menu-bar-mode -1)
 (tool-bar-mode -1)
+(scroll-bar-mode -1)
 
 ;; add duplicate line feature
 (defun duplicate-line ()
@@ -27,8 +52,31 @@
     (insert (thing-at-point 'line t))))
 (global-set-key (kbd "C-M-d") 'duplicate-line)
 
+;; move current line down or up (vscode functionality)
+(defun move-line-down ()
+  (interactive)
+  (let ((col (current-column)))
+	(save-excursion
+      (forward-line)
+      (transpose-lines 1))
+    (move-to-column col)))
+	(forward-line)
+
+(defun move-line-up ()
+  (interactive)
+  (let ((col (current-column)))
+	(save-excursion
+      (forward-line)
+      (transpose-lines -1))
+    (forward-line -1)
+    (move-to-column col)))
+
+(global-set-key (kbd "C-S-k") 'move-line-up)
+(global-set-key (kbd "C-S-j") 'move-line-down)
+
 (show-paren-mode 1)
 
+;; enable traditional copy/paste functionality
 (cua-mode t)
 (setq cua-auto-tabify-rectangles nil) ;; Don't tabify after rectangle commands
 (transient-mark-mode 1) ;; No region when it is not highlighted
@@ -36,6 +84,7 @@
 
 (setq inhibit-startup-message t)
 
+;; disable auto backup and auto-save
 (setq make-backup-files nil)
 (setq auto-save-default nil)
 
@@ -52,19 +101,19 @@
 
 (global-prettify-symbols-mode t)
 
-(defun split-and-follow-horizontally ()
-  (interactive)
-  (split-window-below)
-  (balance-windows)
-  (other-window 1))
-(global-set-key (kbd "C-x 2") 'split-and-follow-horizontally)
+;(defun split-and-follow-horizontally ()
+;  (interactive)
+;  (split-window-below)
+;  (balance-windows)
+;  (other-window 1))
+;(global-set-key (kbd "C-x 2") 'split-and-follow-horizontally)
 
-(defun split-and-follow-vertically ()
-  (interactive)
-  (split-window-right)
-  (balance-windows)
-  (other-window 1))
-(global-set-key (kbd "C-x 3") 'split-and-follow-vertically)
+;(defun split-and-follow-vertically ()
+;  (interactive)
+;  (split-window-right)
+;  (balance-windows)
+;  (other-window 1))
+;(global-set-key (kbd "C-x 3") 'split-and-follow-vertically)
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 
@@ -75,13 +124,18 @@
 
 (global-hl-line-mode t)
 
+
+;; use-package section
+
+
 (setq use-package-always-defer t)
 
 (use-package org
+  :ensure t
   :config
   (add-hook 'org-mode-hook 'org-indent-mode)
   (add-hook 'org-mode-hook
-            '(lambda ()
+            #'(lambda ()
                (visual-line-mode 1))))
 
 (use-package org-indent
@@ -98,6 +152,14 @@
   (setq auto-package-update-hide-results t)
   (auto-package-update-maybe))
 
+(use-package vterm
+  :ensure t)
+
+(use-package savehist
+  :ensure t
+  :init
+  (savehist-mode))
+
 (use-package diminish
   :ensure t)
 
@@ -107,7 +169,7 @@
 (use-package powerline
   :ensure t
   :init
-  (spaceline-spacemacs-theme)
+  (spaceline-emacs-theme)
   :hook
   ('after-init-hook) . 'powerline-reset)
 
@@ -149,147 +211,121 @@
   :ensure t)
 
 (use-package eldoc
+  :ensure t
   :diminish eldoc-mode)
 
 (use-package abbrev
   :diminish abbrev-mode)
+
+(use-package multiple-cursors
+  :ensure t
+  :bind(("M-S M-S" . mc/edit-lines)
+        ("C-»" . mc/mark-next-like-this)
+        ("C-«" . mc/mark-previous-like-this)
+        ("C-c C-«" . mc/mark-all-like-this)
+        ("C-c n" . mc/insert-numbers))
+)
+
+(use-package vertico
+  :ensure t
+  :custom
+    (vertico-scroll-margin 0) ;; Different scroll margin
+    (vertico-count 20) ;; Show more candidates
+    (vertico-resize t) ;; Grow and shrink the Vertico minibuffer
+    (vertico-cycle t) ;; Enable cycling for `vertico-next/previous'
+  :init
+  #'(vertico-mode))
+
+(use-package flycheck
+  :ensure t
+  :config
+  (add-hook 'after-init-hook #'global-flycheck-mode))
+;      :bind (:map 'flycheck-mode-map
+;                  ("M-n" . flycheck-next-error) ; optional but recommended error navigation
+;                  ("M-p" . flycheck-previous-error)))
+
+(use-package corfu
+  :ensure t
+  :custom
+  (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
+  (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
+  (corfu-quit-no-match nil)      ;; Never quit, even if there is no match
+  (corfu-preview-current nil)    ;; Disable current candidate preview
+  (corfu-preselect 'prompt)      ;; Preselect the prompt
+  (corfu-on-exact-match nil)     ;; Configure handling of exact matches
+  :init
+  #'(global-corfu-mode))
+
+(use-package emacs
+  :custom
+  (tab-always-indent 'complete)
+  ;; Emacs 30 and newer: Disable Ispell completion function.
+  ;; Try `cape-dict' as an alternative.
+  (text-mode-ispell-word-completion nil)
+
+  ;; Hide commands in M-x which do not apply to the current mode.  Corfu
+  ;; commands are hidden, since they are not used via M-x. This setting is
+  ;; useful beyond Corfu.
+  (read-extended-command-predicate #'command-completion-default-include-p))
+
+(use-package cape
+  :ensure t
+  :bind ("C-c p" . cape-prefix-map) ;; Alternative keys: M-p, M-+, ...
+  ;; :bind (("C-c p d" . cape-dabbrev)
+  ;;        ("C-c p h" . cape-history)
+  ;;        ("C-c p f" . cape-file)
+  ;;        ...)
+  :init
+  (add-hook 'completion-at-point-functions #'cape-dabbrev)
+  (add-hook 'completion-at-point-functions #'cape-file)
+  (add-hook 'completion-at-point-functions #'cape-elisp-block)
+  ;; (add-hook 'completion-at-point-functions #'cape-history)
+)
+
+(use-package dashboard
+  :ensure t
+  :defer nil
+  :config
+  (dashboard-setup-startup-hook)
+  (setq dashboard-banner-logo-title "Welcome to Emacs")
+  (setq dashboard-startup-banner 'official )
+  (setq dashboard-center-content t)
+  (setq dashboard-vertically-center-content t)
+  ;(setq dashboard-show-shortcuts nil)
+  (setq dashboard-display-icons-p t)     ; display icons on both GUI and terminal
+  (setq dashboard-icon-type 'nerd-icons) ; use `nerd-icons' package
+)
+
+(use-package nerd-icons
+  :ensure t)
+
+;(use-package lsp-mode
+;  :commands lsp
+;  :hook
+;  (sh-mode . lsp) ;; bash
+;  (python-mode . lsp) ;; python
+;  (lsp-enable-which-key-integration t)
+;)
+
+;(defun efs/lsp-mode-setup ()
+;  (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
+;  (lsp-headerline-breadcrumb-mode))
+;
+;  :hook (lsp-mode . efs/lsp-mode-setup)
+
+;(use-package lsp-ui
+;  :hook (lsp-mode . lsp-ui-mode))
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(cua-mode t)
- '(custom-enabled-themes nil)
- '(custom-safe-themes
-   '("acb636fb88d15c6dd4432e7f197600a67a48fd35b54e82ea435d7cd52620c96d" default))
  '(package-selected-packages
-   '(treemacs-tab-bar treemacs-persp treemacs-magit treemacs-icons-dired treemacs-projectile treemacs magit undo-tree page-break-lines async avy beacon swiper which-key spaceline diminish auto-package-update htmlize)))
+   '(spacemacs-theme which-key vterm vscode-dark-plus-theme vertico undo-tree treemacs-projectile treemacs-magit swiper spaceline page-break-lines nerd-icons multiple-cursors marginalia jinx htmlize flycheck embark-consult diminish dashboard corfu cape beacon auto-package-update async)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "DroidSansM Nerd Font Mono" :foundry "1ASC" :slant normal :weight regular :height 120 :width normal)))))
-
-(use-package treemacs
-  :ensure t
-  :defer t
-  :init
-  (with-eval-after-load 'winum
-    (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
-  :config
-  (progn
-    (setq treemacs-collapse-dirs                   (if treemacs-python-executable 3 0)
-          treemacs-deferred-git-apply-delay        0.5
-          treemacs-directory-name-transformer      #'identity
-          treemacs-display-in-side-window          t
-          treemacs-eldoc-display                   'simple
-          treemacs-file-event-delay                2000
-          treemacs-file-extension-regex            treemacs-last-period-regex-value
-          treemacs-file-follow-delay               0.2
-          treemacs-file-name-transformer           #'identity
-          treemacs-follow-after-init               t
-          treemacs-expand-after-init               t
-          treemacs-find-workspace-method           'find-for-file-or-pick-first
-          treemacs-git-command-pipe                ""
-          treemacs-goto-tag-strategy               'refetch-index
-          treemacs-header-scroll-indicators        '(nil . "^^^^^^")
-          treemacs-hide-dot-git-directory          t
-          treemacs-indentation                     2
-          treemacs-indentation-string              " "
-          treemacs-is-never-other-window           nil
-          treemacs-max-git-entries                 5000
-          treemacs-missing-project-action          'ask
-          treemacs-move-files-by-mouse-dragging    t
-          treemacs-move-forward-on-expand          nil
-          treemacs-no-png-images                   nil
-          treemacs-no-delete-other-windows         t
-          treemacs-project-follow-cleanup          nil
-          treemacs-persist-file                    (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
-          treemacs-position                        'left
-          treemacs-read-string-input               'from-child-frame
-          treemacs-recenter-distance               0.1
-          treemacs-recenter-after-file-follow      nil
-          treemacs-recenter-after-tag-follow       nil
-          treemacs-recenter-after-project-jump     'always
-          treemacs-recenter-after-project-expand   'on-distance
-          treemacs-litter-directories              '("/node_modules" "/.venv" "/.cask")
-          treemacs-project-follow-into-home        nil
-          treemacs-show-cursor                     nil
-          treemacs-show-hidden-files               t
-          treemacs-silent-filewatch                nil
-          treemacs-silent-refresh                  nil
-          treemacs-sorting                         'alphabetic-asc
-          treemacs-select-when-already-in-treemacs 'move-back
-          treemacs-space-between-root-nodes        t
-          treemacs-tag-follow-cleanup              t
-          treemacs-tag-follow-delay                1.5
-          treemacs-text-scale                      nil
-          treemacs-user-mode-line-format           nil
-          treemacs-user-header-line-format         nil
-          treemacs-wide-toggle-width               70
-          treemacs-width                           35
-          treemacs-width-increment                 1
-          treemacs-width-is-initially-locked       t
-          treemacs-workspace-switch-cleanup        nil)
-
-    ;; The default width and height of the icons is 22 pixels. If you are
-    ;; using a Hi-DPI display, uncomment this to double the icon size.
-    ;;(treemacs-resize-icons 44)
-
-    (treemacs-follow-mode t)
-    (treemacs-filewatch-mode t)
-    (treemacs-fringe-indicator-mode 'always)
-    (when treemacs-python-executable
-      (treemacs-git-commit-diff-mode t))
-
-    (pcase (cons (not (null (executable-find "git")))
-                 (not (null treemacs-python-executable)))
-      (`(t . t)
-       (treemacs-git-mode 'deferred))
-      (`(t . _)
-       (treemacs-git-mode 'simple)))
-
-    (treemacs-hide-gitignored-files-mode nil))
-  :bind
-  (:map global-map
-        ("M-0"       . treemacs-select-window)
-        ("C-x t 1"   . treemacs-delete-other-windows)
-        ("C-x t t"   . treemacs)
-        ("C-x t d"   . treemacs-select-directory)
-        ("C-x t B"   . treemacs-bookmark)
-        ("C-x t C-t" . treemacs-find-file)
-        ("C-x t M-t" . treemacs-find-tag)))
-
-;(use-package treemacs-evil
-;  :after (treemacs evil)
-;  :ensure t)
-
-;(use-package treemacs-projectile
-;  :after (treemacs projectile)
-;  :ensure t)
-
-(use-package treemacs-icons-dired
-  :hook (dired-mode . treemacs-icons-dired-enable-once)
-  :ensure t)
-
-(use-package treemacs-magit
-  :after (treemacs magit)
-  :ensure t)
-
-;(use-package treemacs-persp ;;treemacs-perspective if you use perspective.el vs. persp-mode
-;  :after (treemacs persp-mode) ;;or perspective vs. persp-mode
-;  :ensure t
-;  :config (treemacs-set-scope-type 'Perspectives))
-
-(use-package treemacs-tab-bar ;;treemacs-tab-bar if you use tab-bar-mode
-  :after (treemacs)
-  :ensure t
-  :config (treemacs-set-scope-type 'Tabs))
-
-(treemacs-start-on-boot)
-
-
-
-
-
+ )

@@ -60,6 +60,9 @@ local split_setting = {
     minimum_size = true
 };
 
+local = fhe
+{
+
 local colour_setting = {
     color0 = true, color1 = true, color2 = true, color3 = true, color4 = true, color5 = true,
     color6 = true, color7 = true, color8 = true, color9 = true, default_color = true,

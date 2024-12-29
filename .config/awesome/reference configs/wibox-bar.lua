@@ -34,18 +34,18 @@ mytextclock = wibox.widget.textclock("%l:%M %p")
 -- })
 
 -- Lain RAM usage indicator
-local lain_ram = lain.widget.mem({
-    settings = function()
-        widget:set_markup("RAM: " .. mem_now.used .. " MB")
-    end
-})
+--local lain_ram = lain.widget.mem({
+--    settings = function()
+--        widget:set_markup("RAM: " .. mem_now.used .. " MB")
+--    end
+--})
 
 -- Lain CPU usage indicator
-local lain_cpu_usage = lain.widget.cpu({
-    settings = function()
-        widget:set_markup("CPU: " .. cpu_now.usage .. "%")
-    end
-})
+--local lain_cpu_usage = lain.widget.cpu({
+--    settings = function()
+--        widget:set_markup("CPU: " .. cpu_now.usage .. "%")
+--    end
+--})
 
 -- Coretemp
 --local temp = lain.widget.temp({
@@ -126,18 +126,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
             { -- Right widgets
                 layout = wibox.layout.fixed.horizontal,
                 mykeyboardlayout,
-                seperator,
-                --st_logout_menu_widget,
-                --seperator,
-                --st_brightness_widget,
-                --seperator,
                 st_battery_widget,
-                --seperator,
-                --st_fs_widget,
-                --seperator,
-                --lain_ram,
-                --seperator,
-                --lain_cpu_usage,
                 seperator,
                 wibox.widget.systray(),
                 seperator,

@@ -1,17 +1,13 @@
-#!/bin/bash
-#
-# ~/.bashrc: executed by bash(1) for non-login shells.
-#
+#!/bin/zsh
+# ~/.zshrc file for zsh non-login shells.
+# see /usr/share/doc/zsh/examples/zshrc for examples
+
 
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
 # source git-prompt for ps1 
 source /usr/share/git/git-prompt.sh
-
-for sh in /etc/bash/bashrc.d/* ; do
-	[[ -r ${sh} ]] && source "${sh}"
-done
 
 # Default umask. A umask of 022 prevents new files from being created group and world writable.
 # file permissions: rwxr-xr-x
@@ -38,16 +34,7 @@ fi
 #     source "$XDG_RUNTIME_DIR/ssh-agent.env" >/dev/null
 # fi
 
-for sh in /etc/bash/bashrc.d/* ; do
-	[[ -r ${sh} ]] && source "${sh}"
-done
-
-# You may want to put all your additions into a separate file like ~/.bash_aliases, instead of adding them here directly.
-if [ -f ~/.bash_aliases ]; then
-    . ~/.bash_aliases
-fi
-
-# Set envrionment path_______________________________________________________________________________________________________________________________
+# Set envrionment path________________________________________________________________________________
 
 # Check for user bin $HOME/.local/bin and add to path if it exists and isnt in path
 if [ -d "$HOME/.local/bin" ] && [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
@@ -93,7 +80,8 @@ if command -v ccache &> /dev/null && [ -d "/usr/lib/ccache/bin" ] && [[ ":$PATH:
   export PATH="/usr/lib/ccache/bin:$PATH"
 fi
 
-# Set environment variables _________________________________________________________________________________________________________________________
+# Set environment variables ____________________________________________________________________________
+#export EDITOR="emacs -nw -Q"
 export EDITOR="emacsclient -t"
 export VISUAL="emacsclient -c -a emacs"
 export LD_PRELOAD=""
@@ -107,30 +95,84 @@ export RANGER_LOAD_DEFAULT_RC=FALSE
 # Uncomment the following line if you don't like systemctl's auto-paging feature:
 # export SYSTEMD_PAGER=
 
-shopt -s autocd # Enable auto cd when typing directories 
-shopt -s checkwinsize # check the terminal size when it regains control - check winsize when resize
-shopt -s histappend # append to the history file, don't overwrite it
-shopt -s globstar # the pattern "**" used in a pathname expansion context will match all files and zero or more directories and subdirectories.
-shopt -s promptvars # prompt strings undergo parameter expansion, command substitution, arithmetic expansion, and quote removal after being expanded.
-shopt -s no_empty_cmd_completion # Disable completion when the input buffer is empty
 
-bind "set completion-ignore-case on" #ignore upper and lowercase when TAB completion
+unsetopt beep
+unsetopt correct            # auto correct mistakes
+setopt autocd               # change directory just by typing its name
+setopt interactivecomments  # allow comments in interactive mode
+setopt ksharrays            # arrays start at 0
+setopt magicequalsubst      # enable filename expansion for arguments of the form ‘anything=expression’
+setopt nonomatch            # hide error message if there is no match for the pattern
+setopt notify               # report the status of background jobs immediately
+setopt numericglobsort      # sort filenames numerically when it makes sense
+setopt promptsubst          # enable command substitution in prompt
+
+
+HISTFILE=~/.zsh_history
+HISTSIZE=1000
+SAVEHIST=2000
+
+zstyle :compinstall filename "$HOME/.zshrc"
+#compinit
+
+WORDCHARS=${WORDCHARS//\/} # Don't consider certain characters part of the word
+
+# hide EOL sign ('%')
+export PROMPT_EOL_MARK=""
+
+# enable completion features
+autoload -Uz compinit
+compinit -d ~/.cache/zcompdump
+zstyle ':completion:*:*:*:*:*' menu select
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' # case insensitive tab completion
+
+# History configurations
+setopt hist_expire_dups_first # delete duplicates first when HISTFILE size exceeds HISTSIZE
+setopt hist_ignore_dups       # ignore duplicated commands history list
+setopt hist_ignore_space      # ignore commands that start with space
+setopt hist_verify            # show command with history expansion to user before running it
+#setopt share_history         # share command history data
+
+# force zsh to show the complete history
+alias history="history 0"
+
+# make less more friendly for non-text input files, see lesspipe(1)
+#[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+
+#shopt -s checkwinsize # check the terminal size when it regains control - check winsize when resize
+#shopt -s histappend # append to the history file, don't overwrite it
+#shopt -s globstar # the pattern "**" used in a pathname expansion context will match all files and zero or more directories and subdirectories.
+#shopt -s promptvars # prompt strings undergo parameter expansion, command substitution, arithmetic expansion, and quote removal after being expanded.
+#shopt -s no_empty_cmd_completion # Disable completion when the input buffer is empty
+#bind "set completion-ignore-case on" #ignore upper and lowercase when TAB completion
+
+bindkey -e                                        # emacs key bindings
+#bindkey ' ' magic-space                           # do history expansion on space
+#bindkey '^[[3;5~' kill-word                       # ctrl + Supr
+#bindkey '^[[1;5C' forward-word                    # ctrl + ->
+#bindkey '^[[C' forward-word                       # ctrl + ->
+#bindkey '^[[1;5D' backward-word                   # ctrl + <-
+#bindkey '^[[D' backward-word                      # ctrl + <-
+#bindkey '^[[5~' beginning-of-buffer-or-history    # page up
+#bindkey '^[[6~' end-of-buffer-or-history          # page down
+#bindkey '^[[Z' undo                               # shift + tab undo last action
 
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
 # Change the window title of X terminals 
-case ${TERM} in
-	[aEkx]term*|rxvt*|gnome*|konsole*|interix|tmux*|alacritty*)
-		PS1='\[\033]0;\u@\h:\w\007\]'
-		;;
-	screen*)
-		PS1='\[\033k\u@\h:\w\033\\\]'
-		;;
-	*)
-		unset PS1
-		;;
-esac
+
+#case ${TERM} in
+#	[aEkx]term*|rxvt*|gnome*|konsole*|interix|tmux*|alacritty*)
+#		PS1='\[\033]0;\u@\h:\w\007\]'
+#		;;
+#	screen*)
+#		PS1='\[\033k\u@\h:\w\033\\\]'
+#		;;
+#	*)
+#		unset PS1
+#		;;
+#esac
 
 # # set variable identifying the chroot you work in (used in the prompt below)
 # if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
@@ -140,84 +182,297 @@ esac
 # Set colorful PS1 only on colorful terminals.
 # dircolors --print-database uses its own built-in database instead of using /etc/DIR_COLORS. Try to use the external file first to take advantage of user additions.
 # We run dircolors directly due to its changes in file syntax and terminal name patching.
-use_color=false
-if type -P dircolors >/dev/null ; then
-	# Enable colors for ls, etc.  Prefer ~/.dir_colors #64489
-	LS_COLORS=
-	if [[ -f ~/.dir_colors ]] ; then
-		eval "$(dircolors -b ~/.dir_colors)"
-	elif [[ -f /etc/DIR_COLORS ]] ; then
-		eval "$(dircolors -b /etc/DIR_COLORS)"
-	else
-		eval "$(dircolors -b)"
-	fi
-	# Note: We always evaluate the LS_COLORS setting even when it's the default. 
-	#If it isn't set, then `ls` will only colorize by default based on file attributes and ignore extensions (even the compiled in defaults of dircolors). #583814
-	if [[ -n ${LS_COLORS:+set} ]]; then
-		use_color=true
-	else
-		# Delete it if it's empty as it's useless in that case.
-		unset LS_COLORS
-	fi
-else
-	# Some systems (e.g. BSD & embedded) don't typically come with
-	# dircolors so we need to hardcode some terminals in here.
-	case ${TERM} in
-	[aEkx]term*|rxvt*|gnome*|konsole*|screen|tmux|cons25|*color) use_color=true;;
-	esac
-fi
 
-# 'Safe' version of __git_ps1 to avoid errors on systems that don't have it, shows git status within bash prompt
-gitPrompt () {
-  command -v __git_ps1 > /dev/null && __git_ps1 " (%s)"
-}
+#use_color=false
+#if type -P dircolors >/dev/null ; then
+#	# Enable colors for ls, etc.  Prefer ~/.dir_colors #64489
+#	LS_COLORS=
+#	if [[ -f ~/.dir_colors ]] ; then
+#		eval "$(dircolors -b ~/.dir_colors)"
+#	elif [[ -f /etc/DIR_COLORS ]] ; then
+#		eval "$(dircolors -b /etc/DIR_COLORS)"
+#	else
+#		eval "$(dircolors -b)"
+#	fi
+#	# Note: We always evaluate the LS_COLORS setting even when it's the default. 
+#	#If it isn't set, then `ls` will only colorize by default based on file attributes and ignore extensions (even the compiled in defaults of dircolors). #583814
+#	if [[ -n ${LS_COLORS:+set} ]]; then
+#		use_color=true
+#	else
+#		# Delete it if it's empty as it's useless in that case.
+#		unset LS_COLORS
+#	fi
+#else
+#	# Some systems (e.g. BSD & embedded) don't typically come with
+#	# dircolors so we need to hardcode some terminals in here.
+#	case ${TERM} in
+#	[aEkx]term*|rxvt*|gnome*|konsole*|screen|tmux|cons25|*color) use_color=true;;
+#	esac
+#fi
+
+# 'Safe' version of __git_ps1 to avoid errors on systems that don't have it, shows git status within zsh prompt
+#gitPrompt () {
+#  command -v __git_ps1 > /dev/null && __git_ps1 " (%s)"
+#}
 
 # Set PS1 prompt display
-if ${use_color} ; then 
-	if [[ ${EUID} == 0 ]] ; then # set root PS1
-    PS1+='\[\033[01;32m\]\T \[\033[01;36m\]\w\[\033[01;33m\]$(gitPrompt)\[\033[01;34m\] \$\[\033[00m\]$(if ! [ $(jobs | wc -l) -eq 0 ]; then jobs | wc -l;fi) ' # custom with inline git branch status
-	else # set user PS1
-    PS1+='\[\033[01;32m\]\T \[\033[01;36m\]\w\[\033[01;33m\]$(gitPrompt)\[\033[01;34m\] \$\[\033[00m\]$(if ! [ $(jobs | wc -l) -eq 0 ]; then jobs | wc -l;fi) ' # custom with inline git branch status
-  fi
-	#BSD#@export CLICOLOR=1
-  alias ls='ls --color=auto'
-  alias grep='grep --color=auto'
-  alias fgrep='fgrep --color=auto'
-  alias egrep='egrep --color=auto'
-  alias dir='dir --color=auto'
-  alias vdir='vdir --color=auto'
-  alias ip='ip -c'
-  alias diff='diff --color=auto'
-  export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01' # colored GCC warnings and errors
-else
-	# show root@ when we don't have colors
-	PS1+='\u@\h \w \$ '
-fi
+
+#if ${use_color} ; then 
+#	if [[ ${EUID} == 0 ]] ; then # set root PS1
+#    PS1+='\[\033[01;32m\]\T \[\033[01;36m\]\w\[\033[01;33m\]$(gitPrompt)\[\033[01;34m\] \$\[\033[00m\]$(if ! [ $(jobs | wc -l) -eq 0 ]; then jobs | wc -l;fi) ' # custom with inline git branch status
+#	else # set user PS1
+#    PS1+='\[\033[01;32m\]\T \[\033[01;36m\]\w\[\033[01;33m\]$(gitPrompt)\[\033[01;34m\] \$\[\033[00m\]$(if ! [ $(jobs | wc -l) -eq 0 ]; then jobs | wc -l;fi) ' # custom with inline git branch status
+#  fi
+#	#BSD#@export CLICOLOR=1
+#  alias ls='ls --color=auto'
+#  alias grep='grep --color=auto'
+#  alias fgrep='fgrep --color=auto'
+#  alias egrep='egrep --color=auto'
+#  alias dir='dir --color=auto'
+#  alias vdir='vdir --color=auto'
+#  alias ip='ip -c'
+#  alias diff='diff --color=auto'
+#  export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01' # colored GCC warnings and errors
+#else
+#	# show root@ when we don't have colors
+#	PS1+='\u@\h \w \$ '
+#fi
+
 # Start bash PS1 prompt on newline if none within previous EOT (FIX, breaks multiple term in tiled wm)
 #PS1='$(printf "%$((`tput cols`-1))s\r")'$PS1
 
 # Set 'man' colors
-if [ "$use_color" = yes ]; then
-	man() {
-	env \
-	LESS_TERMCAP_mb=$'\e[01;31m' \
-	LESS_TERMCAP_md=$'\e[01;31m' \
-	LESS_TERMCAP_me=$'\e[0m' \
-	LESS_TERMCAP_se=$'\e[0m' \
-	LESS_TERMCAP_so=$'\e[01;44;33m' \
-	LESS_TERMCAP_ue=$'\e[0m' \
-	LESS_TERMCAP_us=$'\e[01;32m' \
-	man "$@"
-	}
+#if [ "$use_color" = yes ]; then
+#	man() {
+#	env \
+#	LESS_TERMCAP_mb=$'\e[01;31m' \
+#	LESS_TERMCAP_md=$'\e[01;31m' \
+#	LESS_TERMCAP_me=$'\e[0m' \
+#	LESS_TERMCAP_se=$'\e[0m' \
+#	LESS_TERMCAP_so=$'\e[01;44;33m' \
+#	LESS_TERMCAP_ue=$'\e[0m' \
+#	LESS_TERMCAP_us=$'\e[01;32m' \
+#	man "$@"
+#	}
+#fi
+
+# enable auto-suggestions based on the history
+if [ -f /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]; then
+    . /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+    # change suggestion color
+    ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#999'
+fi 
+
+# set a fancy prompt (non-color, unless we know we "want" color)
+case "$TERM" in
+    xterm-color|*-256color) color_prompt=yes;;
+esac
+
+# uncomment for a colored prompt, if the terminal has the capability; turned
+# off by default to not distract the user: the focus in a terminal window
+# should be on the output of commands, not on the prompt
+force_color_prompt=yes
+
+if [ -n "$force_color_prompt" ]; then
+    if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
+        # We have color support; assume it's compliant with Ecma-48
+        # (ISO/IEC-6429). (Lack of such support is extremely rare, and such
+        # a case would tend to support setf rather than setaf.)
+        color_prompt=yes
+    else
+        color_prompt=
+    fi
 fi
+
+if [ -x /usr/bin/dircolors ]; then
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    alias ls='ls --color=auto'
+    alias dir='dir --color=auto'
+    alias vdir='vdir --color=auto'
+
+    alias grep='grep --color=auto'
+    alias fgrep='fgrep --color=auto'
+    alias egrep='egrep --color=auto'
+    alias diff='diff --color=auto'
+    alias ip='ip --color=auto'
+    alias trim='fstrim -a'    
+    
+    export LESS_TERMCAP_mb=$'\E[1;31m'     # begin blink
+    export LESS_TERMCAP_md=$'\E[1;36m'     # begin bold
+    export LESS_TERMCAP_me=$'\E[0m'        # reset bold/blink
+    export LESS_TERMCAP_so=$'\E[01;33m'    # begin reverse video
+    export LESS_TERMCAP_se=$'\E[0m'        # reset reverse video
+    export LESS_TERMCAP_us=$'\E[1;32m'     # begin underline
+    export LESS_TERMCAP_ue=$'\E[0m'        # reset underline
+
+    # Take advantage of $LS_COLORS for completion as well
+    zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+fi
+
+unset color_prompt force_color_prompt
+
+new_line_before_prompt=yes
+precmd() {
+    # Print the previously configured title
+    print -Pn "$TERM_TITLE"
+
+    # Print a new line before the prompt, but only if it is not the first line
+    if [ "$new_line_before_prompt" = yes ]; then
+        if [ -z "$_NEW_LINE_BEFORE_PROMPT" ]; then
+            _NEW_LINE_BEFORE_PROMPT=1
+        else
+            print ""
+        fi
+    fi
+}
+
+#______________________________________________________________________________________________________________________________________________
+#OLD ZSH
+## .zsh
+#HISTFILE=~/.zsh_history
+#HISTSIZE=1000
+#SAVEHIST=2000
+#
+## The following lines were added by compinstall
+#zstyle :compinstall filename "$HOME/.zshrc"
+#
+#compinit
+## End of lines added by compinstall
+#
+## ~/.zshrc file for zsh non-login shells.
+## see /usr/share/doc/zsh/examples/zshrc for examples
+#
+#unsetopt beep
+#unsetopt autocd              # change directory just by typing its name
+#unsetopt correct            # auto correct mistakes
+#setopt interactivecomments # allow comments in interactive mode
+#setopt ksharrays           # arrays start at 0
+#setopt magicequalsubst     # enable filename expansion for arguments of the form ‘anything=expression’
+#setopt nonomatch           # hide error message if there is no match for the pattern
+#setopt notify              # report the status of background jobs immediately
+#setopt numericglobsort     # sort filenames numerically when it makes sense
+#setopt promptsubst         # enable command substitution in prompt
+#
+#WORDCHARS=${WORDCHARS//\/} # Don't consider certain characters part of the word
+#
+## hide EOL sign ('%')
+#export PROMPT_EOL_MARK=""
+#
+## configure key keybindings
+#bindkey -e                                        # emacs key bindings
+#bindkey ' ' magic-space                           # do history expansion on space
+#bindkey '^[[3;5~' kill-word                       # ctrl + Supr
+#bindkey '^[[1;5C' forward-word                    # ctrl + ->
+#bindkey '^[[C' forward-word                       # ctrl + ->
+#bindkey '^[[1;5D' backward-word                   # ctrl + <-
+#bindkey '^[[D' backward-word                      # ctrl + <-
+#bindkey '^[[5~' beginning-of-buffer-or-history    # page up
+#bindkey '^[[6~' end-of-buffer-or-history          # page down
+#bindkey '^[[Z' undo                               # shift + tab undo last action
+#
+## enable completion features
+#autoload -Uz compinit
+#compinit -d ~/.cache/zcompdump
+#zstyle ':completion:*:*:*:*:*' menu select
+#zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' # case insensitive tab completion
+#
+## History configurations
+#setopt hist_expire_dups_first # delete duplicates first when HISTFILE size exceeds HISTSIZE
+#setopt hist_ignore_dups       # ignore duplicated commands history list
+#setopt hist_ignore_space      # ignore commands that start with space
+#setopt hist_verify            # show command with history expansion to user before running it
+##setopt share_history         # share command history data
+#
+## force zsh to show the complete history
+#alias history="history 0"
+#
+## make less more friendly for non-text input files, see lesspipe(1)
+##[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+#
+## set a fancy prompt (non-color, unless we know we "want" color)
+#case "$TERM" in
+#    xterm-color|*-256color) color_prompt=yes;;
+#esac
+#
+## uncomment for a colored prompt, if the terminal has the capability; turned
+## off by default to not distract the user: the focus in a terminal window
+## should be on the output of commands, not on the prompt
+#force_color_prompt=yes
+#
+#if [ -n "$force_color_prompt" ]; then
+#    if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
+#        # We have color support; assume it's compliant with Ecma-48
+#        # (ISO/IEC-6429). (Lack of such support is extremely rare, and such
+#        # a case would tend to support setf rather than setaf.)
+#        color_prompt=yes
+#    else
+#        color_prompt=
+#    fi
+#fi
+#
+#unset color_prompt force_color_prompt
+#
+#new_line_before_prompt=yes
+#precmd() {
+#    # Print the previously configured title
+#    print -Pn "$TERM_TITLE"
+#
+#    # Print a new line before the prompt, but only if it is not the first line
+#    if [ "$new_line_before_prompt" = yes ]; then
+#        if [ -z "$_NEW_LINE_BEFORE_PROMPT" ]; then
+#            _NEW_LINE_BEFORE_PROMPT=1
+#        else
+#            print ""
+#        fi
+#    fi
+#}
+#
+## enable color support of ls, less and man, and also add handy aliases
+#if [ -x /usr/bin/dircolors ]; then
+#    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+#    alias ls='ls --color=auto'
+#    alias dir='dir --color=auto'
+#    alias vdir='vdir --color=auto'
+#
+#    alias grep='grep --color=auto'
+#    alias fgrep='fgrep --color=auto'
+#    alias egrep='egrep --color=auto'
+#    alias diff='diff --color=auto'
+#    alias ip='ip --color=auto'
+#    alias trim='fstrim -a'    
+#    
+#    export LESS_TERMCAP_mb=$'\E[1;31m'     # begin blink
+#    export LESS_TERMCAP_md=$'\E[1;36m'     # begin bold
+#    export LESS_TERMCAP_me=$'\E[0m'        # reset bold/blink
+#    export LESS_TERMCAP_so=$'\E[01;33m'    # begin reverse video
+#    export LESS_TERMCAP_se=$'\E[0m'        # reset reverse video
+#    export LESS_TERMCAP_us=$'\E[1;32m'     # begin underline
+#    export LESS_TERMCAP_ue=$'\E[0m'        # reset underline
+#
+#    # Take advantage of $LS_COLORS for completion as well
+#    zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+#fi
+#
+## some more ls aliases
+#alias ll='ls -l'
+#alias la='ls -A'
+#alias l='ls -CF'
+#alias lla='ls -la'
+#
+## enable auto-suggestions based on the history
+#if [ -f /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]; then
+#    . /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+#    # change suggestion color
+#    ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#999'
+#fi 
+#
+#______________________________________________________________________________________________________________________________________________
+
 
 # Import colorscheme from 'wal' asynchronously. 
 (cat ~/.cache/wal/sequences &)
 
-# Try to keep environment pollution down, EPA loves us.
-unset use_color sh
-
-# Set aliases & functions____________________________________________________________________________________________________________________________
+# Set Aliases
 alias ssh='TERM=xterm-256color ssh'
 alias em='emacs -nw'
 #alias em='emacsclient -t'
@@ -262,6 +517,7 @@ alias rsync='rsync -P'
 alias free="free -mth"
 alias da='date "+%Y-%m-%d %A    %T %Z"'
 alias sb='source ~/.bashrc'
+alias sz='source ~/.zshrc'
 alias xlx='xrdb -load $HOME/.Xresources'
 alias errorlog='journalctl -p 3 -b'
 alias brokensym='sudo find / -xtype l -print'
@@ -281,40 +537,17 @@ alias reinstall-packages='sudo pacman -Qqn | sudo pacman -S -'
 #alias aurlist='sudo pacman -Qqm'
 #alias paclist='sudo pacman -Qqn'
 alias packagereinstall='sudo pacman -Qqe > packages.txt; sudo pacman -S $(comm -12 <(pacman -Slq | sort) <(sort packages.txt)); rm packages.txt'
-alias sysdblame='systemd-analyze plot > $HOME/Pictures/boot.svg'
 
 # dfir
 alias loginsh='cat /etc/passwd | grep sh$'
 alias allcron='for i in $(cat /etc/passwd | grep sh$ | cut -f1 -d: ); do echo $i; sudo crontab -u $i -l; done'
 alias loginshcron='for i in $(cat /etc/passwd | grep sh$ | cut -f1 -d: ); do echo $i; sudo crontab -u $i -l; done'
-clonedisk2disk() { # clone a hard disk to another, usage: 'clonedisk2disk /dev/sda /dev/sda' clonedisk2disk [source] [destination]
-  dd if="$1" of="$2" bs=64K conv=noerror,sync status=progress
-}
 
-imagedisk2file() { # image a hard disk to a compressed file, usage: 'imagedisk2file /dev/sda file_to_write_to.img' clonedisk2file [source-disk] [destination-file]
-  dd if="$1" conv=sync,noerror bs=64K | gzip -c  > "$2".img.gz
-  fdisk -l "$1" > "$2".info
-}
-
-encryptwholeerase() { # Encrypt and overwrite drive with encrypted cipher for secure erase - Usage: encryptwholeerase "/dev/sdX"
-  DEVICE="$1"; PASS=$(tr -cd '[:alnum:]' < /dev/urandom | head -c 1024)
-  openssl enc -aes-256-ctr -pass pass:"$PASS" -nosalt < /dev/zero | dd obs=64K ibs=4K of="$DEVICE" oflag=direct status=progress
-}
-
-encryptfreeerase() { # Encrypt and overwrite free space with encrypted cipher for secure erase - Usage: encryptfreeerase
-  PASS=$(tr -cd '[:alnum:]' < /dev/urandom | head -c 1024)
-  openssl enc -pbkdf2 -pass pass:"$PASS" -nosalt < /dev/zero | dd obs=128K ibs=4K of="Eraser" oflag=direct status=progress
-  rm -f "Eraser"
-}
-
-# proxmox/virtualization tools
+# proxmox 
 alias iommugroup='find /sys/kernel/iommu_groups/ -type l | sort -V'
 alias iommusupport='sudo dmesg | grep -e DMAR -e IOMMU -e AMD-Vi'
 alias pcidsupport="grep ' pcid ' /proc/cpuinfo"
 alias cpuvuln='for f in /sys/devices/system/cpu/vulnerabilities/*; do printf '%n%s' "${f##*/}" $(cat "$f"); done'
-hugepage() {
-  grep -e AnonHugePages  /proc/*/smaps | awk  '{ if($2>4) print $0} ' |  awk -F "/"  '{printf $0; system("ps -fp " $3)} '
-}
 
 # git tools
 alias gadd='git add'
@@ -327,32 +560,24 @@ alias gpull='git pull'
 alias gfetch='git fetch'
 alias branch='git branch -a'
 
-pgit(){ # usage pgit https://github.com/username/repo - converts regular github repo link to private link that can be cloned
-  git clone "${1/#https:\/\/github.com/git@github.com:}"
-}
-
-git_update_all() {
-	# ls | xargs -I{} git -C {} pull OR for i in */.git; do ( echo $i; cd $i/..; git pull; ); done
-	find . -maxdepth 1 -print0 | xargs -P10 -I{} git -C {} pull
-}
-
 # flatpak aliases
 if command -v flatpak run org.winehq.Wine &> /dev/null && ! command -v wine &> /dev/null; then alias wine='flatpak run org.winehq.Wine'; fi
 if command -v com.openwall.John &> /dev/null && ! command -v john &> /dev/null; then alias john='com.openwall.John'; fi
 if command -v io.gitlab.librewolf-community &> /dev/null && ! command -v librewolf &> /dev/null; then alias librewolf='io.gitlab.librewolf-community'; fi
 
+alias sysdblame='systemd-analyze plot > $HOME/Pictures/boot.svg'
+
 # Add an "alert" alias for long running commands.  Use like so: sleep 10; alert
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
-# dotfile Management
+# Dotfile Management
 alias dtf='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 alias dfpush='dtf push origin'
 alias dfshow='dtf ls-tree --full-tree -r --name-only HEAD'
 alias dfc='dtf commit -am'
 alias dfs='dtf status'
 
-# Loop through ".$HOME/.dotfiles.conf" of files, check to see if file within exists and track it in the bare repo
-dftrack(){   
+dftrack(){   # Loop through ".$HOME/.dotfiles.conf" of files, check to see if file within exists and track it in the bare repo
   untrack+=();
 
   wdir=$(pwd | sed "s|$HOME|\$HOME|");                                            # initialize array to hold dir/files to be "untracked" and removed from .dotfiles.conf
@@ -367,7 +592,7 @@ dftrack(){
     fi                                                                            # if dir/file exists within fs, track it with "git add"
   done < "$HOME/.dotfiles.conf"                    
   
-  # remove dir & files from .dotfiles.conf that are in array and untrack from git with "git rm --cached"
+    # remove dir & files from .dotfiles.conf that are in array and untrack from git with "git rm --cached"
   for i in "${untrack[@]}"; do 
     sed -i "\:$i:d" "$HOME/.dotfiles.conf"
     if [[ -e "$p" ]]; then 
@@ -380,8 +605,7 @@ dftrack(){
   sort -o "$HOME/.dotfiles.conf" "$HOME/.dotfiles.conf"
 }
 
-# Add file(s) to tracked dotfiles
-dfadd(){ 
+dfadd(){ # Add file(s) to tracked dotfiles"
   wdir=$(pwd | sed "s|$HOME|\$HOME|");
   for i in "$@"; do                                                               # Loop through tracked dotfiles (.dotfiles.conf)
     if [[ -e "$(pwd)/$i" ]]; then                                                                                                     
@@ -399,38 +623,80 @@ dfadd(){
   sort -o "$HOME/.dotfiles.conf" "$HOME/.dotfiles.conf"      
 }
 
-# update all system programs
-upd() { 
+# pkg manager tools
+upd() { # update all system programs
   if command -v pacman &> /dev/null; then # if ARCH LINUX, WIN HUGE
+    
     if command -v pacman &> /dev/null; then  tput setaf 2; tput setaf 2; printf '%s\n' "Arch Official Repos (pacman -Syu):"; tput sgr0; sudo pacman -Syu; fi
+    
     if command -v paru &> /dev/null; then  tput setaf 2; printf '\n%s\n' "Arch User Repository (paru -Syu):"; tput sgr0; paru -Syu; fi
+    
     if command -v yay &> /dev/null; then  tput setaf 2; printf '\n%s\n' "Arch User Repository (paru -Syu):"; tput sgr0; yay -Syua; fi
+           
     if command -v updatedb &> /dev/null; then tput setaf 2; printf '\n%s\n' "Update locate/plocate database..."; tput sgr0; sudo updatedb; fi # update the locate/plocate database
+    
     if command -v pkgfile &> /dev/null; then tput setaf 2; printf '\n%s\n' "Update pkgfile database (pkgfile -u):"; tput sgr0; sudo pkgfile -u; fi # update the pkgfile database
+        
     if command -v pacman &> /dev/null; then  tput setaf 2; printf '\n%s\n' "Update pacman file database (pacman -Fy):"; tput sgr0; sudo pacman -Fy; fi # update the pacman file database
+    
     if command -v pacman-db-upgrade &> /dev/null; then tput setaf 2; printf '\n%s\n' "Upgrade pacman database"; tput sgr0; sudo pacman-db-upgrade; fi # upgrade the local pacman db to a newer format
+    
     if command -v pacman &> /dev/null; then tput setaf 2; printf '\n%s\n' "Clear pacman cache:"; tput sgr0; # Remove all files and unused repositories from pacman cache without prompt
+      
       yes | sudo pacman -Scc; 
+      
       if command -v paru &> /dev/null; then yes | paru -Scc; fi; 
+      
       if command -v yay &> /dev/null; then yes | yay -Scc; fi; 
     fi 
   fi
+  
   if command -v zypper; then # if OpenSUSE (weird)
     if command -v zypper &> /dev/null; then  tput setaf 2; tput setaf 2; printf '\n%s\n' "OpenSUSE Repos (zypper refresh/zypper dup):"; tput sgr0; sudo zypper refresh; sudo zypper dup; fi
   fi  
+
   if command -v apt; then # if Debian
     if command -v apt &> /dev/null; then  tput setaf 2; tput setaf 2; printf '\n%s\n' "Debian Repos (apt update/apt upgrade):"; tput sgr0; sudo apt update; sudo apt upgrade; fi
   fi
+
   if command -v yum; then # if Fedora/RHEL
     if command -v yum &> /dev/null; then  tput setaf 2; tput setaf 2; printf '\n%s\n' "RHEL/Fedora Repos (yum update/yum upgrade):"; tput sgr0; sudo yum update; sudo yum upgrade; fi
   fi
+
   if command -v pkg; then # Alpine Linux
     if command -v pkg &> /dev/null; then  tput setaf 2; tput setaf 2; printf '\n%s\n' "Alpine Repos (pkg update/pkg upgrade):"; tput sgr0; sudo pkg update; sudo pkg upgrade; fi
   fi
+
   if command -v flatpak &> /dev/null; then  tput setaf 2; printf '\n\n%s\n' "Flatpak (flatpak --user update):"; tput sgr0; flatpak --user update; flatpak uninstall --unused;fi
+  
   if command -v snap &> /dev/null; then  tput setaf 2; printf '\n%s\n' "Snap (snap refresh):"; tput sgr0; sudo snap refresh; fi
+
   sync && printf '\n'
 }
+
+clonedisk2disk() { # clone a hard disk to another, usage: 'clonedisk2disk /dev/sda /dev/sda' clonedisk2disk [source] [destination]
+  dd if="$1" of="$2" bs=64K conv=noerror,sync status=progress
+}
+
+imagedisk2file() { # image a hard disk to a compressed file, usage: 'imagedisk2file /dev/sda file_to_write_to.img' clonedisk2file [source-disk] [destination-file]
+  dd if="$1" conv=sync,noerror bs=64K | gzip -c  > "$2".img.gz
+  fdisk -l "$1" > "$2".info
+}
+
+# proxmox tools
+hugepage() {
+  grep -e AnonHugePages  /proc/*/smaps | awk  '{ if($2>4) print $0} ' |  awk -F "/"  '{printf $0; system("ps -fp " $3)} '
+}
+
+pgit(){ # usage pgit https://github.com/username/repo - converts regular github repo link to private link that can be cloned
+  git clone "${1/#https:\/\/github.com/git@github.com:}"
+}
+
+git_update_all() {
+	# ls | xargs -I{} git -C {} pull OR for i in */.git; do ( echo $i; cd $i/..; git pull; ); done
+	find . -maxdepth 1 -print0 | xargs -P10 -I{} git -C {} pull
+}
+
 
 flacverify() { # verify flac files for corruption - flacverify [dir]
   find -L "$1" -type f -name '.flac' -print0 | while IFS= read -r -d '' file
@@ -485,13 +751,13 @@ quote() { # Pulls quote
 	curl -s https://favqs.com/api/qotd | jq -r '[.quote.body, .quote.author] | "\(.[0]) \n~\(.[1])\n"'
 }
 
-repeat() { # Repeat n times command. Usage: "repeat 20 ls"
-  local i max
-  max=$1; shift;
-  for ((i=1; i <= max ; i++)); do  # --> C-like syntax
-    "$@";
-  done
-}
+#repeat() { # Repeat n times command. Usage: "repeat 20 ls"
+#  local i max
+#  max=$1; shift;
+#  for ((i=1; i <= max ; i++)); do  # --> C-like syntax
+#    "$@";
+#  done
+#}
 
 # check top ten commands executed
 top10() { 
@@ -595,7 +861,7 @@ ef() {
       *.tar.bz2)   tar xjf "$1"                                   ;;
       *.tar.gz)    tar xzf "$1"                                   ;;
       *.bz2)       bunzip2 "$1"                                   ;;
-      *.rar)       7z x -o"${1%.rar}" "$1"                        ;;
+      *.rar)       7z x -o"${1%.rar}" "$1"                         ;;
       *.gz)        gunzip "$1"                                    ;;
       *.tar)       mkdir "${1%.tar}"; tar -xvf "$1" -C "${1%.tar}";;
       *.tbz2)      tar xjf "$1"                                   ;;
@@ -654,6 +920,17 @@ smush() { # Usage "smush <file> <tar.gz.>"
         *.rar)       shift && rar "$FILE" "$1"                                         ;;
         *.7z)        shift && 7z a -t7z -m0=lzma2 -mx=9 -mfb=64 -md=64m -ms=on "$FILE" ;;
     esac
+}
+
+encryptwholeerase() { # Encrypt and overwrite drive with encrypted cipher for secure erase - Usage: encryptwholeerase "/dev/sdX"
+  DEVICE="$1"; PASS=$(tr -cd '[:alnum:]' < /dev/urandom | head -c 1024)
+  openssl enc -aes-256-ctr -pass pass:"$PASS" -nosalt < /dev/zero | dd obs=64K ibs=4K of="$DEVICE" oflag=direct status=progress
+}
+
+encryptfreeerase() { # Encrypt and overwrite free space with encrypted cipher for secure erase - Usage: encryptfreeerase
+  PASS=$(tr -cd '[:alnum:]' < /dev/urandom | head -c 1024)
+  openssl enc -pbkdf2 -pass pass:"$PASS" -nosalt < /dev/zero | dd obs=128K ibs=4K of="Eraser" oflag=direct status=progress
+  rm -f "Eraser"
 }
 
 buffer_clean() { # frees ram buffer

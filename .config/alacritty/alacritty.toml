@@ -12,25 +12,57 @@ TERM = "alacritty"
 [font]
 size = 12.0
 
-[font.bold]
+[font.normal]
 family = "LiterationMono Nerd Font Mono"
-style = "Bold"
-
-[font.bold_italic]
-family = "LiterationMono Nerd Font Mono"
-style = "Bold Italic"
-
-[font.glyph_offset]
-x = 0
-y = 0
+style = "Regular"
 
 [font.italic]
 family = "LiterationMono Nerd Font Mono"
 style = "Italic"
 
-[font.normal]
+[font.bold]
 family = "LiterationMono Nerd Font Mono"
-style = "Regular"
+style = "Bold"
+ 
+[font.bold_italic]
+family = "LiterationMono Nerd Font Mono"
+style = "Bold Italic"
+
+# [font.normal]
+# family = "Terminess Nerd Font Mono"
+# style = "Regular"
+# 
+# [font.italic]
+# family = "Terminess Nerd Font Mono"
+# style = "Italic"
+# 
+# [font.bold]
+# family = "Terminess Nerd Font Mono"
+# style = "Bold"
+# 
+# [font.bold_italic]
+# family = "Terminess Nerd Font Mono"
+# style = "Bold Italic"
+
+# [font.normal]
+# family = "FiraCode Nerd Font Mono"
+# style = "Regular"
+# 
+# [font.italic]
+# family = "FiraCode Nerd Font Mono"
+# style = "Italic"
+# 
+# [font.bold]
+# family = "FiraCode Nerd Font Mono"
+# style = "Bold"
+# 
+# [font.bold_italic]
+# family = "FiraCode Nerd Font Mono"
+# style = "Bold Italic"
+
+[font.glyph_offset]
+x = 0
+y = 0
 
 [font.offset]
 x = 0
