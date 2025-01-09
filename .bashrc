@@ -283,6 +283,14 @@ alias reinstall-packages='sudo pacman -Qqn | sudo pacman -S -'
 alias packagereinstall='sudo pacman -Qqe > packages.txt; sudo pacman -S $(comm -12 <(pacman -Slq | sort) <(sort packages.txt)); rm packages.txt'
 alias sysdblame='systemd-analyze plot > $HOME/Pictures/boot.svg'
 
+# flatpak aliases
+if command -v flatpak run org.winehq.Wine &> /dev/null && ! command -v wine &> /dev/null; then alias wine='flatpak run org.winehq.Wine'; fi
+if command -v com.openwall.John &> /dev/null && ! command -v john &> /dev/null; then alias john='com.openwall.John'; fi
+if command -v io.gitlab.librewolf-community &> /dev/null && ! command -v librewolf &> /dev/null; then alias librewolf='io.gitlab.librewolf-community'; fi
+
+# Add an "alert" alias for long running commands.  Use like so: sleep 10; alert
+alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+
 # dfir
 alias loginsh='cat /etc/passwd | grep sh$'
 alias allcron='for i in $(cat /etc/passwd | grep sh$ | cut -f1 -d: ); do echo $i; sudo crontab -u $i -l; done'
@@ -320,12 +328,17 @@ hugepage() {
 alias gadd='git add'
 alias gpush='git push'
 alias gshow='git ls-tree --full-tree -r --name-only HEAD'
-alias gcom='git commit -am'
-alias gstat='git status'
-alias gclone='git clone'
+gcom(){
+  git commit -am "$1"
+}
+gcompush(){
+  git commit -am "$1";git push
+}
+alias gst='git status'
+alias gcl='git clone'
 alias gpull='git pull'
-alias gfetch='git fetch'
-alias branch='git branch -a'
+alias gfet='git fetch'
+alias gbr='git branch -a'
 
 pgit(){ # usage pgit https://github.com/username/repo - converts regular github repo link to private link that can be cloned
   git clone "${1/#https:\/\/github.com/git@github.com:}"
@@ -336,19 +349,13 @@ git_update_all() {
 	find . -maxdepth 1 -print0 | xargs -P10 -I{} git -C {} pull
 }
 
-# flatpak aliases
-if command -v flatpak run org.winehq.Wine &> /dev/null && ! command -v wine &> /dev/null; then alias wine='flatpak run org.winehq.Wine'; fi
-if command -v com.openwall.John &> /dev/null && ! command -v john &> /dev/null; then alias john='com.openwall.John'; fi
-if command -v io.gitlab.librewolf-community &> /dev/null && ! command -v librewolf &> /dev/null; then alias librewolf='io.gitlab.librewolf-community'; fi
-
-# Add an "alert" alias for long running commands.  Use like so: sleep 10; alert
-alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
-
-# dotfile Management
+# dotfile Management 
 alias dtf='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 alias dfpush='dtf push origin'
 alias dfshow='dtf ls-tree --full-tree -r --name-only HEAD'
-alias dfc='dtf commit -am'
+dfc(){
+  dtf commit -am "$1"
+}
 alias dfs='dtf status'
 
 # Loop through ".$HOME/.dotfiles.conf" of files, check to see if file within exists and track it in the bare repo
