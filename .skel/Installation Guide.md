@@ -8,10 +8,10 @@
   - [Connect to Network](#connect-to-network)
   - [Check system time](#check-the-system-clock)
 - [Main Installation](#main-installation)
-  - [Disk partitioning](#disk-partitioning)
-  - [Disk formatting](#disk-formatting)
-  - [Disk mounting](#disk-mounting)
-  - [Packages Installation Bootstrap](#package-bootstrap)
+  - [Partition the disks](#partition-the-disks)
+  - [Format the partitions](#format-the-partitions)
+  - [Mount the filesystem](#mount-the-file-system)
+  - [Bootstrap Packages](#package-bootstrap)
   - [Generate Fstab](#generate-fstab)
   - [Chroot into our Install](#chroot-into-our-new-install)
   - [Set time zone](#set-time-zone)
@@ -138,7 +138,7 @@ timedatectl
 
 # Main installation
 
-## Disk partitioning
+## Partition the disks
 
 - I recommend making 2 partitions:  
 
@@ -161,8 +161,7 @@ cfdisk -z /dev/nvme0n1
 ```
 <br>
 
-## Disk formatting  
-
+## Format the partitions
 
 - Find the efi partition with ``fdisk -l`` or ``lsblk``. For me it's ``/dev/nvme0n1p1`` and format it.
 ```Zsh
@@ -170,41 +169,41 @@ mkfs.fat -F 32 /dev/nvme0n1p1
 ```
 <br>
 
-- Find the root partition. For me it's ``/dev/nvme0n1p2`` and format it. I will use BTRFS.
+- Find and format the foort partition as BTRFS. For me it's ``/dev/nvme0n1p2``
 ```Zsh
 mkfs.btrfs /dev/nvme0n1p2
 ```
 <br>
 
-- Mount the root fs to make it accessible
+
+## Mount the file system
+
+
+- Mount the root partition to prepare the btrfs subvolumes
 ```Zsh
 mount /dev/nvme0n1p2 /mnt
 ```
 
 <br>
 
-## Disk mounting
-<br>
-
-- Lay down the subvolumes on a **flat** layout
-[explanation from sysadmin guide](https://archive.kernel.org/oldwiki/btrfs.wiki.kernel.org/index.php/SysadminGuide.html#Layout)
+- Lay down the subvolumes on a **flat** layout. More info from [sysadmin guide](https://archive.kernel.org/oldwiki/btrfs.wiki.kernel.org/index.php/SysadminGuide.html#Layout)
 
 
-- Create the subvolumes, in my case I choose to make a subvolume for / and one for /home. Subvolumes are identified by prepending @
+- Create the subvolumes
 ```Zsh
 btrfs subvolume create /mnt/@
 btrfs subvolume create /mnt/@home
 ```
 <br>
 
-- Unmount the root fs
+- Unmount the root partition so you can remount with btrfs mount options
 ```Zsh
 umount /mnt
 ```
 
 <br>
 
-- Mount the root and home subvolume. compress option.
+- Remount the root and home subvolume while setting mount options to compress and define subvol location
 ```Zsh
 mount -o compress=zstd,subvol=@ /dev/nvme0n1p2 /mnt
 mkdir -p /mnt/home
@@ -212,6 +211,8 @@ mount -o compress=zstd,subvol=@home /dev/nvme0n1p2 /mnt/home
 ```
 
 <br>
+
+- Create the ``/boot`` directory and mount your ESP (EFI partition) to the ``/boot`` partition 
 
 ```Zsh
 mkdir -p /mnt/boot
