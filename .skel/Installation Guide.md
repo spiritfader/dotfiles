@@ -140,36 +140,41 @@ timedatectl
 
 ## Partition the disks
 
-- I recommend making 2 partitions:  
-
-| Number | Type | Size | Mount |
-| --- | --- | --- | --- |
-| 1 | EFI | 1024 Mb | /boot |
-| 2 | Linux Filesystem | Remaining Space | / |  
-
-<br>
-
-- List and check drives names
+- List and check drives names to determine the drive you wish to use.
 ```Zsh
 fdisk -l
 ```
 <br>
 
-- Run cfdisk to parition disk and start with zero'd partition table
+- Run ``cfdisk`` to partition your disk while starting with a zeroed partition table.
 ```Zsh
 cfdisk -z /dev/nvme0n1
 ```
 <br>
 
+- Select ``GPT`` when prompted. 
+
+
+- We will be making two partitions that look as follows.  
+
+| Number | Type | Size | Mount |
+| --- | --- | --- | --- |
+| 1 | EFI | 1024 MB | /boot |
+| 2 | Linux Filesystem | Remaining Space | / |  
+
+<br>
+
+- Once finished, select ``write`` with your arrow keys, hit enter, and type ``yes``. Then highlight ``quit`` and hit enter.
+
 ## Format the partitions
 
-- Find the efi partition with ``fdisk -l`` or ``lsblk``. For me it's ``/dev/nvme0n1p1`` and format it.
+- Find the EFI partition you created with ``fdisk -l`` or ``lsblk``, then format it as a FAT32 filesystem.
 ```Zsh
 mkfs.fat -F 32 /dev/nvme0n1p1
 ```
 <br>
 
-- Find and format the foort partition as BTRFS. For me it's ``/dev/nvme0n1p2``
+- Find the root partition you created with ``fdisk -l`` or ``lsblk``, then format it as a BTRFS filesystem.
 ```Zsh
 mkfs.btrfs /dev/nvme0n1p2
 ```
@@ -186,10 +191,9 @@ mount /dev/nvme0n1p2 /mnt
 
 <br>
 
-- Lay down the subvolumes on a **flat** layout. More info from [sysadmin guide](https://archive.kernel.org/oldwiki/btrfs.wiki.kernel.org/index.php/SysadminGuide.html#Layout)
+- Use a **flat** subvolume layout in the creation of your subvolumes. More info from [sysadmin guide](https://archive.kernel.org/oldwiki/btrfs.wiki.kernel.org/index.php/SysadminGuide.html#Layout)
 
 
-- Create the subvolumes
 ```Zsh
 btrfs subvolume create /mnt/@
 btrfs subvolume create /mnt/@home
@@ -212,7 +216,7 @@ mount -o compress=zstd,subvol=@home /dev/nvme0n1p2 /mnt/home
 
 <br>
 
-- Create the ``/boot`` directory and mount your ESP (EFI partition) to the ``/boot`` partition 
+- Create the ``/boot`` directory and mount your EFI partition there 
 
 ```Zsh
 mkdir -p /mnt/boot
