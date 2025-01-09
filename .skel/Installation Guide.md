@@ -39,7 +39,11 @@ localectl list-keymaps
 
 loadkeys de-latin1
 ```
-##### If you need to set a particular console font, for example a HiDPI font
+
+<br>
+
+If you need to set a particular console font, for example a HiDPI font
+
 
 - Show available fonts
 ```Zsh
@@ -49,12 +53,9 @@ ls /usr/share/kbd/consolefonts/
 ```Zsh
 setfont ter-132b
 ```
-
 <br>
 
 ## Verify boot mode
-
-
 - If output is 64, system booted in UEFI mode with a 64-bit x64 UEFI.
 - If output is 32, system booted in UEFI mode with a 32-bit IA32 UEFI.
 - If the file doesn't exist, the system may be booted in BIOS (or CSM) mode.
@@ -65,25 +66,34 @@ cat /sys/firmware/efi/fw_platform_size
 
 
 ## Connect to network
+<br>
 
 #####  *Ethernet*
 ```Zsh
 Plug in your ethernet cable
 ```
+<br>
+
 ##### *Wi-Fi*
 
 - Get name of wireless nic
 ```Zsh
 ip link
 ```
+<br> 
+
 - Connect to unprotected Wi-Fi network (replace interface with nic name)
 ```Zsh
 iwctl station interface connect SSID
 ```
+<br>
+
 - Connect to password protected Wi-Fi network (replace interface with nic name)
 ```Zsh
 iwctl --passphrase passphrase station interface connect SSID
 ```
+<br>
+
 ##### *Modem*
 
 - Use mmcli to list available modems 
@@ -91,11 +101,14 @@ iwctl --passphrase passphrase station interface connect SSID
 ```Zsh
 mmcli -L
 ```
+<br>
+
 - Connect to the unprotected modem network, replacing ``MODEM_INDEX`` from above
 - Replace ``internet.myisp.example`` with your ISP's provided APN
 ```Zsh
 mmcli -m MODEM_INDEX --simple-connect="apn=internet.myisp.example"
 ```
+<br>
 
 - Connect to the protected modem network, replacing ``MODEM_INDEX`` from above
 - Replace ``internet.myisp.example`` with your ISP's provided APN
@@ -113,6 +126,8 @@ ping -c 5 archlinux.org
 <br>
 
 ## Check the system clock
+
+<br>
 
 - Check if ntp is active and if the time is right
 ```Zsh
@@ -138,11 +153,12 @@ timedatectl
 ```Zsh
 fdisk -l
 ```
+<br>
+
 - Run cfdisk to parition disk and start with zero'd partition table
 ```Zsh
 cfdisk -z /dev/nvme0n1
 ```
-
 <br>
 
 ## Disk formatting  
@@ -152,10 +168,14 @@ cfdisk -z /dev/nvme0n1
 ```Zsh
 mkfs.fat -F 32 /dev/nvme0n1p1
 ```
+<br>
+
 - Find the root partition. For me it's ``/dev/nvme0n1p2`` and format it. I will use BTRFS.
 ```Zsh
 mkfs.btrfs /dev/nvme0n1p2
 ```
+<br>
+
 - Mount the root fs to make it accessible
 ```Zsh
 mount /dev/nvme0n1p2 /mnt
@@ -164,6 +184,7 @@ mount /dev/nvme0n1p2 /mnt
 <br>
 
 ## Disk mounting
+<br>
 
 - Lay down the subvolumes on a **flat** layout
 [explanation from sysadmin guide](https://archive.kernel.org/oldwiki/btrfs.wiki.kernel.org/index.php/SysadminGuide.html#Layout)
@@ -174,6 +195,8 @@ mount /dev/nvme0n1p2 /mnt
 btrfs subvolume create /mnt/@
 btrfs subvolume create /mnt/@home
 ```
+<br>
+
 - Unmount the root fs
 ```Zsh
 umount /mnt
@@ -214,6 +237,7 @@ pacstrap -K /mnt base base-devel linux linux-firmware git btrfs-progs vim networ
 ```Zsh
 genfstab -U /mnt >> /mnt/etc/fstab
 ```
+<br>
 
 - Verify fstab
 ```Zsh
@@ -238,6 +262,8 @@ arch-chroot /mnt
 ```Zsh
 ln -sf /usr/share/zoneinfo/US/Eastern /etc/localtime
 ```
+<br>
+
 - Sync the system time to the hardware clock
 ```Zsh
 hwclock --systohc
@@ -247,17 +273,23 @@ hwclock --systohc
 
 ## Set Language and TTY keymap
 
+
 Edit `/etc/locale.gen` and uncomment the entries for your locales. ie: remove the `#` preceeding `en_US.UTF-8 UTF-8`
 
+<br>
 
 - Edit ``/etc/locale.gen``
 ```Zsh
 vim /etc/locale.gen
 ```
+<br>
+
 - Generate locales
 ```Zsh
 locale-gen
 ```
+<br>
+
 - Set ``LANG=`` variable to reflect your above choice in ``/etc/locale.conf``
 ```Zsh
 vim /etc/locale.conf
@@ -267,11 +299,14 @@ vim /etc/locale.conf
 
 If not using the default US keymap, edit `/etc/vconsole.conf`
 
- 
+<br>
+
 - Edit ``/etc/vconsole.conf``
 ```Zsh
 vim /etc/vconsole.conf
 ```
+<br>
+
 - Update the following line to reflect your current keymap
 ```Zsh
 KEYMAP=us
@@ -286,10 +321,14 @@ KEYMAP=us
 ```Zsh
 vim /etc/hostname
 ```
+<br>
+
 - Create/Edit the ``/etc/hosts`` file to reflect your localhost replacing 
 ```Zsh
 vim /etc/hosts
 ```
+<br>
+
 - add the following three lines replacing arch with your hostname from above
 ```Zsh
 127.0.0.1 localhost
@@ -307,10 +346,14 @@ vim /etc/hosts
 useradd -mG wheel spiritfader
 passwd spiritfader
 ```
+<br>
+
 - Edit sudoers file with visudo
 ```Zsh
 EDITOR=vim visudo
 ```
+<br>
+
 - Uncomment Allow sudo access to all within wheel group
 ```Zsh
 (wip)
@@ -325,6 +368,7 @@ EDITOR=vim visudo
 ```Zsh
 bootctl install
 ```
+<br>
 
 ## Enable/Disable services
 
@@ -333,6 +377,8 @@ bootctl install
 ```Zsh
 systemctl enable NetworkManager
 ```
+<br>
+
 - Enable chronyd and disable systemd-timesyncd because we use chronyd
 ```Zsh
 systemctl disable systemd-timesyncd
@@ -348,10 +394,14 @@ systemctl enable chronyd.service
 ```Zsh
 exit
 ```
+<br>
+
 - Unmount everything
 ```Zsh
 umount -R /mnt
 ```
+<br>
+
 - Reboot the system and unplug the installation media
 ```Zsh
 reboot
