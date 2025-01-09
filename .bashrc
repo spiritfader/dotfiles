@@ -329,10 +329,10 @@ alias gadd='git add'
 alias gpush='git push'
 alias gshow='git ls-tree --full-tree -r --name-only HEAD'
 gcom(){
-  git commit -am "$1"
+  git commit -am "$*"
 }
 gcompush(){
-  git commit -am "$1";git push
+  git commit -am "$*";git push
 }
 alias gst='git status'
 alias gcl='git clone'
@@ -354,7 +354,7 @@ alias dtf='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 alias dfpush='dtf push origin'
 alias dfshow='dtf ls-tree --full-tree -r --name-only HEAD'
 dfc(){
-  dtf commit -am "$1"
+  dtf commit -am "$*"
 }
 alias dfs='dtf status'
 
@@ -408,7 +408,7 @@ dfadd(){
 
 # update all system programs
 upd() { 
-  if command -v pacman &> /dev/null; then # if ARCH LINUX, WIN HUGE
+  if command -v pacman &> /dev/null; then # if Arch Linux
     if command -v pacman &> /dev/null; then  tput setaf 2; tput setaf 2; printf '%s\n' "Arch Official Repos (pacman -Syu):"; tput sgr0; sudo pacman -Syu; fi
     if command -v paru &> /dev/null; then  tput setaf 2; printf '\n%s\n' "Arch User Repository (paru -Syu):"; tput sgr0; paru -Syu; fi
     if command -v yay &> /dev/null; then  tput setaf 2; printf '\n%s\n' "Arch User Repository (paru -Syu):"; tput sgr0; yay -Syua; fi
@@ -422,7 +422,7 @@ upd() {
       if command -v yay &> /dev/null; then yes | yay -Scc; fi; 
     fi 
   fi
-  if command -v zypper; then # if OpenSUSE (weird)
+  if command -v zypper; then # if OpenSUSE
     if command -v zypper &> /dev/null; then  tput setaf 2; tput setaf 2; printf '\n%s\n' "OpenSUSE Repos (zypper refresh/zypper dup):"; tput sgr0; sudo zypper refresh; sudo zypper dup; fi
   fi  
   if command -v apt; then # if Debian
