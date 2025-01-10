@@ -22,6 +22,7 @@
   - [Configure services](#enabledisable-services)
   - [Unmount and reboot](#unmount-and-reboot)
 - [Post-Installation](#post-installation)
+  - [Install an Aur Helper](#aur-helper)
 
 # Pre-Installation
 ## Set the console keyboard layout and font (if necessary)
@@ -414,9 +415,8 @@ reboot
 
 <br>
 
-## Post-Installation
-
-
+# Post-Installation
+## Aur Helper
 - Install paru as AUR helper
 
 ```Zsh
