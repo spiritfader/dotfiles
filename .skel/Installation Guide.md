@@ -83,31 +83,31 @@ ip link
 ```
 <br> 
 
-- Connect to unprotected Wi-Fi network (replace interface with nic name)
+- Connect to unprotected Wi-Fi network (replace ``$INTERFACE`` with nic name, and ``$SSID`` with your wireless network name)
 ```Zsh
-iwctl station interface connect SSID
+iwctl station $INTERFACE connect $SSID
 ```
 <br>
 
-- Connect to password protected Wi-Fi network (replace interface with nic name)
+- Connect to password protected Wi-Fi network (replace ``$INTERFACE`` with nic name, ``$PASSPHRASE`` with your ``$SSID`` password, and ``$SSID`` with your wireless network name)
 ```Zsh
-iwctl --passphrase passphrase station interface connect SSID
+iwctl --passphrase $PASSPHRASE station $INTERFACE connect $SSID
 ```
 <br>
 
 ##### *Modem*
 
 - Use mmcli to list available modems 
-- Take note of ``/org/freedesktop/ModemManager1/Modem/MODEM_INDEX``
+- Take note of ``/org/freedesktop/ModemManager1/Modem/$MODEM_INDEX``
 ```Zsh
 mmcli -L
 ```
 <br>
 
-- Connect to the unprotected modem network, replacing ``MODEM_INDEX`` from above
+- Connect to the unprotected modem network, replacing ``$MODEM_INDEX`` from above
 - Replace ``internet.myisp.example`` with your ISP's provided APN
 ```Zsh
-mmcli -m MODEM_INDEX --simple-connect="apn=internet.myisp.example"
+mmcli -m $MODEM_INDEX --simple-connect="apn=internet.myisp.example"
 ```
 <br>
 
