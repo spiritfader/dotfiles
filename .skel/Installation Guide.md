@@ -69,13 +69,13 @@ cat /sys/firmware/efi/fw_platform_size
 ## Connect to network
 <br>
 
-#####  *Ethernet*
+###  *Ethernet*
 ```Zsh
 Plug in your ethernet cable
 ```
 <br>
 
-##### *Wi-Fi*
+### *Wi-Fi*
 
 - Get name of wireless nic
 ```Zsh
@@ -95,7 +95,7 @@ iwctl --passphrase $PASSPHRASE station $INTERFACE connect $SSID
 ```
 <br>
 
-##### *Modem*
+### *Modem*
 
 - Use mmcli to list available modems 
 - Take note of ``/org/freedesktop/ModemManager1/Modem/$MODEM_INDEX``
@@ -111,10 +111,10 @@ mmcli -m $MODEM_INDEX --simple-connect="apn=internet.myisp.example"
 ```
 <br>
 
-- Connect to the protected modem network, replacing ``MODEM_INDEX`` from above
+- Connect to the protected modem network, replacing ``$MODEM_INDEX`` from above
 - Replace ``internet.myisp.example`` with your ISP's provided APN
 ```Zsh
-mmcli -m MODEM_INDEX --simple-connect="apn=internet.myisp.example,user=user_name,password=password"
+mmcli -m $MODEM_INDEX --simple-connect="apn=internet.myisp.example,user=user_name,password=password"
 ```
 <br>
 
@@ -231,7 +231,7 @@ mount /dev/nvme0n1p1 /mnt/boot
 - Install packages to the root mountpoint thus, bootstrapping the new install and using -K switch to initialize a new pacman keyring. 
 - Append any additional packages to the end of the list or install in post-installation
 ```Zsh
-pacstrap -K /mnt base base-devel linux linux-firmware git btrfs-progs vim networkmanager openssh man sudo
+pacstrap -K /mnt base base-devel linux linux-firmware git btrfs-progs nano networkmanager openssh man sudo
 ```
 
 <br>
@@ -286,7 +286,7 @@ Edit `/etc/locale.gen` and uncomment the entries for your locales. ie: remove th
 
 - Edit ``/etc/locale.gen``
 ```Zsh
-vim /etc/locale.gen
+nano /etc/locale.gen
 ```
 <br>
 
@@ -298,7 +298,7 @@ locale-gen
 
 - Set ``LANG=`` variable to reflect your above choice in ``/etc/locale.conf``
 ```Zsh
-vim /etc/locale.conf
+nano /etc/locale.conf
 ```
 
 <br>
@@ -309,7 +309,7 @@ If not using the default US keymap, edit `/etc/vconsole.conf`
 
 - Edit ``/etc/vconsole.conf``
 ```Zsh
-vim /etc/vconsole.conf
+nano /etc/vconsole.conf
 ```
 <br>
 
@@ -325,13 +325,13 @@ KEYMAP=us
 
 - Edit the ``/etc/hostname`` file to reflect the name of your system (hostname) 
 ```Zsh
-vim /etc/hostname
+nano /etc/hostname
 ```
 <br>
 
 - Create/Edit the ``/etc/hosts`` file to reflect your localhost replacing 
 ```Zsh
-vim /etc/hosts
+nano /etc/hosts
 ```
 <br>
 
@@ -356,23 +356,40 @@ passwd spiritfader
 
 - Edit sudoers file with visudo
 ```Zsh
-EDITOR=vim visudo
+EDITOR=nano visudo
 ```
 <br>
 
-- Uncomment Allow sudo access to all within wheel group
+- Uncomment (remove the #) Allow sudo access to all members of the wheel group 
+- Change the line from: 
 ```Zsh
-(wip)
+#%wheel      ALL=(ALL:ALL) ALL
 ```
-
+to
+```Zsh
+%wheel      ALL=(ALL:ALL) ALL
+```
+and save.
 <br>
 
-## Bootloader configuration  
+## Bootloader configuration
 
-- Setup systemd-boot 
+- Install the systemd-boot loader 
 
 ```Zsh
 bootctl install
+```
+<br>
+
+- Setup unified kernel image
+```Zsh
+wip
+```
+<br>
+
+- Generate uki with mkinictpio
+```Zsh
+wip
 ```
 <br>
 
@@ -426,3 +443,26 @@ cd paru && makepkg -si
 
 <br>
 
+## Hardening your new install (Optional)
+
+```Zsh
+wip
+```
+
+<br>
+
+## Improving Performance (Optional)
+
+```Zsh
+wip
+```
+
+<br>
+
+## Optimizing Battery Life for Laptops (Optional)
+
+```Zsh
+wip
+```
+
+<br>
