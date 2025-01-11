@@ -20,6 +20,7 @@
   - [Create Users](#create-users)
   - [Bootloader configuration](#bootloader-configuration)
   - [Configure services](#enabledisable-services)
+  - [Setup swap](#setup-swap)
   - [Unmount and reboot](#unmount-and-reboot)
 - [Post-Installation](#post-installation)
   - [Install an Aur Helper](#aur-helper)
@@ -229,9 +230,9 @@ mount /dev/nvme0n1p1 /mnt/boot
 ## Package bootstrap  
 
 - Install packages to the root mountpoint thus, bootstrapping the new install and using -K switch to initialize a new pacman keyring. 
-- Append any additional packages to the end of the list or install in post-installation
+- Append any additional packages to the end of the list or install in post-installation. Install ``intel-ucode`` or ``amd-ucode`` to install the respective microcode for your cpu. 
 ```Zsh
-pacstrap -K /mnt base base-devel linux linux-firmware git btrfs-progs nano networkmanager openssh man sudo
+pacstrap -K /mnt base base-devel linux linux-firmware git btrfs-progs nano networkmanager zram-generator openssh man sudo amd-ucode
 ```
 
 <br>
@@ -381,11 +382,54 @@ bootctl install
 ```
 <br>
 
-- Setup unified kernel image
+### *Setup unified kernel image*
+
+- open ``/etc/mkinitcpio.d/linux.preset`` for editing 
 ```Zsh
-wip
+nano /etc/mkinitcpio.d/linux.preset
 ```
 <br>
+
+- replace the contents of ``linux.preset`` from this;
+```Zsh
+ALL_config="/etc/mkinitcpio.conf"
+ALL_kver="/boot/vmlinuz-linux"
+
+PRESETS=('default' 'fallback')
+
+default_config="/etc/mkinitcpio.conf"
+default_image="/boot/initramfs-linux.img"
+#default_uki="/esp/EFI/Linux/arch-linux.efi"
+#default_options="--splash=/usr/share/systemd/bootctl/splash-arch.bmp"
+
+fallback_config="/etc/mkinitcpio.conf"
+fallback_image="/boot/initramfs-linux-fallback.img"
+#fallback_uki="/esp/EFI/Linux/arch-linux-fallback.efi"
+#fallback_options="-S autodetect"
+```
+
+<br>
+
+- To this. 
+- Replace ``esp`` with the mount point of your esp created earlier. For us this is ``/boot``
+```Zsh
+#ALL_config="/etc/mkinitcpio.conf"
+ALL_kver="/boot/vmlinuz-linux"
+
+PRESETS=('default' 'fallback')
+
+#default_config="/etc/mkinitcpio.conf"
+#default_image="/boot/initramfs-linux.img"
+default_uki="/boot/EFI/Linux/arch-linux.efi"
+default_options="--splash=/usr/share/systemd/bootctl/splash-arch.bmp"
+
+#fallback_config="/etc/mkinitcpio.conf"
+#fallback_image="/boot/initramfs-linux-fallback.img"
+fallback_uki="/boot/EFI/Linux/arch-linux-fallback.efi"
+fallback_options="-S autodetect"
+```
+<br>
+
 
 - Generate uki with mkinictpio
 ```Zsh
@@ -408,6 +452,24 @@ systemctl disable systemd-timesyncd
 systemctl enable chronyd.service
 ```
 
+<br>
+
+## Setup swap
+
+
+- Create and open``/etc/systemd/zram-generator.conf`` for editing
+```Zsh
+nano /etc/systemd/zram-generator.conf
+```
+<br>
+
+- Add the following lines, save and exit when finished.
+
+```Zsh
+[zram0]
+zram-size = min(ram / 2, 4096)
+compression-algorithm = zstd
+```
 <br>
 
 ## Unmount and reboot 
