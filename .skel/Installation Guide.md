@@ -374,6 +374,7 @@ and save.
 <br>
 
 ## Bootloader configuration
+### *Install your bootloader*
 
 - Install the systemd-boot loader 
 
@@ -410,7 +411,7 @@ fallback_image="/boot/initramfs-linux-fallback.img"
 
 <br>
 
-- To this. 
+- To this;
 - Replace ``esp`` with the mount point of your esp created earlier. For us this is ``/boot``
 ```Zsh
 #ALL_config="/etc/mkinitcpio.conf"
@@ -430,10 +431,15 @@ fallback_options="-S autodetect"
 ```
 <br>
 
-
-- Generate uki with mkinictpio
+### *Set kernel parameters for your uki*
 ```Zsh
 wip
+```
+<br>
+
+### *Generate your newly defined uki with mkinictpio*
+```Zsh
+mkinitcpio -p linux
 ```
 <br>
 
