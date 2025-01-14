@@ -9,35 +9,7 @@
 # source git-prompt for ps1 
 source /usr/share/git/git-prompt.sh
 
-for sh in /etc/bash/bashrc.d/* ; do
-	[[ -r ${sh} ]] && source "${sh}"
-done
-
-# Default umask. A umask of 022 prevents new files from being created group and world writable.
-# file permissions: rwxr-xr-x
-#
-umask 022
-
-# search path for cd(1)
-CDPATH=:$HOME
-
-# Enable the builtin emacs(1) command line editor in sh(1), e.g. C-a -> beginning-of-line.
-# Enable the builtin vi(1) command line editor in sh(1), e.g. ESC to go into visual mode.
-set -o emacs
-# set -o vi
-
-# Set ksh93 visual editing mode:
-if [ "$SHELL" = "/bin/ksh" ]; then
-  VISUAL=emacs
-fi
-
-# if ! pgrep -u "$USER" ssh-agent > /dev/null; then
-#     ssh-agent -t 1h > "$XDG_RUNTIME_DIR/ssh-agent.env"
-# fi
-# if [[ ! -f "$SSH_AUTH_SOCK" ]]; then
-#     source "$XDG_RUNTIME_DIR/ssh-agent.env" >/dev/null
-# fi
-
+# source bashrc.d if exists
 for sh in /etc/bash/bashrc.d/* ; do
 	[[ -r ${sh} ]] && source "${sh}"
 done
@@ -46,6 +18,33 @@ done
 if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
+
+# Default umask. A umask of 022 prevents new files from being created group and world writable.
+# file permissions: rwxr-xr-x
+umask 022
+
+# search path for cd(1)
+CDPATH=:$HOME
+
+# Enable the builtin emacs(1) command line editor in sh(1), e.g. C-a -> beginning-of-line.
+set -o emacs
+
+# Enable the builtin vi(1) command line editor in sh(1), e.g. ESC to go into visual mode.
+# set -o vi
+
+# Set ksh93 visual editing mode:
+if [ "$SHELL" = "/bin/ksh" ]; then
+  VISUAL=emacs
+fi
+
+# set ssh agent
+#if ! pgrep -u "$USER" ssh-agent > /dev/null; then
+#    ssh-agent -t 1h > "$XDG_RUNTIME_DIR/ssh-agent.env"
+#fi
+
+#if [[ ! -f "$SSH_AUTH_SOCK" ]]; then
+#    source "$XDG_RUNTIME_DIR/ssh-agent.env" >/dev/null
+#fi
 
 # Set envrionment path_______________________________________________________________________________________________________________________________
 
@@ -82,15 +81,20 @@ if command -v go &> /dev/null && [ -d "$(go env GOPATH)" ] && [[ ":$PATH:" != *"
   PATH="$(go env GOBIN):$(go env GOPATH)/bin${PATH:+":$PATH"}"
 fi
 
-#### Check for dotnet and add to path
+#### Check for dotnet and add to path             
 if command -v dotnet &> /dev/null && [ -d "$HOME/.dotnet/tools"  ] && [[ ":$PATH:" != *":$HOME/.dotnet/tools:"* ]]; then
-  PATH="$HOME/.dotnet/tools:$PATH"
+  PATH="$HOME/.dotnet/tools${PATH:+":$PATH"}"
   export DOTNET_CLI_TELEMETRY_OPTOUT=1
 fi
 
 #### Check for ccache and add to path
-if command -v ccache &> /dev/null && [ -d "/usr/lib/ccache/bin" ] && [[ ":$PATH:" != *":/usr/lib/ccache/bin:$PATH:"* ]]; then
-  export PATH="/usr/lib/ccache/bin:$PATH"
+if command -v ccache &> /dev/null && [ -d "/usr/lib/ccache/bin" ] && [[ ":$PATH:" != *":/usr/lib/ccache/bin:"* ]]; then
+  PATH="/usr/lib/ccache/bin${PATH:+":$PATH"}"
+fi
+
+#### Check for rustup and add to path
+if command -v rustup &> /dev/null && [ -d "/usr/lib/rustup/bin" ] && [[ ":$PATH:" != *":/usr/lib/rustup/bin:"* ]]; then
+  PATH="/usr/lib/rustup/bin${PATH:+":$PATH"}"
 fi
 
 # Set environment variables _________________________________________________________________________________________________________________________
@@ -99,13 +103,10 @@ export VISUAL="emacsclient -c -a emacs"
 export LD_PRELOAD=""
 export HISTSIZE=8192
 export HISTCONTROL=ignorespace
-#export HISTCONTROL=ignoreboth:erasedups:ignorespace
 export MANPAGER="less -R --use-color -Dd+r -Du+b"
 export RANGER_LOAD_DEFAULT_RC=FALSE
-#export PAGER='less'
-
-# Uncomment the following line if you don't like systemctl's auto-paging feature:
-# export SYSTEMD_PAGER=
+export PAGER="less"
+export SYSTEMD_PAGER="less"
 
 shopt -s autocd # Enable auto cd when typing directories 
 shopt -s checkwinsize # check the terminal size when it regains control - check winsize when resize
@@ -133,9 +134,9 @@ case ${TERM} in
 esac
 
 # # set variable identifying the chroot you work in (used in the prompt below)
-# if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
-#     debian_chroot=$(cat /etc/debian_chroot)
-# fi
+if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
+    debian_chroot=$(cat /etc/debian_chroot)
+fi
 
 # Set colorful PS1 only on colorful terminals.
 # dircolors --print-database uses its own built-in database instead of using /etc/DIR_COLORS. Try to use the external file first to take advantage of user additions.
@@ -193,6 +194,7 @@ else
 	# show root@ when we don't have colors
 	PS1+='\u@\h \w \$ '
 fi
+
 # Start bash PS1 prompt on newline if none within previous EOT (FIX, breaks multiple term in tiled wm)
 #PS1='$(printf "%$((`tput cols`-1))s\r")'$PS1
 
@@ -278,8 +280,6 @@ alias upde='sudo pacman -Syu && paru -Syu'
 alias xls='xlsclients'
 alias err='journalctl -b -p err'
 alias reinstall-packages='sudo pacman -Qqn | sudo pacman -S -'
-#alias aurlist='sudo pacman -Qqm'
-#alias paclist='sudo pacman -Qqn'
 alias packagereinstall='sudo pacman -Qqe > packages.txt; sudo pacman -S $(comm -12 <(pacman -Slq | sort) <(sort packages.txt)); rm packages.txt'
 alias sysdblame='systemd-analyze plot > $HOME/Pictures/boot.svg'
 
@@ -288,28 +288,33 @@ if command -v flatpak run org.winehq.Wine &> /dev/null && ! command -v wine &> /
 if command -v com.openwall.John &> /dev/null && ! command -v john &> /dev/null; then alias john='com.openwall.John'; fi
 if command -v io.gitlab.librewolf-community &> /dev/null && ! command -v librewolf &> /dev/null; then alias librewolf='io.gitlab.librewolf-community'; fi
 
-# Add an "alert" alias for long running commands.  Use like so: sleep 10; alert
+# Add an "alert" alias for long running commands, Usage: "sleep 10; alert"
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
 # dfir
 alias loginsh='cat /etc/passwd | grep sh$'
 alias allcron='for i in $(cat /etc/passwd | grep sh$ | cut -f1 -d: ); do echo $i; sudo crontab -u $i -l; done'
 alias loginshcron='for i in $(cat /etc/passwd | grep sh$ | cut -f1 -d: ); do echo $i; sudo crontab -u $i -l; done'
-clonedisk2disk() { # clone a hard disk to another, usage: 'clonedisk2disk /dev/sda /dev/sda' clonedisk2disk [source] [destination]
+
+# clone a hard disk to another, usage: 'clonedisk2disk /dev/sda /dev/sda' clonedisk2disk [source] [destination]
+clonedisk2disk() { 
   dd if="$1" of="$2" bs=64K conv=noerror,sync status=progress
 }
 
-imagedisk2file() { # image a hard disk to a compressed file, usage: 'imagedisk2file /dev/sda file_to_write_to.img' clonedisk2file [source-disk] [destination-file]
+# image a hard disk to a compressed file, usage: 'imagedisk2file /dev/sda file_to_write_to.img' clonedisk2file [source-disk] [destination-file]
+imagedisk2file() { 
   dd if="$1" conv=sync,noerror bs=64K | gzip -c  > "$2".img.gz
   fdisk -l "$1" > "$2".info
 }
 
-encryptwholeerase() { # Encrypt and overwrite drive with encrypted cipher for secure erase - Usage: encryptwholeerase "/dev/sdX"
+# Encrypt and overwrite drive with encrypted cipher for secure erase - Usage: encryptwholeerase "/dev/sdX"
+encryptwholeerase() {
   DEVICE="$1"; PASS=$(tr -cd '[:alnum:]' < /dev/urandom | head -c 1024)
   openssl enc -aes-256-ctr -pass pass:"$PASS" -nosalt < /dev/zero | dd obs=64K ibs=4K of="$DEVICE" oflag=direct status=progress
 }
 
-encryptfreeerase() { # Encrypt and overwrite free space with encrypted cipher for secure erase - Usage: encryptfreeerase
+# Encrypt and overwrite free space with encrypted cipher for secure erase - Usage: encryptfreeerase
+encryptfreeerase() {
   PASS=$(tr -cd '[:alnum:]' < /dev/urandom | head -c 1024)
   openssl enc -pbkdf2 -pass pass:"$PASS" -nosalt < /dev/zero | dd obs=128K ibs=4K of="Eraser" oflag=direct status=progress
   rm -f "Eraser"
@@ -319,7 +324,7 @@ encryptfreeerase() { # Encrypt and overwrite free space with encrypted cipher fo
 alias iommugroup='find /sys/kernel/iommu_groups/ -type l | sort -V'
 alias iommusupport='sudo dmesg | grep -e DMAR -e IOMMU -e AMD-Vi'
 alias pcidsupport="grep ' pcid ' /proc/cpuinfo"
-alias cpuvuln='for f in /sys/devices/system/cpu/vulnerabilities/*; do printf '%n%s' "${f##*/}" $(cat "$f"); done'
+alias cpuvuln='for f in /sys/devices/system/cpu/vulnerabilities/*; do echo "${f##*/} -" $(cat "$f"); done'
 hugepage() {
   grep -e AnonHugePages  /proc/*/smaps | awk  '{ if($2>4) print $0} ' |  awk -F "/"  '{printf $0; system("ps -fp " $3)} '
 }
@@ -340,12 +345,11 @@ alias gpull='git pull'
 alias gfet='git fetch'
 alias gbr='git branch -a'
 
-pgit(){ # usage pgit https://github.com/username/repo - converts regular github repo link to private link that can be cloned
+pcl(){ # usage pcl https://github.com/username/repo - converts regular github repo link to private link that can be cloned
   git clone "${1/#https:\/\/github.com/git@github.com:}"
 }
 
 git_update_all() {
-	# ls | xargs -I{} git -C {} pull OR for i in */.git; do ( echo $i; cd $i/..; git pull; ); done
 	find . -maxdepth 1 -print0 | xargs -P10 -I{} git -C {} pull
 }
 
@@ -358,20 +362,25 @@ dfc(){
 }
 alias dfs='dtf status'
 
-# Loop through ".$HOME/.dotfiles.conf" of files, check to see if file within exists and track it in the bare repo
+# Dotfile Management System - Loop through ".$HOME/.dotfiles.conf" of files, check to see if file within exists and track it in the bare repo
 dftrack(){   
   untrack+=();
-
-  wdir=$(pwd | sed "s|$HOME|\$HOME|");                                            # initialize array to hold dir/files to be "untracked" and removed from .dotfiles.conf
   
-  while IFS="" read -r p || [ -n "$p" ]; do                                       # loop through $HOME/.dotfiles.conf
+  # initialize array to hold dir/files to be "untracked" and removed from .dotfiles.conf
+  wdir=$(pwd | sed "s|$HOME|\$HOME|");
+
+  # loop through $HOME/.dotfiles.conf
+  while IFS="" read -r p || [ -n "$p" ]; do       
+    
+    # if dir/file does not exist within filesystem, add to "untracked" array                                
     if ! [[ $p ]]; then
       untrack+=("$p"); 
-      #printf '%s%n' "${untrack[@]}" #for testing purposes
-    fi                                                                            # if dir/file does not exist within fs, add to "untracked" array
+    fi                                                                            
+   
+    # if dir/file exists within fs, track it with "git add"
     if [[ $p ]]; then 
       dtf -C "$HOME" add "${p##\$HOME/}"
-    fi                                                                            # if dir/file exists within fs, track it with "git add"
+    fi                                                                            
   done < "$HOME/.dotfiles.conf"                    
   
   # remove dir & files from .dotfiles.conf that are in array and untrack from git with "git rm --cached"
@@ -381,71 +390,96 @@ dftrack(){
       dtf rm -r --cached "$i"; 
     fi; 
   done 
-
-  unset untrack                                                                   # unset "untracked" variable to keep consecutive runs clean
+  
+  # unset "untracked" variable to keep consecutive runs clean
+  unset untrack   
   
   sort -o "$HOME/.dotfiles.conf" "$HOME/.dotfiles.conf"
 }
 
-# Add file(s) to tracked dotfiles
+# Dotfile Management System - Add file(s) to tracked dotfiles
 dfadd(){ 
   wdir=$(pwd | sed "s|$HOME|\$HOME|");
-  for i in "$@"; do                                                               # Loop through tracked dotfiles (.dotfiles.conf)
+  
+  # Loop through tracked dotfiles (.dotfiles.conf)
+  for i in "$@"; do 
     if [[ -e "$(pwd)/$i" ]]; then                                                                                                     
       if grep -q "^$wdir/$i$" "$HOME"/.dotfiles.conf; then 
         printf '%s\n' "dir/file already exists within tracked file, skipping.";
-      fi;                                                                         # if dir/file exists and is already in tracked file, do nothing. 
+      fi;
+
+      # if dir/file exists and is already in tracked file, do nothing. 
       if ! grep -q "^$wdir/$i$" "$HOME"/.dotfiles.conf; then 
         printf '%s\n' "$wdir/$i" >> "$HOME"/.dotfiles.conf; 
       fi; 
-    fi;                                                                           # if dir/file exists but is not in file, add it.
+    fi;
+    
+    # if dir/file exists but is not in file, add it.
     if ! [[ -e "$(pwd)/$i" ]]; then 
+      # if dir/file does not exist, skip and do nothing.
       printf '%s\n' "The dir/file $wdir/$i cannot be located. Skipping.";
-    fi                                                                            # if dir/file does not exist, skip and do nothing.
+    fi
   done;
   sort -o "$HOME/.dotfiles.conf" "$HOME/.dotfiles.conf"      
 }
 
 # update all system programs
 upd() { 
-  if command -v pacman &> /dev/null; then # if Arch Linux
+  # Arch Linux
+  if command -v pacman &> /dev/null; then 
     if command -v pacman &> /dev/null; then  tput setaf 2; tput setaf 2; printf '%s\n' "Arch Official Repos (pacman -Syu):"; tput sgr0; sudo pacman -Syu; fi
     if command -v paru &> /dev/null; then  tput setaf 2; printf '\n%s\n' "Arch User Repository (paru -Syu):"; tput sgr0; paru -Syu; fi
     if command -v yay &> /dev/null; then  tput setaf 2; printf '\n%s\n' "Arch User Repository (paru -Syu):"; tput sgr0; yay -Syua; fi
-    if command -v updatedb &> /dev/null; then tput setaf 2; printf '\n%s\n' "Update locate/plocate database..."; tput sgr0; sudo updatedb; fi # update the locate/plocate database
-    if command -v pkgfile &> /dev/null; then tput setaf 2; printf '\n%s\n' "Update pkgfile database (pkgfile -u):"; tput sgr0; sudo pkgfile -u; fi # update the pkgfile database
-    if command -v pacman &> /dev/null; then  tput setaf 2; printf '\n%s\n' "Update pacman file database (pacman -Fy):"; tput sgr0; sudo pacman -Fy; fi # update the pacman file database
-    if command -v pacman-db-upgrade &> /dev/null; then tput setaf 2; printf '\n%s\n' "Upgrade pacman database"; tput sgr0; sudo pacman-db-upgrade; fi # upgrade the local pacman db to a newer format
-    if command -v pacman &> /dev/null; then tput setaf 2; printf '\n%s\n' "Clear pacman cache:"; tput sgr0; # Remove all files and unused repositories from pacman cache without prompt
+    if command -v updatedb &> /dev/null; then tput setaf 2; printf '\n%s\n' "Update locate/plocate database..."; tput sgr0; sudo updatedb; fi          
+    if command -v pkgfile &> /dev/null; then tput setaf 2; printf '\n%s\n' "Update pkgfile database (pkgfile -u):"; tput sgr0; sudo pkgfile -u; fi     
+    if command -v pacman &> /dev/null; then  tput setaf 2; printf '\n%s\n' "Update pacman file database (pacman -Fy):"; tput sgr0; sudo pacman -Fy; fi 
+    if command -v pacman-db-upgrade &> /dev/null; then tput setaf 2; printf '\n%s\n' "Upgrade pacman database"; tput sgr0; sudo pacman-db-upgrade; fi 
+    if command -v pacman &> /dev/null; then tput setaf 2; printf '\n%s\n' "Clear pacman cache:"; tput sgr0; 
       yes | sudo pacman -Scc; 
       if command -v paru &> /dev/null; then yes | paru -Scc; fi; 
       if command -v yay &> /dev/null; then yes | yay -Scc; fi; 
     fi 
   fi
-  if command -v zypper; then # if OpenSUSE
+
+  # OpenSUSE
+  if command -v zypper; then 
     if command -v zypper &> /dev/null; then  tput setaf 2; tput setaf 2; printf '\n%s\n' "OpenSUSE Repos (zypper refresh/zypper dup):"; tput sgr0; sudo zypper refresh; sudo zypper dup; fi
-  fi  
-  if command -v apt; then # if Debian
+  fi
+
+  # Debian
+  if command -v apt; then
     if command -v apt &> /dev/null; then  tput setaf 2; tput setaf 2; printf '\n%s\n' "Debian Repos (apt update/apt upgrade):"; tput sgr0; sudo apt update; sudo apt upgrade; fi
   fi
-  if command -v yum; then # if Fedora/RHEL
+
+  # Fedora/RHEL
+  if command -v yum; then
     if command -v yum &> /dev/null; then  tput setaf 2; tput setaf 2; printf '\n%s\n' "RHEL/Fedora Repos (yum update/yum upgrade):"; tput sgr0; sudo yum update; sudo yum upgrade; fi
   fi
-  if command -v pkg; then # Alpine Linux
+
+  # Alpine
+  if command -v pkg; then
     if command -v pkg &> /dev/null; then  tput setaf 2; tput setaf 2; printf '\n%s\n' "Alpine Repos (pkg update/pkg upgrade):"; tput sgr0; sudo pkg update; sudo pkg upgrade; fi
   fi
+
+  # Flatpak
   if command -v flatpak &> /dev/null; then  tput setaf 2; printf '\n\n%s\n' "Flatpak (flatpak --user update):"; tput sgr0; flatpak --user update; flatpak uninstall --unused;fi
+  
+  # Snap
   if command -v snap &> /dev/null; then  tput setaf 2; printf '\n%s\n' "Snap (snap refresh):"; tput sgr0; sudo snap refresh; fi
   sync && printf '\n'
+
 }
 
-flacverify() { # verify flac files for corruption - flacverify [dir]
+# verify flac files for corruption - flacverify [dir]
+flacverify() { 
   find -L "$1" -type f -name '.flac' -print0 | while IFS= read -r -d '' file
   do printf '%3d %s\n' "$?" "$(tput sgr0)checking $(realpath "$file")" && flac -wst "$file" 2>/dev/null || printf '%3d %s\n' "$?" "$(tput setaf 1; realpath "$file") is corrupt $(tput sgr0)" | tee -a ~/corruptedFlacsList.txt
   done
+
 }
 
-appendPagination() { # read file in and append pagenumbers to each line 
+# read file in and append pagenumbers to each line
+appendPagination() {  
   while IFS="" read -r p || [ -n "$p" ]
   do
     for i in {2..50}
@@ -460,15 +494,18 @@ packetDrop() {
   printf '%s\n' "ifconfig -a | grep X errors" "$(ifconfig -a | grep "X errors")"
 }
 
-ffs (){ # Search for text in firefox with pre-configured search engine
+# Search for text in firefox with pre-configured search engine
+ffs (){ 
   firefox -search "$*";exit 
 }
 
-pskill() { # kill a given process by name
+# kill a given process by name
+pskill() { 
     pgrep "$1" | grep -v grep | awk '{ print $1 }' | xargs kill
 }
 
-ask() { # Wrap in loop to evaluate command, statement, or idea OR use confirm()
+# Wrap in loop to evaluate command, statement, or idea OR use confirm()
+ask() { 
   echo -n "$@" '[y/n] ' ; read -r ans
   case "$ans" in
       y*|Y*) return 0 ;;
@@ -476,23 +513,27 @@ ask() { # Wrap in loop to evaluate command, statement, or idea OR use confirm()
   esac
 }
 
-confirm() { # Usage: confirm ls or confirm htop, etc.
+# Usage: confirm ls or confirm htop, etc.
+confirm() {
   if ask "$1"; then 
     "$1" 
   fi
 }
 
-utime() { # Convert unix time to human readable - Usage: utime unixtime "utime 23454236" 
+# Convert unix time to human readable - Usage: utime unixtime "utime 23454236" 
+utime() { 
   if [ -n "$1" ]; then
       printf '%(%F %T)T\n' "$1"
   fi
 }
 
-quote() { # Pulls quote
+# Pulls quote
+quote() { 
 	curl -s https://favqs.com/api/qotd | jq -r '[.quote.body, .quote.author] | "\(.[0]) \n~\(.[1])\n"'
 }
 
-repeat() { # Repeat n times command. Usage: "repeat 20 ls"
+# Repeat n times command. Usage: "repeat 20 ls"
+repeat() { 
   local i max
   max=$1; shift;
   for ((i=1; i <= max ; i++)); do  # --> C-like syntax
@@ -571,7 +612,7 @@ nvimod() {
     nvim -p "$(git status -suall | awk '{print $2}')"
 }
 
-# Open files modified in a git commit in nvim tabs; defaults to HEAD. Pop it in your .bashrc - Examples: "virev 49808d5" or "virev HEAD~3"
+# Open files modified in a git commit in nvim tabs; defaults to HEAD. Usage: "virev 49808d5" or "virev HEAD~3"
 virev() {
   commit=$1
   if [ -z "${commit}" ]; then
@@ -651,7 +692,8 @@ eh() {
   IFS=$SAVEIFS
 }
 
-smush() { # Usage "smush <file> <tar.gz.>"
+# Usage "smush <file> <tar.gz.>"
+smush() { 
     FILE=$1
     case $FILE in
         *.tar.bz2)   shift && tar cjf "$FILE" "$1"                                     ;;
@@ -663,32 +705,39 @@ smush() { # Usage "smush <file> <tar.gz.>"
     esac
 }
 
-buffer_clean() { # frees ram buffer
+# frees ram buffer
+buffer_clean() { 
 	free -h && sudo sh -c 'echo 1 > /proc/sys/vm/drop_caches' && free -h
 }
 
-calc() { # Calculate the input string using bc command (it's a calculator)
+# Calculate the input string using bc command (it's a calculator)
+calc() { 
   echo "$*" | bc;
 }
+
 
 mktargz() { 
   tar czf "${1%%/}.tar.gz" "${1%%/}/"; 
 }
 
-mkown() { # take ownership of file
+# take ownership of file
+mkown() { 
   sudo chown -R "$(whoami)" "${1:-.}"; 
 }
 
-mkgrp() { # change ownership of group on file to self
+# change ownership of group on file to self
+mkgrp() { 
   sudo chgrp -R "$(whoami)" "${1:-.}"; 
 }
 
-mkmv() { # make directory and move file into it - Usage: "mkmv filetobemoved.txt NewDirectory"
+# make directory and move file into it - Usage: "mkmv filetobemoved.txt NewDirectory"
+mkmv() { 
     mkdir "$2"
     mv "$1" "$2"
 }
 
-md () { # make directory and immediately enter it
+# make directory and immediately enter it
+md () { 
   mkdir -p "$@" && cd "$@" || exit
 }
 
@@ -839,11 +888,13 @@ wafscan(){
   nmap -p443 --script http-waf-detect --script-args="http-waf-detect.aggro,http-waf-detect.detectBodyChanges" "${1}"
 }
 
-pingdrops() { # Detect frame drops using `ping` - Usage: pingdrops 192.168.122.137
+# Detect frame drops using `ping` - Usage: pingdrops 192.168.122.137
+pingdrops() { 
   ping "${1}" | grep -oP --line-buffered "(?<=icmp_seq=)[0-9]{1,}(?= )" | awk '$1!=p+1{print p+1"-"$1-1}{p=$1}'
 }
 
-urltest() { # Use Curl to check URL connection performance - urltest https://google.com
+# Use Curl to check URL connection performance - urltest https://google.com
+urltest() { 
   URL="$*"
   if [ -n "${URL[0]}" ]; then
     curl -L --write-out "URL,DNS,conn,time,speed,size\n%{url_effective},%{time_namelookup} (s),%{time_connect} (s),%{time_total} (s),%{speed_download} (bps),%{size_download} (bytes)\n" \
@@ -851,7 +902,8 @@ urltest() { # Use Curl to check URL connection performance - urltest https://goo
   fi
 }
 
-portproc() { # List processes associated with a port - Usage: "portproc 22"
+# List processes associated with a port - Usage: "portproc 22"
+portproc() { 
   port="${1}"
   if [ -n "${port}" ]
   then
@@ -865,7 +917,8 @@ portproc() { # List processes associated with a port - Usage: "portproc 22"
   fi
 }
 
-filegen() { # Generate a file of randomized data and certain size - Usage: filegen <size> <location> <(a)lpha, (n)umeric, (r)andom, (b)inary> 
+# Generate a file of randomized data and certain size - Usage: filegen <size> <location> <(a)lpha, (n)umeric, (r)andom, (b)inary>
+filegen() {  
   s="${1}"
   if [ -z "${s}" ]; then s="1M"; fi
   fsize="$(echo "${s}" | grep -Eo '[0-9]{1,}')"
@@ -882,7 +935,8 @@ filegen() { # Generate a file of randomized data and certain size - Usage: fileg
   ls -alh "${f}"
 }
 
-gifify() { #  animated gifs from any video - https://gist.github.com/SlexAxton/4989674
+#  animated gifs from any video - https://gist.github.com/SlexAxton/4989674
+gifify() { 
   if [[ -n "$1" ]]; then
     if [[ $2 == '--good' ]]; then
       ffmpeg -i "$1" -r 10 -vcodec png out-static-%05d.png
@@ -910,7 +964,8 @@ tree_size() {
 	du -a ./* | sort -r -n | head -20
 }
 
-appleProtection() { # Apple Protection On/Off (only available on mac running bash, outdated)
+# Apple Protection On/Off (only available on mac running bash, outdated)
+appleProtection() {
   case "$1" in
      on)       sudo spctl --master-enable ;;
     off)       sudo spctl --master-disable ;;

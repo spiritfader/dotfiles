@@ -362,15 +362,14 @@ EDITOR=nano visudo
 <br>
 
 - Uncomment (remove the #) Allow sudo access to all members of the wheel group 
-- Change the line from: 
+- Change the line from this;
 ```Zsh
 #%wheel      ALL=(ALL:ALL) ALL
 ```
-to
+- To this, then save.
 ```Zsh
 %wheel      ALL=(ALL:ALL) ALL
 ```
-and save.
 <br>
 
 ## Bootloader configuration
