@@ -46,14 +46,14 @@ fi
 #    source "$XDG_RUNTIME_DIR/ssh-agent.env" >/dev/null
 #fi
 
-# Set envrionment path_______________________________________________________________________________________________________________________________
+# Set environment path________________________________________________________
 
-# Check for user bin $HOME/.local/bin and add to path if it exists and isnt in path
+#### Check for user bin $HOME/.local/bin and add to path if it exists and isnt in path
 if [ -d "$HOME/.local/bin" ] && [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
   PATH="$HOME/.local/bin${PATH:+":$PATH"}"
 fi
 
-## Check for user bin $HOME/bin and add to path if it exists and isnt in path
+#### Check for user bin $HOME/bin and add to path if it exists and isnt in path
 if [ -d "$HOME/bin" ] && [[ ":$PATH:" != *":$HOME/bin:"* ]]; then
   PATH="$HOME/bin${PATH:+":$PATH"}"
 fi
@@ -97,7 +97,12 @@ if command -v rustup &> /dev/null && [ -d "/usr/lib/rustup/bin" ] && [[ ":$PATH:
   PATH="/usr/lib/rustup/bin${PATH:+":$PATH"}"
 fi
 
-# Set environment variables _________________________________________________________________________________________________________________________
+#### Check for npm and allow for local installations
+if command -v npm &> /dev/null && [ -d "$HOME/.local/bin" ] && [[ ":$PATH:" = *":$HOME/.local/bin:"* ]]; then
+  export npm_config_prefix="$HOME/.local" 
+fi
+
+# Set environment variables __________________________________________________
 export EDITOR="emacsclient -t"
 export VISUAL="emacsclient -c -a emacs"
 export LD_PRELOAD=""
@@ -219,7 +224,7 @@ fi
 # Try to keep environment pollution down, EPA loves us.
 unset use_color sh
 
-# Set aliases & functions____________________________________________________________________________________________________________________________
+# Set aliases & functions_____________________________________________________
 alias ssh='TERM=xterm-256color ssh'
 alias em='emacs -nw'
 #alias em='emacsclient -t'
@@ -291,7 +296,8 @@ if command -v io.gitlab.librewolf-community &> /dev/null && ! command -v librewo
 # Add an "alert" alias for long running commands, Usage: "sleep 10; alert"
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
-# dfir
+# dfir _______________________________________________________________________
+
 alias loginsh='cat /etc/passwd | grep sh$'
 alias allcron='for i in $(cat /etc/passwd | grep sh$ | cut -f1 -d: ); do echo $i; sudo crontab -u $i -l; done'
 alias loginshcron='for i in $(cat /etc/passwd | grep sh$ | cut -f1 -d: ); do echo $i; sudo crontab -u $i -l; done'
@@ -329,7 +335,7 @@ hugepage() {
   grep -e AnonHugePages  /proc/*/smaps | awk  '{ if($2>4) print $0} ' |  awk -F "/"  '{printf $0; system("ps -fp " $3)} '
 }
 
-# git tools
+# git tools___________________________________________________________________
 alias gadd='git add'
 alias gpush='git push'
 alias gshow='git ls-tree --full-tree -r --name-only HEAD'
@@ -345,7 +351,9 @@ alias gpull='git pull'
 alias gfet='git fetch'
 alias gbr='git branch -a'
 
-pcl(){ # usage pcl https://github.com/username/repo - converts regular github repo link to private link that can be cloned
+# converts regular github repo link to private link that can be cloned
+# usage: pcl https://github.com/username/repo
+pcl(){ 
   git clone "${1/#https:\/\/github.com/git@github.com:}"
 }
 
@@ -353,7 +361,7 @@ git_update_all() {
 	find . -maxdepth 1 -print0 | xargs -P10 -I{} git -C {} pull
 }
 
-# dotfile Management 
+# dotfile Management _________________________________________________________
 alias dtf='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 alias dfpush='dtf push origin'
 alias dfshow='dtf ls-tree --full-tree -r --name-only HEAD'
@@ -423,13 +431,28 @@ dfadd(){
   sort -o "$HOME/.dotfiles.conf" "$HOME/.dotfiles.conf"      
 }
 
+# miscellaenous programs/functions_____________________________________________
+
+# output power scaling driver
+powersch() {
+  SCALING_DRIVER="$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_driver)"
+  tput setaf 2;printf '%s\n\n' "Scaling Driver in-use: $(tput setaf 4;cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_driver | uniq)"
+  tput setaf 2;printf '%s\n' "Governor in-use: $(tput setaf 4;cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor | uniq)"
+  tput setaf 2;printf '%s\n' "Available Governors: $(tput setaf 4;cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_available_governors| uniq)"
+
+  if [ "$SCALING_DRIVER" = "amd-pstate-epp" ]; then
+    tput setaf 2;printf '\n%s\n' "EPP in-use: $(tput setaf 4;cat /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference | uniq)"
+    tput setaf 2;printf '%s\n' "Available EPP: $(tput setaf 4;cat /sys/devices/system/cpu/cpufreq/policy*/energy_performance_available_preferences | uniq)"
+  fi
+}
+
 # update all system programs
 upd() { 
   # Arch Linux
   if command -v pacman &> /dev/null; then 
-    if command -v pacman &> /dev/null; then  tput setaf 2; tput setaf 2; printf '%s\n' "Arch Official Repos (pacman -Syu):"; tput sgr0; sudo pacman -Syu; fi
-    if command -v paru &> /dev/null; then  tput setaf 2; printf '\n%s\n' "Arch User Repository (paru -Syu):"; tput sgr0; paru -Syu; fi
-    if command -v yay &> /dev/null; then  tput setaf 2; printf '\n%s\n' "Arch User Repository (paru -Syu):"; tput sgr0; yay -Syua; fi
+    if command -v pacman &> /dev/null; then tput setaf 2; tput setaf 2; printf '%s\n' "Arch Official Repos (pacman -Syu):"; tput sgr0; sudo pacman -Syu; fi
+    if command -v paru &> /dev/null; then tput setaf 2; printf '\n%s\n' "Arch User Repository (paru -Syu):"; tput sgr0; paru -Syu; fi
+    if command -v yay &> /dev/null; then tput setaf 2; printf '\n%s\n' "Arch User Repository (paru -Syu):"; tput sgr0; yay -Syua; fi
     if command -v updatedb &> /dev/null; then tput setaf 2; printf '\n%s\n' "Update locate/plocate database..."; tput sgr0; sudo updatedb; fi          
     if command -v pkgfile &> /dev/null; then tput setaf 2; printf '\n%s\n' "Update pkgfile database (pkgfile -u):"; tput sgr0; sudo pkgfile -u; fi     
     if command -v pacman &> /dev/null; then  tput setaf 2; printf '\n%s\n' "Update pacman file database (pacman -Fy):"; tput sgr0; sudo pacman -Fy; fi 
@@ -443,22 +466,22 @@ upd() {
 
   # OpenSUSE
   if command -v zypper; then 
-    if command -v zypper &> /dev/null; then  tput setaf 2; tput setaf 2; printf '\n%s\n' "OpenSUSE Repos (zypper refresh/zypper dup):"; tput sgr0; sudo zypper refresh; sudo zypper dup; fi
+    if command -v zypper &> /dev/null; then tput setaf 2; tput setaf 2; printf '\n%s\n' "OpenSUSE Repos (zypper refresh/zypper dup):"; tput sgr0; sudo zypper refresh; sudo zypper dup; fi
   fi
 
   # Debian
   if command -v apt; then
-    if command -v apt &> /dev/null; then  tput setaf 2; tput setaf 2; printf '\n%s\n' "Debian Repos (apt update/apt upgrade):"; tput sgr0; sudo apt update; sudo apt upgrade; fi
+    if command -v apt &> /dev/null; then tput setaf 2; tput setaf 2; printf '\n%s\n' "Debian Repos (apt update/apt upgrade):"; tput sgr0; sudo apt update; sudo apt upgrade; fi
   fi
 
   # Fedora/RHEL
   if command -v yum; then
-    if command -v yum &> /dev/null; then  tput setaf 2; tput setaf 2; printf '\n%s\n' "RHEL/Fedora Repos (yum update/yum upgrade):"; tput sgr0; sudo yum update; sudo yum upgrade; fi
+    if command -v yum &> /dev/null; then tput setaf 2; tput setaf 2; printf '\n%s\n' "RHEL/Fedora Repos (yum update/yum upgrade):"; tput sgr0; sudo yum update; sudo yum upgrade; fi
   fi
 
   # Alpine
   if command -v pkg; then
-    if command -v pkg &> /dev/null; then  tput setaf 2; tput setaf 2; printf '\n%s\n' "Alpine Repos (pkg update/pkg upgrade):"; tput sgr0; sudo pkg update; sudo pkg upgrade; fi
+    if command -v pkg &> /dev/null; then tput setaf 2; tput setaf 2; printf '\n%s\n' "Alpine Repos (pkg update/pkg upgrade):"; tput sgr0; sudo pkg update; sudo pkg upgrade; fi
   fi
 
   # Flatpak
@@ -469,11 +492,71 @@ upd() {
   sync && printf '\n'
 
 }
+netpps() {
+  # Measure Packets per Second on an Interface
+  # Refactored from code written by Joe Miller (https://github.com/joemiller)
+  # The following script periodically prints out the number of RX/TX packets for a given network interface (to be provided as an argument to the script).
+  INTERVAL="1"  # update interval in seconds
+
+  if [ -z "$1" ]; then
+          echo
+          echo usage: "$0" network-interface
+          echo
+          echo e.g. "$0" eth0
+          echo
+          echo shows packets-per-second
+          exit
+  fi
+
+  while true
+  do
+          R1=$(cat /sys/class/net/"$1"/statistics/rx_packets)
+          T1=$(cat /sys/class/net/"$1"/statistics/tx_packets)
+          sleep $INTERVAL
+          R2=$(cat /sys/class/net/"$1"/statistics/rx_packets)
+          T2=$(cat /sys/class/net/"$1"/statistics/tx_packets)
+          TXPPS=$((T2 - T1))
+          RXPPS=$((R2 - R1))
+          echo "TX $1: $TXPPS pkts/s RX $1: $RXPPS pkts/s"
+  done
+}
+
+netspeed() {
+  # Measure Network Bandwidth on an Interface
+  # Refactored from code written by Joe Miller (https://github.com/joemiller)
+  # The following script periodically prints out the RX/TX bandwidth (KB/s) for a given network interface (to be provided as an argument to the script).
+  INTERVAL="1"  # update interval in seconds
+
+  if [ -z "$1" ]; then
+          echo
+          echo usage: "$0" network-interface
+          echo
+          echo e.g. "$0" eth0
+          echo
+          exit
+  fi
+
+  while true
+  do
+          R1=$(cat /sys/class/net/"$1"/statistics/rx_bytes)
+          T1=$(cat /sys/class/net/"$1"/statistics/tx_bytes)
+          sleep $INTERVAL
+          R2=$(cat /sys/class/net/"$1"/statistics/rx_bytes)
+          T2=$(cat /sys/class/net/"$1"/statistics/tx_bytes)
+          TBPS=$((T2 - T1))
+          RBPS=$((R2 - R1))
+          TKBPS=$((TBPS / 1024))
+          RKBPS=$((RBPS / 1024))
+          echo "TX $1: $TKBPS kB/s RX $1: $RKBPS kB/s"
+  done
+}
 
 # verify flac files for corruption - flacverify [dir]
 flacverify() { 
   find -L "$1" -type f -name '.flac' -print0 | while IFS= read -r -d '' file
-  do printf '%3d %s\n' "$?" "$(tput sgr0)checking $(realpath "$file")" && flac -wst "$file" 2>/dev/null || printf '%3d %s\n' "$?" "$(tput setaf 1; realpath "$file") is corrupt $(tput sgr0)" | tee -a ~/corruptedFlacsList.txt
+  do printf '%3d %s\n' "$?" "$(tput sgr0)checking $(realpath "$file")" && \
+  flac -wst "$file" 2>/dev/null || printf '%3d %s\n' "$?" "$(tput setaf 1;\
+  realpath "$file") is corrupt $(tput sgr0)" | tee -a ~/corruptedFlacsList.txt
   done
 
 }
@@ -580,7 +663,7 @@ swapname() { # Swap 2 filenames around, if they exist (from Uzi's bashrc). - Usa
 
 # disables ctrl+z for the wrapped command ($1) 
 nopause(){
-  trap "" 20
+  trap "" SIGTSTP # send signal 20
   "$1"
 }
 
@@ -664,7 +747,7 @@ ef() {
   IFS=$SAVEIFS
 }
 
-# [e]tract[h]ere = extracts files loosely into directory - usage: exhere <file>
+# [e]tract[h]ere = extracts files loosely into directory usage: exhere <file>
 eh() {
   SAVEIFS=$IFS
   IFS="$(printf '\n\t')"
