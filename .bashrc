@@ -625,11 +625,11 @@ top10() {
 ii() {
     printf '%s\n\n' "You are logged on to $HOSTNAME"
     printf '%s\n%5s\n\n' "Kernel information: " "$(uname -a)"
-    printf '%s\n%5s\n\n' "Users logged on: " "$(PROCPS_USERLEN=32 w -hs | cut -d " " -f1 | sort | uniq)"
-    printf '%s\n%50s\n\n' "Current date: " "$(date)"
-    printf '%s\n%5s\n\n' "Machine stats: " "uptime is $(uptime | awk /'up/ {print $3,$4,$5,$6,$7,$8,$9,$10}')"
+    printf '%s\n%5s\n\n' "Users logged on: $(PROCPS_USERLEN=32 w -hs | cut -d " " -f1 | sort | uniq)"
+    printf '%s\n%50s\n\n' "Current date: $(date)"
+    printf '%s\n%5s\n\n' "Machine stats: uptime is $(uptime | awk /'up/ {print $3,$4,$5,$6,$7,$8,$9,$10}')"
     printf '%s\n%5s\n\n' "Memory stats: " "$(free)"
-    printf '%s\n%5s\n\n' "Diskspace: " "$(df / "$HOME")"
+    printf '%s\n%5s\n\n' "Diskspace: " "$(df -h / "$HOME")"
     printf '%s\n%5s\n\n' "Local IP Address:" "$(ip -4 addr | grep -v 127.0.0.1 | grep -v secondary | grep "inet" | awk '{print $2}' ; ip -6 addr | grep -v ::1 | grep -v secondary | grep "inet" | awk '{print $2}')"
     #printf '%s\n' ""
 }
