@@ -448,6 +448,14 @@ powersch() {
 
 # update all system programs
 upd() { 
+  
+  ## trap ctrl-c and call ctrl_c()
+  #trap ctrl_c INT
+#
+  #function ctrl_c() {
+  #  exit
+  #}
+
   # Arch Linux
   if command -v pacman &> /dev/null; then 
     if command -v pacman &> /dev/null; then tput setaf 2; tput setaf 2; printf '%s\n' "Arch Official Repos (pacman -Syu):"; tput sgr0; sudo pacman -Syu; fi
@@ -492,12 +500,20 @@ upd() {
   sync && printf '\n'
 
 }
+
 netpackets() {
   # Measure Packets per Second on an Interface
   # Refactored from code written by Joe Miller (https://github.com/joemiller)
   # The following script periodically prints out the number of RX/TX packets for a given network interface (to be provided as an argument to the script).
   
-  INTERVAL="1"  # update interval in seconds
+  # default to wlan0 if no interface is provided
+  if [ -z "$1" ]
+  then
+    set -- "wlan0"
+  fi
+
+  # update interval in seconds
+  INTERVAL="1"  
 
   printf '%s\n' "usage: $0 network-interface"
   printf '%s\n' "e.g. $0 eth0"
@@ -520,6 +536,12 @@ netspeed() {
   # Measure Network Bandwidth on an Interface
   # Refactored from code written by Joe Miller (https://github.com/joemiller)
   # The following script periodically prints out the RX/TX bandwidth (KB/s) for a given network interface (to be provided as an argument to the script).
+
+  # default to wlan0 if no interface is provided
+  if [ -z "$1" ]
+  then
+    set -- "wlan0"
+  fi
 
   INTERVAL="1"  # update interval in seconds
 
