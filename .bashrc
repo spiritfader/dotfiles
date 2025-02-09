@@ -6,7 +6,7 @@
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
-# source git-prompt for ps1 
+# source git-prompt for ps1
 source /usr/share/git/git-prompt.sh
 
 # source bashrc.d if exists
@@ -81,7 +81,7 @@ if command -v go &> /dev/null && [ -d "$(go env GOPATH)" ] && [[ ":$PATH:" != *"
   PATH="$(go env GOBIN):$(go env GOPATH)/bin${PATH:+":$PATH"}"
 fi
 
-#### Check for dotnet and add to path             
+#### Check for dotnet and add to path
 if command -v dotnet &> /dev/null && [ -d "$HOME/.dotnet/tools"  ] && [[ ":$PATH:" != *":$HOME/.dotnet/tools:"* ]]; then
   PATH="$HOME/.dotnet/tools${PATH:+":$PATH"}"
   export DOTNET_CLI_TELEMETRY_OPTOUT=1
@@ -99,7 +99,7 @@ fi
 
 #### Check for npm and allow for local installations
 if command -v npm &> /dev/null && [ -d "$HOME/.local/bin" ] && [[ ":$PATH:" = *":$HOME/.local/bin:"* ]]; then
-  export npm_config_prefix="$HOME/.local" 
+  export npm_config_prefix="$HOME/.local"
 fi
 
 # Set environment variables __________________________________________________
@@ -113,7 +113,7 @@ export RANGER_LOAD_DEFAULT_RC=FALSE
 export PAGER="less"
 export SYSTEMD_PAGER="less"
 
-shopt -s autocd # Enable auto cd when typing directories 
+shopt -s autocd # Enable auto cd when typing directories
 shopt -s checkwinsize # check the terminal size when it regains control - check winsize when resize
 shopt -s histappend # append to the history file, don't overwrite it
 shopt -s globstar # the pattern "**" used in a pathname expansion context will match all files and zero or more directories and subdirectories.
@@ -125,7 +125,7 @@ bind "set completion-ignore-case on" #ignore upper and lowercase when TAB comple
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
-# Change the window title of X terminals 
+# Change the window title of X terminals
 case ${TERM} in
 	[aEkx]term*|rxvt*|gnome*|konsole*|interix|tmux*|alacritty*)
 		PS1='\[\033]0;\u@\h:\w\007\]'
@@ -157,7 +157,7 @@ if type -P dircolors >/dev/null ; then
 	else
 		eval "$(dircolors -b)"
 	fi
-	# Note: We always evaluate the LS_COLORS setting even when it's the default. 
+	# Note: We always evaluate the LS_COLORS setting even when it's the default.
 	#If it isn't set, then `ls` will only colorize by default based on file attributes and ignore extensions (even the compiled in defaults of dircolors). #583814
 	if [[ -n ${LS_COLORS:+set} ]]; then
 		use_color=true
@@ -218,7 +218,7 @@ if [ "$use_color" = yes ]; then
 	}
 fi
 
-# Import colorscheme from 'wal' asynchronously. 
+# Import colorscheme from 'wal' asynchronously.
 (cat ~/.cache/wal/sequences &)
 
 # Try to keep environment pollution down, EPA loves us.
@@ -264,7 +264,7 @@ alias setuid='find /usr/bin -perm "/u=s,g=s"'
 alias smart='sudo smartctl -a $(sudo fdisk -l | grep "Disk /dev/" | cut -d " " -f2 | tr -d ":")'
 alias services='systemctl --type=service --state=running'
 alias c='clear'
-alias trim='sudo fstrim -av'  
+alias trim='sudo fstrim -av'
 alias rsync='rsync -P'
 alias free="free -mth"
 alias da='date "+%Y-%m-%d %A    %T %Z"'
@@ -303,12 +303,12 @@ alias allcron='for i in $(cat /etc/passwd | grep sh$ | cut -f1 -d: ); do echo $i
 alias loginshcron='for i in $(cat /etc/passwd | grep sh$ | cut -f1 -d: ); do echo $i; sudo crontab -u $i -l; done'
 
 # clone a hard disk to another, usage: 'clonedisk2disk /dev/sda /dev/sda' clonedisk2disk [source] [destination]
-clonedisk2disk() { 
+clonedisk2disk() {
   dd if="$1" of="$2" bs=64K conv=noerror,sync status=progress
 }
 
 # image a hard disk to a compressed file, usage: 'imagedisk2file /dev/sda file_to_write_to.img' clonedisk2file [source-disk] [destination-file]
-imagedisk2file() { 
+imagedisk2file() {
   dd if="$1" conv=sync,noerror bs=64K | gzip -c  > "$2".img.gz
   fdisk -l "$1" > "$2".info
 }
@@ -353,7 +353,7 @@ alias gbr='git branch -a'
 
 # converts regular github repo link to private link that can be cloned
 # usage: pcl https://github.com/username/repo
-pcl(){ 
+pcl(){
   git clone "${1/#https:\/\/github.com/git@github.com:}"
 }
 
@@ -371,64 +371,64 @@ dfc(){
 alias dfs='dtf status'
 
 # Dotfile Management System - Loop through ".$HOME/.dotfiles.conf" of files, check to see if file within exists and track it in the bare repo
-dftrack(){   
+dftrack(){
   untrack+=();
-  
+
   # initialize array to hold dir/files to be "untracked" and removed from .dotfiles.conf
   wdir=$(pwd | sed "s|$HOME|\$HOME|");
 
   # loop through $HOME/.dotfiles.conf
-  while IFS="" read -r p || [ -n "$p" ]; do       
-    
-    # if dir/file does not exist within filesystem, add to "untracked" array                                
+  while IFS="" read -r p || [ -n "$p" ]; do
+
+    # if dir/file does not exist within filesystem, add to "untracked" array
     if ! [[ $p ]]; then
-      untrack+=("$p"); 
-    fi                                                                            
-   
+      untrack+=("$p");
+    fi
+
     # if dir/file exists within fs, track it with "git add"
-    if [[ $p ]]; then 
+    if [[ $p ]]; then
       dtf -C "$HOME" add "${p##\$HOME/}"
-    fi                                                                            
-  done < "$HOME/.dotfiles.conf"                    
-  
+    fi
+  done < "$HOME/.dotfiles.conf"
+
   # remove dir & files from .dotfiles.conf that are in array and untrack from git with "git rm --cached"
-  for i in "${untrack[@]}"; do 
+  for i in "${untrack[@]}"; do
     sed -i "\:$i:d" "$HOME/.dotfiles.conf"
-    if [[ -e "$p" ]]; then 
-      dtf rm -r --cached "$i"; 
-    fi; 
-  done 
-  
+    if [[ -e "$p" ]]; then
+      dtf rm -r --cached "$i";
+    fi;
+  done
+
   # unset "untracked" variable to keep consecutive runs clean
-  unset untrack   
-  
+  unset untrack
+
   sort -o "$HOME/.dotfiles.conf" "$HOME/.dotfiles.conf"
 }
 
 # Dotfile Management System - Add file(s) to tracked dotfiles
-dfadd(){ 
+dfadd(){
   wdir=$(pwd | sed "s|$HOME|\$HOME|");
-  
+
   # Loop through tracked dotfiles (.dotfiles.conf)
-  for i in "$@"; do 
-    if [[ -e "$(pwd)/$i" ]]; then                                                                                                     
-      if grep -q "^$wdir/$i$" "$HOME"/.dotfiles.conf; then 
+  for i in "$@"; do
+    if [[ -e "$(pwd)/$i" ]]; then
+      if grep -q "^$wdir/$i$" "$HOME"/.dotfiles.conf; then
         printf '%s\n' "dir/file already exists within tracked file, skipping.";
       fi;
 
-      # if dir/file exists and is already in tracked file, do nothing. 
-      if ! grep -q "^$wdir/$i$" "$HOME"/.dotfiles.conf; then 
-        printf '%s\n' "$wdir/$i" >> "$HOME"/.dotfiles.conf; 
-      fi; 
+      # if dir/file exists and is already in tracked file, do nothing.
+      if ! grep -q "^$wdir/$i$" "$HOME"/.dotfiles.conf; then
+        printf '%s\n' "$wdir/$i" >> "$HOME"/.dotfiles.conf;
+      fi;
     fi;
-    
+
     # if dir/file exists but is not in file, add it.
-    if ! [[ -e "$(pwd)/$i" ]]; then 
+    if ! [[ -e "$(pwd)/$i" ]]; then
       # if dir/file does not exist, skip and do nothing.
       printf '%s\n' "The dir/file $wdir/$i cannot be located. Skipping.";
     fi
   done;
-  sort -o "$HOME/.dotfiles.conf" "$HOME/.dotfiles.conf"      
+  sort -o "$HOME/.dotfiles.conf" "$HOME/.dotfiles.conf"
 }
 
 # miscellaenous programs/functions_____________________________________________
@@ -447,8 +447,8 @@ powersch() {
 }
 
 # update all system programs
-upd() { 
-  
+upd() {
+
   ## trap ctrl-c and call ctrl_c()
   #trap ctrl_c INT
 #
@@ -457,23 +457,23 @@ upd() {
   #}
 
   # Arch Linux
-  if command -v pacman &> /dev/null; then 
+  if command -v pacman &> /dev/null; then
     if command -v pacman &> /dev/null; then tput setaf 2; tput setaf 2; printf '%s\n' "Arch Official Repos (pacman -Syu):"; tput sgr0; sudo pacman -Syu; fi
     if command -v paru &> /dev/null; then tput setaf 2; printf '\n%s\n' "Arch User Repository (paru -Syu):"; tput sgr0; paru -Syu; fi
     if command -v yay &> /dev/null; then tput setaf 2; printf '\n%s\n' "Arch User Repository (paru -Syu):"; tput sgr0; yay -Syua; fi
-    if command -v updatedb &> /dev/null; then tput setaf 2; printf '\n%s\n' "Update locate/plocate database..."; tput sgr0; sudo updatedb; fi          
-    if command -v pkgfile &> /dev/null; then tput setaf 2; printf '\n%s\n' "Update pkgfile database (pkgfile -u):"; tput sgr0; sudo pkgfile -u; fi     
-    if command -v pacman &> /dev/null; then  tput setaf 2; printf '\n%s\n' "Update pacman file database (pacman -Fy):"; tput sgr0; sudo pacman -Fy; fi 
-    if command -v pacman-db-upgrade &> /dev/null; then tput setaf 2; printf '\n%s\n' "Upgrade pacman database"; tput sgr0; sudo pacman-db-upgrade; fi 
-    if command -v pacman &> /dev/null; then tput setaf 2; printf '\n%s\n' "Clear pacman cache:"; tput sgr0; 
-      yes | sudo pacman -Scc; 
-      if command -v paru &> /dev/null; then yes | paru -Scc; fi; 
-      if command -v yay &> /dev/null; then yes | yay -Scc; fi; 
-    fi 
+    if command -v updatedb &> /dev/null; then tput setaf 2; printf '\n%s\n' "Update locate/plocate database..."; tput sgr0; sudo updatedb; fi
+    if command -v pkgfile &> /dev/null; then tput setaf 2; printf '\n%s\n' "Update pkgfile database (pkgfile -u):"; tput sgr0; sudo pkgfile -u; fi
+    if command -v pacman &> /dev/null; then  tput setaf 2; printf '\n%s\n' "Update pacman file database (pacman -Fy):"; tput sgr0; sudo pacman -Fy; fi
+    if command -v pacman-db-upgrade &> /dev/null; then tput setaf 2; printf '\n%s\n' "Upgrade pacman database"; tput sgr0; sudo pacman-db-upgrade; fi
+    if command -v pacman &> /dev/null; then tput setaf 2; printf '\n%s\n' "Clear pacman cache:"; tput sgr0;
+      yes | sudo pacman -Scc;
+      if command -v paru &> /dev/null; then yes | paru -Scc; fi;
+      if command -v yay &> /dev/null; then yes | yay -Scc; fi;
+    fi
   fi
 
   # OpenSUSE
-  if command -v zypper; then 
+  if command -v zypper; then
     if command -v zypper &> /dev/null; then tput setaf 2; tput setaf 2; printf '\n%s\n' "OpenSUSE Repos (zypper refresh/zypper dup):"; tput sgr0; sudo zypper refresh; sudo zypper dup; fi
   fi
 
@@ -494,7 +494,7 @@ upd() {
 
   # Flatpak
   if command -v flatpak &> /dev/null; then  tput setaf 2; printf '\n\n%s\n' "Flatpak (flatpak --user update):"; tput sgr0; flatpak --user update; flatpak uninstall --unused;fi
-  
+
   # Snap
   if command -v snap &> /dev/null; then  tput setaf 2; printf '\n%s\n' "Snap (snap refresh):"; tput sgr0; sudo snap refresh; fi
   sync && printf '\n'
@@ -505,7 +505,7 @@ netpackets() {
   # Measure Packets per Second on an Interface
   # Refactored from code written by Joe Miller (https://github.com/joemiller)
   # The following script periodically prints out the number of RX/TX packets for a given network interface (to be provided as an argument to the script).
-  
+
   # default to wlan0 if no interface is provided
   if [ -z "$1" ]
   then
@@ -513,7 +513,7 @@ netpackets() {
   fi
 
   # update interval in seconds
-  INTERVAL="1"  
+  INTERVAL="1"
 
   printf '%s\n' "usage: $0 network-interface"
   printf '%s\n' "e.g. $0 eth0"
