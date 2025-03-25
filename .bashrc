@@ -2,8 +2,10 @@
 #
 # ~/.bashrc: executed by bash(1) for non-login shells.
 #
+# shellcheck disable=SC1090
+# shellcheck disable=SC1091
 
-# If not running interactively, don't do anything
+# if not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
 # source git-prompt for ps1
@@ -14,25 +16,25 @@ for sh in /etc/bash/bashrc.d/* ; do
 	[[ -r ${sh} ]] && source "${sh}"
 done
 
-# You may want to put all your additions into a separate file like ~/.bash_aliases, instead of adding them here directly.
+# you may want to put all your additions into a separate file like ~/.bash_aliases, instead of adding them here directly.
 if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
 
-# Default umask. A umask of 022 prevents new files from being created group and world writable.
+# default umask. A umask of 022 prevents new files from being created group and world writable.
 # file permissions: rwxr-xr-x
 umask 022
 
 # search path for cd(1)
 CDPATH=:$HOME
 
-# Enable the builtin emacs(1) command line editor in sh(1), e.g. C-a -> beginning-of-line.
+# enable the builtin emacs(1) command line editor in sh(1), e.g. C-a -> beginning-of-line.
 set -o emacs
 
-# Enable the builtin vi(1) command line editor in sh(1), e.g. ESC to go into visual mode.
+# enable the builtin vi(1) command line editor in sh(1), e.g. ESC to go into visual mode.
 # set -o vi
 
-# Set ksh93 visual editing mode:
+# set ksh93 visual editing mode:
 if [ "$SHELL" = "/bin/ksh" ]; then
   VISUAL=emacs
 fi
@@ -46,21 +48,21 @@ fi
 #    source "$XDG_RUNTIME_DIR/ssh-agent.env" >/dev/null
 #fi
 
-# Set environment path________________________________________________________
+# set environment path________________________________________________________
 
-#### Check for user bin $HOME/.local/bin and add to path if it exists and isnt in path
+#### check for user bin $HOME/.local/bin and add to path if it exists and isnt in path
 if [ -d "$HOME/.local/bin" ] && [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
   PATH="$HOME/.local/bin${PATH:+":$PATH"}"
 fi
 
-#### Check for user bin $HOME/bin and add to path if it exists and isnt in path
+#### check for user bin $HOME/bin and add to path if it exists and isnt in path
 if [ -d "$HOME/bin" ] && [[ ":$PATH:" != *":$HOME/bin:"* ]]; then
   PATH="$HOME/bin${PATH:+":$PATH"}"
 fi
 
 #### check for pspdev toolchain and add to path if exists
-if [ -d "$HOME/pspdev" ] && [[ ":$PATH:" != *":$HOME/$PSPDEV/bin:"* ]]; then
-  export PSPDEV=~/pspdev
+if [ -d "$HOME/$PSPDEV" ] && [[ ":$PATH:" != *":$HOME/$PSPDEV/bin:"* ]]; then
+  export PSPDEV=.pspdev
   PATH="$HOME/$PSPDEV/bin${PATH:+":$PATH"}"
 fi
 
@@ -76,28 +78,28 @@ if command -v gem &> /dev/null && [ -d "$(gem env user_gemhome)" ] && [[ ":$PATH
   PATH="$GEM_HOME/bin${PATH:+":$PATH"}"
 fi
 
-#### Check for go bin and add to path
+#### check for go bin and add to path
 if command -v go &> /dev/null && [ -d "$(go env GOPATH)" ] && [[ ":$PATH:" != *":$(go env GOBIN):$(go env GOPATH)/bin:"* ]]; then
   PATH="$(go env GOBIN):$(go env GOPATH)/bin${PATH:+":$PATH"}"
 fi
 
-#### Check for dotnet and add to path
+#### check for dotnet and add to path
 if command -v dotnet &> /dev/null && [ -d "$HOME/.dotnet/tools"  ] && [[ ":$PATH:" != *":$HOME/.dotnet/tools:"* ]]; then
   PATH="$HOME/.dotnet/tools${PATH:+":$PATH"}"
   export DOTNET_CLI_TELEMETRY_OPTOUT=1
 fi
 
-#### Check for ccache and add to path
+#### check for ccache and add to path
 if command -v ccache &> /dev/null && [ -d "/usr/lib/ccache/bin" ] && [[ ":$PATH:" != *":/usr/lib/ccache/bin:"* ]]; then
   PATH="/usr/lib/ccache/bin${PATH:+":$PATH"}"
 fi
 
-#### Check for rustup and add to path
+#### check for rustup and add to path
 if command -v rustup &> /dev/null && [ -d "/usr/lib/rustup/bin" ] && [[ ":$PATH:" != *":/usr/lib/rustup/bin:"* ]]; then
   PATH="/usr/lib/rustup/bin${PATH:+":$PATH"}"
 fi
 
-#### Check for npm and allow for local installations
+#### check for npm and allow for local installations
 if command -v npm &> /dev/null && [ -d "$HOME/.local/bin" ] && [[ ":$PATH:" = *":$HOME/.local/bin:"* ]]; then
   export npm_config_prefix="$HOME/.local"
 fi
@@ -112,6 +114,7 @@ export MANPAGER="less -R --use-color -Dd+r -Du+b"
 export RANGER_LOAD_DEFAULT_RC=FALSE
 export PAGER="less"
 export SYSTEMD_PAGER="less"
+export CFLAGS+="-fdiagnostics-color=always"
 
 shopt -s autocd # Enable auto cd when typing directories
 shopt -s checkwinsize # check the terminal size when it regains control - check winsize when resize
@@ -125,22 +128,16 @@ bind "set completion-ignore-case on" #ignore upper and lowercase when TAB comple
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
-# Change the window title of X terminals
+# change the window title of X terminals
 case ${TERM} in
-	[aEkx]term*|rxvt*|gnome*|konsole*|interix|tmux*|alacritty*)
-		PS1='\[\033]0;\u@\h:\w\007\]'
-		;;
-	screen*)
-		PS1='\[\033k\u@\h:\w\033\\\]'
-		;;
-	*)
-		unset PS1
-		;;
+  [aEkx]term*|rxvt*|gnome*|konsole*|interix|tmux*|alacritty*)  PS1='\[\033]0;\u@\h:\w\007\]';;
+  screen*)  PS1='\[\033k\u@\h:\w\033\\\]';;
+  *)  unset PS1;;
 esac
 
-# # set variable identifying the chroot you work in (used in the prompt below)
+# set variable identifying the chroot you work in (used in the prompt below)
 if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
-    debian_chroot=$(cat /etc/debian_chroot)
+  debian_chroot=$(cat /etc/debian_chroot)
 fi
 
 # Set colorful PS1 only on colorful terminals.
@@ -148,44 +145,46 @@ fi
 # We run dircolors directly due to its changes in file syntax and terminal name patching.
 use_color=false
 if type -P dircolors >/dev/null ; then
-	# Enable colors for ls, etc.  Prefer ~/.dir_colors #64489
-	LS_COLORS=
-	if [[ -f ~/.dir_colors ]] ; then
-		eval "$(dircolors -b ~/.dir_colors)"
-	elif [[ -f /etc/DIR_COLORS ]] ; then
-		eval "$(dircolors -b /etc/DIR_COLORS)"
-	else
-		eval "$(dircolors -b)"
-	fi
-	# Note: We always evaluate the LS_COLORS setting even when it's the default.
-	#If it isn't set, then `ls` will only colorize by default based on file attributes and ignore extensions (even the compiled in defaults of dircolors). #583814
-	if [[ -n ${LS_COLORS:+set} ]]; then
-		use_color=true
-	else
-		# Delete it if it's empty as it's useless in that case.
-		unset LS_COLORS
-	fi
+  # enable colors for ls, etc.  Prefer ~/.dir_colors #64489
+  LS_COLORS=
+  if [[ -f ~/.dir_colors ]] ; then
+    eval "$(dircolors -b ~/.dir_colors)"
+  elif [[ -f /etc/DIR_COLORS ]] ; then
+    eval "$(dircolors -b /etc/DIR_COLORS)"
+  else
+    eval "$(dircolors -b)"
+  fi
+  # note: We always evaluate the LS_COLORS setting even when it's the default.
+  # if it isn't set, then `ls` will only colorize by default based on file attributes and ignore extensions (even the compiled in defaults of dircolors). #583814
+  if [[ -n ${LS_COLORS:+set} ]]; then
+    use_color=true
+  else
+    # delete it if it's empty as it's useless in that case.
+    unset LS_COLORS
+  fi
 else
-	# Some systems (e.g. BSD & embedded) don't typically come with
-	# dircolors so we need to hardcode some terminals in here.
-	case ${TERM} in
-	[aEkx]term*|rxvt*|gnome*|konsole*|screen|tmux|cons25|*color) use_color=true;;
-	esac
+  # some systems (e.g. BSD & embedded) don't typically come with
+  # dircolors so we need to hardcode some terminals in here.
+  case ${TERM} in
+  [aEkx]term*|rxvt*|gnome*|konsole*|screen|tmux|cons25|*color) use_color=true;;
+  esac
 fi
 
-# 'Safe' version of __git_ps1 to avoid errors on systems that don't have it, shows git status within bash prompt
+# 'safe' version of __git_ps1 to avoid errors on systems that don't have it, shows git status within bash prompt
 gitPrompt () {
   command -v __git_ps1 > /dev/null && __git_ps1 " (%s)"
 }
 
-# Set PS1 prompt display
+# set PS1 prompt display
 if ${use_color} ; then 
-	if [[ ${EUID} == 0 ]] ; then # set root PS1
-    PS1+='\[\033[01;32m\]\T \[\033[01;36m\]\w\[\033[01;33m\]$(gitPrompt)\[\033[01;34m\] \$\[\033[00m\]$(if ! [ $(jobs | wc -l) -eq 0 ]; then jobs | wc -l;fi) ' # custom with inline git branch status
-	else # set user PS1
-    PS1+='\[\033[01;32m\]\T \[\033[01;36m\]\w\[\033[01;33m\]$(gitPrompt)\[\033[01;34m\] \$\[\033[00m\]$(if ! [ $(jobs | wc -l) -eq 0 ]; then jobs | wc -l;fi) ' # custom with inline git branch status
+  i=1;
+  if [[ ${EUID} == 0 ]] ; then # set root PS1
+    PS1+='\[\e[32m\]\T \[\e[36m\]\w\[\e[33m\]$(gitPrompt)\[\e[34m\] \$\[\e[00m\]$(if ! [ $(jobs | wc -l) -eq 0 ]; then jobs | wc -l;fi) ' # custom root prompt with inline git branch status
+  else # set user PS1
+    PS1+='\[\e[32m\]\T \[\e[36m\]\w\[\e[33m\]$(gitPrompt)\[\e[34m\] \$\[\e[36m\]$(if ! [ $(jobs | wc -l) -eq 0 ]; then echo "[$(jobs | wc -l)]";fi)\[\e[00m\] ' # custom root prompt with inline git branch status
+    PS2="~ "
   fi
-	#BSD#@export CLICOLOR=1
+  #BSD#@export CLICOLOR=1
   alias ls='ls --color=auto'
   alias grep='grep --color=auto'
   alias fgrep='fgrep --color=auto'
@@ -196,35 +195,36 @@ if ${use_color} ; then
   alias diff='diff --color=auto'
   export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01' # colored GCC warnings and errors
 else
-	# show root@ when we don't have colors
-	PS1+='\u@\h \w \$ '
+  # show root@ when we don't have colors
+  PS1+='\u@\h \w \$ '
 fi
 
-# Start bash PS1 prompt on newline if none within previous EOT (FIX, breaks multiple term in tiled wm)
+# start bash PS1 prompt on newline if none within previous EOT (FIX, breaks multiple term in tiled wm)
 #PS1='$(printf "%$((`tput cols`-1))s\r")'$PS1
 
-# Set 'man' colors
+# set 'man' colors
 if [ "$use_color" = yes ]; then
-	man() {
-	env \
-	LESS_TERMCAP_mb=$'\e[01;31m' \
-	LESS_TERMCAP_md=$'\e[01;31m' \
-	LESS_TERMCAP_me=$'\e[0m' \
-	LESS_TERMCAP_se=$'\e[0m' \
-	LESS_TERMCAP_so=$'\e[01;44;33m' \
-	LESS_TERMCAP_ue=$'\e[0m' \
-	LESS_TERMCAP_us=$'\e[01;32m' \
-	man "$@"
-	}
+  man() {
+  env \
+  LESS_TERMCAP_mb=$'\e[01;31m' \
+  LESS_TERMCAP_md=$'\e[01;31m' \
+  LESS_TERMCAP_me=$'\e[0m' \
+  LESS_TERMCAP_se=$'\e[0m' \
+  LESS_TERMCAP_so=$'\e[01;44;33m' \
+  LESS_TERMCAP_ue=$'\e[0m' \
+  LESS_TERMCAP_us=$'\e[01;32m' \
+  man "$@"
+  }
 fi
 
-# Import colorscheme from 'wal' asynchronously.
+# import colorscheme from 'wal' asynchronously.
 (cat ~/.cache/wal/sequences &)
 
-# Try to keep environment pollution down, EPA loves us.
+# try to keep environment pollution down, EPA loves us.
 unset use_color sh
 
 # Set aliases & functions_____________________________________________________
+# basic util aliases
 alias ssh='TERM=xterm-256color ssh'
 alias em='emacs -nw'
 #alias em='emacsclient -t'
@@ -233,6 +233,7 @@ alias ll='ls -lh'
 alias la='ls -lha'
 alias l='ls -CF'
 alias less='less -FR --use-color'
+alias env='env | sort'
 alias dd='dd status=progress'
 alias rm='rm -i'
 alias mv='mv -i'
@@ -287,24 +288,63 @@ alias err='journalctl -b -p err'
 alias reinstall-packages='sudo pacman -Qqn | sudo pacman -S -'
 alias packagereinstall='sudo pacman -Qqe > packages.txt; sudo pacman -S $(comm -12 <(pacman -Slq | sort) <(sort packages.txt)); rm packages.txt'
 alias sysdblame='systemd-analyze plot > $HOME/Pictures/boot.svg'
+alias rr='ranger'
+
+# add an "alert" alias for long running commands, Usage: "sleep 10; alert"
+alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+
+# docker aliases
+alias lzd='lazydocker'
+alias dcu='docker compose up -d'
+alias dcd='docker compose down'
+
+# compile in docker toolchain, usage: dtc "docker image"
+dtc() { 
+  docker run --rm -v "$PWD":/source -w /source "$@"
+}
+
+# podman aliases 
+alias pcu='podman compose up -d'
+alias pcd='podman compose down'
+alias pls='podman container ps --all'
+
+# compile in podman toolchain, usage: ptc "docker image"
+ptc() {
+  podman run --rm -it -v "$PWD":/source -w /source "$@"
+}
+
+# compile for psp using pspdev toolchains
+alias pspmake='ptc docker.io/spiritfader/pspdev-plus:latest make'
+#alias pspsdkmake='ptc docker.io/pspdev/pspdev:latest make'
+#alias pspkzmake='ptc docker.io/krazynez/ark-4:latest make'
+
+# launch psp app for testing
+alias pspur='ppsspp $HOME/Git/UMDRescue/PSP/GAME150/__SCE__UMDRescue/EBOOT.PBP'
+
+export DOCKER_HOST=unix://$XDG_RUNTIME_DIR/docker.sock
+
+# update the latest pspsdk toolchain
+updpspdev(){
+  curl -L https://github.com/pspdev/pspdev/releases/latest/download/pspdev-ubuntu-latest-x86_64.tar.gz | tar -zxvf - -C "$HOME"
+  mv "$HOME/pspdev" "$HOME/.pspdev"
+}
 
 # flatpak aliases
 if command -v flatpak run org.winehq.Wine &> /dev/null && ! command -v wine &> /dev/null; then alias wine='flatpak run org.winehq.Wine'; fi
 if command -v com.openwall.John &> /dev/null && ! command -v john &> /dev/null; then alias john='com.openwall.John'; fi
 if command -v io.gitlab.librewolf-community &> /dev/null && ! command -v librewolf &> /dev/null; then alias librewolf='io.gitlab.librewolf-community'; fi
+if command -v org.videolan.VLC &> /dev/null && ! command -v vlc &> /dev/null; then alias vlc='org.videolan.VLC'; fi
+if command -v org.kde.dolphin &> /dev/null && ! command -v dolphin &> /dev/null; then alias dolphin='org.kde.dolphin'; fi
+if command -v org.ppsspp.PPSSPP &> /dev/null && ! command -v ppsspp &> /dev/null; then alias ppsspp='org.ppsspp.PPSSPP'; fi
 
-# Add an "alert" alias for long running commands, Usage: "sleep 10; alert"
-alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
-
-# dfir _______________________________________________________________________
-
+# digital forensics
 alias loginsh='cat /etc/passwd | grep sh$'
 alias allcron='for i in $(cat /etc/passwd | grep sh$ | cut -f1 -d: ); do echo $i; sudo crontab -u $i -l; done'
 alias loginshcron='for i in $(cat /etc/passwd | grep sh$ | cut -f1 -d: ); do echo $i; sudo crontab -u $i -l; done'
 
 # clone a hard disk to another, usage: 'clonedisk2disk /dev/sda /dev/sda' clonedisk2disk [source] [destination]
 clonedisk2disk() {
-  dd if="$1" of="$2" bs=64K conv=noerror,sync status=progress
+  sudo dd if="$1" of="$2" bs=64K conv=noerror,sync status=progress
 }
 
 # image a hard disk to a compressed file, usage: 'imagedisk2file /dev/sda file_to_write_to.img' clonedisk2file [source-disk] [destination-file]
@@ -313,13 +353,13 @@ imagedisk2file() {
   fdisk -l "$1" > "$2".info
 }
 
-# Encrypt and overwrite drive with encrypted cipher for secure erase - Usage: encryptwholeerase "/dev/sdX"
+# encrypt and overwrite drive with encrypted cipher for secure erase - Usage: encryptwholeerase "/dev/sdX"
 encryptwholeerase() {
   DEVICE="$1"; PASS=$(tr -cd '[:alnum:]' < /dev/urandom | head -c 1024)
   openssl enc -aes-256-ctr -pass pass:"$PASS" -nosalt < /dev/zero | dd obs=64K ibs=4K of="$DEVICE" oflag=direct status=progress
 }
 
-# Encrypt and overwrite free space with encrypted cipher for secure erase - Usage: encryptfreeerase
+# encrypt and overwrite free space with encrypted cipher for secure erase - Usage: encryptfreeerase
 encryptfreeerase() {
   PASS=$(tr -cd '[:alnum:]' < /dev/urandom | head -c 1024)
   openssl enc -pbkdf2 -pass pass:"$PASS" -nosalt < /dev/zero | dd obs=128K ibs=4K of="Eraser" oflag=direct status=progress
@@ -331,6 +371,8 @@ alias iommugroup='find /sys/kernel/iommu_groups/ -type l | sort -V'
 alias iommusupport='sudo dmesg | grep -e DMAR -e IOMMU -e AMD-Vi'
 alias pcidsupport="grep ' pcid ' /proc/cpuinfo"
 alias cpuvuln='for f in /sys/devices/system/cpu/vulnerabilities/*; do echo "${f##*/} -" $(cat "$f"); done'
+
+# check for hugepage support
 hugepage() {
   grep -e AnonHugePages  /proc/*/smaps | awk  '{ if($2>4) print $0} ' |  awk -F "/"  '{printf $0; system("ps -fp " $3)} '
 }
@@ -339,11 +381,14 @@ hugepage() {
 alias gadd='git add'
 alias gpush='git push'
 alias gshow='git ls-tree --full-tree -r --name-only HEAD'
+
+
 gcom(){
-  git commit -am "$*"
+  git commit -m "$*"
 }
+
 gcompush(){
-  git commit -am "$*";git push
+  git commit -m "$*"; git push
 }
 alias gst='git status'
 alias gcl='git clone'
@@ -358,7 +403,7 @@ pcl(){
 }
 
 git_update_all() {
-	find . -maxdepth 1 -print0 | xargs -P10 -I{} git -C {} pull
+  find . -maxdepth 1 -print0 | xargs -P10 -I{} git -C {} pull
 }
 
 # dotfile Management _________________________________________________________
@@ -449,13 +494,6 @@ powersch() {
 # update all system programs
 upd() {
 
-  ## trap ctrl-c and call ctrl_c()
-  #trap ctrl_c INT
-#
-  #function ctrl_c() {
-  #  exit
-  #}
-
   # Arch Linux
   if command -v pacman &> /dev/null; then
     if command -v pacman &> /dev/null; then tput setaf 2; tput setaf 2; printf '%s\n' "Arch Official Repos (pacman -Syu):"; tput sgr0; sudo pacman -Syu; fi
@@ -465,8 +503,7 @@ upd() {
     if command -v pkgfile &> /dev/null; then tput setaf 2; printf '\n%s\n' "Update pkgfile database (pkgfile -u):"; tput sgr0; sudo pkgfile -u; fi
     if command -v pacman &> /dev/null; then  tput setaf 2; printf '\n%s\n' "Update pacman file database (pacman -Fy):"; tput sgr0; sudo pacman -Fy; fi
     if command -v pacman-db-upgrade &> /dev/null; then tput setaf 2; printf '\n%s\n' "Upgrade pacman database"; tput sgr0; sudo pacman-db-upgrade; fi
-    if command -v pacman &> /dev/null; then tput setaf 2; printf '\n%s\n' "Clear pacman cache:"; tput sgr0;
-      yes | sudo pacman -Scc;
+    if command -v pacman &> /dev/null; then tput setaf 2; printf '\n%s\n' "Clear pacman cache:"; tput sgr0; yes | sudo pacman -Scc;
       if command -v paru &> /dev/null; then yes | paru -Scc; fi;
       if command -v yay &> /dev/null; then yes | yay -Scc; fi;
     fi
@@ -501,8 +538,9 @@ upd() {
 
 }
 
+# measure packets per second on an interface
 netpackets() {
-  # Measure Packets per Second on an Interface
+
   # Refactored from code written by Joe Miller (https://github.com/joemiller)
   # The following script periodically prints out the number of RX/TX packets for a given network interface (to be provided as an argument to the script).
 
@@ -532,8 +570,8 @@ netpackets() {
   done
 }
 
+# measure network bandwidth on an interface
 netspeed() {
-  # Measure Network Bandwidth on an Interface
   # Refactored from code written by Joe Miller (https://github.com/joemiller)
   # The following script periodically prints out the RX/TX bandwidth (KB/s) for a given network interface (to be provided as an argument to the script).
 
@@ -567,8 +605,7 @@ netspeed() {
 # verify flac files for corruption - flacverify [dir]
 flacverify() { 
   find -L "$1" -type f -name '.flac' -print0 | while IFS= read -r -d '' file
-  do printf '%3d %s\n' "$?" "$(tput sgr0)checking $(realpath "$file")" && \
-  flac -wst "$file" 2>/dev/null || printf '%3d %s\n' "$?" "$(tput setaf 1;\
+  do printf '%3d %s\n' "$?" "$(tput sgr0)checking $(realpath "$file")";flac -wst "$file" 2>/dev/null || printf '%3d %s\n' "$?" "$(tput setaf 1;\
   realpath "$file") is corrupt $(tput sgr0)" | tee -a ~/corruptedFlacsList.txt
   done
 
@@ -590,26 +627,26 @@ packetDrop() {
   printf '%s\n' "ifconfig -a | grep X errors" "$(ifconfig -a | grep "X errors")"
 }
 
-# Search for text in firefox with pre-configured search engine
+# search for text in firefox with pre-configured search engine
 ffs (){ 
   firefox -search "$*";exit 
 }
 
 # kill a given process by name
 pskill() { 
-    pgrep "$1" | grep -v grep | awk '{ print $1 }' | xargs kill
+  pgrep "$1" | grep -v grep | awk '{ print $1 }' | xargs kill
 }
 
-# Wrap in loop to evaluate command, statement, or idea OR use confirm()
+# wrap in loop to evaluate command, statement, or idea OR use confirm()
 ask() { 
   echo -n "$@" '[y/n] ' ; read -r ans
   case "$ans" in
-      y*|Y*) return 0 ;;
-      *) return 1 ;;
+    y*|Y*) return 0 ;;
+    *) return 1 ;;
   esac
 }
 
-# Usage: confirm ls or confirm htop, etc.
+# usage: confirm ls or confirm htop, etc.
 confirm() {
   if ask "$1"; then 
     "$1" 
@@ -619,13 +656,13 @@ confirm() {
 # Convert unix time to human readable - Usage: utime unixtime "utime 23454236" 
 utime() { 
   if [ -n "$1" ]; then
-      printf '%(%F %T)T\n' "$1"
+    printf '%(%F %T)T\n' "$1"
   fi
 }
 
 # Pulls quote
 quote() { 
-	curl -s https://favqs.com/api/qotd | jq -r '[.quote.body, .quote.author] | "\(.[0]) \n~\(.[1])\n"'
+  curl -s https://favqs.com/api/qotd | jq -r '[.quote.body, .quote.author] | "\(.[0]) \n~\(.[1])\n"'
 }
 
 # Repeat n times command. Usage: "repeat 20 ls"
@@ -639,21 +676,21 @@ repeat() {
 
 # check top ten commands executed
 top10() { 
-    all=$(history | awk '{print $2}' | awk 'BEGIN {FS="|"}{print $1}') 
-    printf '%s\n' "$all" | sort | uniq -c | sort -n | tail | sort -nr
+  all=$(history | awk '{print $2}' | awk 'BEGIN {FS="|"}{print $1}') 
+  printf '%s\n' "$all" | sort | uniq -c | sort -n | tail | sort -nr
 }
 
 # returns a bunch of information about the current host, useful when jumping around hosts a lot
 ii() {
-    printf '%s\n\n' "You are logged on to $HOSTNAME"
-    printf '%s\n%5s\n\n' "Kernel information: " "$(uname -a)"
-    printf '%s\n%5s\n\n' "Users logged on: $(PROCPS_USERLEN=32 w -hs | cut -d " " -f1 | sort | uniq)"
-    printf '%s\n%50s\n\n' "Current date: $(date)"
-    printf '%s\n%5s\n\n' "Machine stats: uptime is $(uptime | awk /'up/ {print $3,$4,$5,$6,$7,$8,$9,$10}')"
-    printf '%s\n%5s\n\n' "Memory stats: " "$(free)"
-    printf '%s\n%5s\n\n' "Diskspace: " "$(df -h / "$HOME")"
-    printf '%s\n%5s\n\n' "Local IP Address:" "$(ip -4 addr | grep -v 127.0.0.1 | grep -v secondary | grep "inet" | awk '{print $2}' ; ip -6 addr | grep -v ::1 | grep -v secondary | grep "inet" | awk '{print $2}')"
-    #printf '%s\n' ""
+  printf '%s\n\n' "You are logged on to $HOSTNAME"
+  printf '%s\n%5s\n\n' "Kernel information: " "$(uname -a)"
+  printf '%s\n\n\n' "Users logged on: $(PROCPS_USERLEN=32 w -hs | cut -d " " -f1 | sort | uniq)"
+  printf '%s\n\n\n' "Current date: $(date)"
+  printf '%s\n\n\n' "Machine stats: uptime is $(uptime | awk /'up/ {print $3,$4,$5,$6,$7,$8,$9,$10}')"
+  printf '%s\n%5s\n\n' "Memory stats: " "$(free)"
+  printf '%s\n%5s\n\n' "Diskspace: " "$(df -h / "$HOME")"
+  printf '%s\n%5s\n\n' "Local IP Address:" "$(ip -4 addr | grep -v 127.0.0.1 | grep -v secondary | grep "inet" | awk '{print $2}' ; ip -6 addr | grep -v ::1 | grep -v secondary | grep "inet" | awk '{print $2}')"
+  #printf '%s\n' ""
 }
 
 # print uptime, host name, number of users, and average load
@@ -663,15 +700,13 @@ upinfo() {
 
 # swap the names/contents of two files
 swapname() { # Swap 2 filenames around, if they exist (from Uzi's bashrc). - Usage: swapname file1 file2
-    local TMPFILE=tmp.$$
-
-    [ $# -ne 2 ] && echo "swap: 2 arguments needed" && return 1
-    [ ! -e "$1" ] && echo "swap: $1 does not exist" && return 1
-    [ ! -e "$2" ] && echo "swap: $2 does not exist" && return 1
-
-    mv "$1" $TMPFILE
-    mv "$2" "$1"
-    mv $TMPFILE "$2"
+  local TMPFILE=tmp.$$
+  [ $# -ne 2 ] && echo "swap: 2 arguments needed" && return 1
+  [ ! -e "$1" ] && echo "swap: $1 does not exist" && return 1
+  [ ! -e "$2" ] && echo "swap: $2 does not exist" && return 1
+  mv "$1" $TMPFILE
+  mv "$2" "$1"
+  mv $TMPFILE "$2"
 }
 
 # disables ctrl+z for the wrapped command ($1) 
@@ -690,25 +725,25 @@ dusort() {
   find "$@" -mindepth 1 -maxdepth 1 -exec du -sch {} + | sort -h
 }
 
-# Traverse up a number of directories | cu   -> cd ../ | cu 2 -> cd ../../ |  cu 3 -> cd ../../../
+# traverse up a number of directories | cu   -> cd ../ | cu 2 -> cd ../../ |  cu 3 -> cd ../../../
 ..() { 
   local count=$1
   if [ -z "${count}" ]; then
-      count=1
+    count=1
   fi
   local path=""
   for i in $(seq 1 "${count}"); do
-      path="${path}../"
+    path="${path}../"
   done
   cd $path || exit
 }
 
-# Open all modified files in vim tabs
+# open all modified files in vim tabs
 nvimod() {
     nvim -p "$(git status -suall | awk '{print $2}')"
 }
 
-# Open files modified in a git commit in nvim tabs; defaults to HEAD. Usage: "virev 49808d5" or "virev HEAD~3"
+# open files modified in a git commit in nvim tabs; defaults to HEAD. Usage: "virev 49808d5" or "virev HEAD~3"
 virev() {
   commit=$1
   if [ -z "${commit}" ]; then
@@ -731,28 +766,28 @@ virev() {
 }
 
 # [e]xtract to [f]older = extracts archives into folders - usage: ex <file>
-ef() {
+extract() {
   SAVEIFS=$IFS
   IFS="$(printf '\n\t')"
   if [ -f "$1" ] ; then
     case $1 in
-      *.tar.bz2)   tar xjf "$1"                                   ;;
-      *.tar.gz)    tar xzf "$1"                                   ;;
-      *.bz2)       bunzip2 "$1"                                   ;;
-      *.rar)       7z x -o"${1%.rar}" "$1"                        ;;
-      *.gz)        gunzip "$1"                                    ;;
+      *.tar.bz2)   tar xjf "$1";;
+      *.tar.gz)    tar xzf "$1";;
+      *.bz2)       bunzip2 "$1";;
+      *.rar)       7z x -o"${1%.rar}" "$1";;
+      *.gz)        gunzip "$1";;
       *.tar)       mkdir "${1%.tar}"; tar -xvf "$1" -C "${1%.tar}";;
-      *.tbz2)      tar xjf "$1"                                   ;;
-      *.tgz)       tar xzf "$1"                                   ;;
-      *.zip)       7z x -o"${1%.zip}" "$1"                        ;; 
-      *.Z)         uncompress "$1"                                ;;
-      *.7z)        7z x -o"${1%.7z}" "$1"                         ;;
-      *.iso)       7z x -o"${1%.iso}" "$1"                        ;;
-      *.lzm)       7z x -o"${1%.lzm}" "$1"                        ;;
-      *.deb)       ar x "$1"                                      ;;
-      *.tar.xz)    tar xf "$1"                                    ;;
-      *.tar.zst)   tar xf "$1"                                    ;;
-      *)           printf "%s" "$1 cannot be extracted"           ;;
+      *.tbz2)      tar xjf "$1";;
+      *.tgz)       tar xzf "$1";;
+      *.zip)       7z x -o"${1%.zip}" "$1";; 
+      *.Z)         uncompress "$1";;
+      *.7z)        7z x -o"${1%.7z}" "$1" ;;
+      *.iso)       7z x -o"${1%.iso}" "$1";;
+      *.lzm)       7z x -o"${1%.lzm}" "$1";;
+      *.deb)       ar x "$1";;
+      *.tar.xz)    tar xf "$1";;
+      *.tar.zst)   tar xf "$1";;
+      *)           printf "%s" "$1 cannot be extracted";;
     esac
   else
     printf '%s' "$1 is not a valid file"
@@ -760,27 +795,27 @@ ef() {
   IFS=$SAVEIFS
 }
 
-# [e]tract[h]ere = extracts files loosely into directory usage: exhere <file>
+# [e]xtract[h]ere = extracts files loosely into directory - usage: exhere <file>
 eh() {
   SAVEIFS=$IFS
   IFS="$(printf '\n\t')"
   if [ -f "$1" ] ; then
     case $1 in
-      *.tar.bz2)        tar xjf "$1"                         ;;
-      *.tar.gz)         tar xzf "$1"                         ;;
-      *.bz2)            bunzip2 "$1"                         ;;
-      *.rar)            unrar x "$1"                         ;;
-      *.gz)             gunzip "$1"                          ;;
-      *.tar)            tar xf "$1"                          ;;
-      *.tbz2)           tar xjf "$1"                         ;;
-      *.tgz)            tar xzf "$1"                         ;;
-      *.zip)            unzip "$1"                           ;;
-      *.Z)              uncompress "$1"                      ;;
-      *.7z|*.iso|.lzm)  7z x "$1"                            ;;
-      *.deb)            ar x "$1"                            ;;
-      *.tar.xz)         tar xf "$1"                          ;;
-      *.tar.zst)        tar xf "$1"                          ;;
-      *)                printf "%s" "$1 cannot be extracted" ;;
+      *.tar.bz2)        tar xjf "$1";;
+      *.tar.gz)         tar xzf "$1";;
+      *.bz2)            bunzip2 "$1";;
+      *.rar)            unrar x "$1";;
+      *.gz)             gunzip "$1";;
+      *.tar)            tar xf "$1";;
+      *.tbz2)           tar xjf "$1";;
+      *.tgz)            tar xzf "$1";;
+      *.zip)            unzip "$1";;
+      *.Z)              uncompress "$1";;
+      *.7z|*.iso|.lzm)  7z x "$1";;
+      *.deb)            ar x "$1";;
+      *.tar.xz)         tar xf "$1";;
+      *.tar.zst)        tar xf "$1";;
+      *)                printf "%s" "$1 cannot be extracted";;
     esac
   else
     printf '%s' "$1 is not a valid file"
@@ -788,29 +823,28 @@ eh() {
   IFS=$SAVEIFS
 }
 
-# Usage "smush <file> <tar.gz.>"
-smush() { 
-    FILE=$1
-    case $FILE in
-        *.tar.bz2)   shift && tar cjf "$FILE" "$1"                                     ;;
-        *.tar.gz)    shift && tar czf "$FILE" "$1"                                     ;;
-        *.tgz)       shift && tar czf "$FILE" "$1"                                     ;;
-        *.zip)       shift && 7z a -tzip "$FILE" "$1"                                  ;;
-        *.rar)       shift && rar "$FILE" "$1"                                         ;;
-        *.7z)        shift && 7z a -t7z -m0=lzma2 -mx=9 -mfb=64 -md=64m -ms=on "$FILE" ;;
-    esac
+# file compression wrapper - Usage: "compress DESTINATION{.ext}  FILE(S)"
+compress() { 
+  DEST=$1
+  case $DEST in
+    *.tar.bz2)   tar cjf "${DEST::-8}" "$@";;
+    *.tar.gz)    tar czf "${DEST::-7}" "$@";;
+    *.tgz)       tar czf "${DEST::-4}" "$@";;
+    *.zip)       7z a -tzip "${DEST::-4}" "$@";;
+    *.rar)       rar "${DEST::-4}" "$@";;
+    *.7z)        7z a -t7z -m0=lzma2 -mx=9 -mfb=64 -md=64m -ms=on "${DEST::-3}" "$@";;
+  esac
 }
 
 # frees ram buffer
 buffer_clean() { 
-	free -h && sudo sh -c 'echo 1 > /proc/sys/vm/drop_caches' && free -h
+  free -h && sudo sh -c 'echo 1 > /proc/sys/vm/drop_caches' && free -h
 }
 
-# Calculate the input string using bc command (it's a calculator)
+# calculate the input string using bc command (it's a calculator)
 calc() { 
   echo "$*" | bc;
 }
-
 
 mktargz() { 
   tar czf "${1%%/}.tar.gz" "${1%%/}/"; 
@@ -828,8 +862,8 @@ mkgrp() {
 
 # make directory and move file into it - Usage: "mkmv filetobemoved.txt NewDirectory"
 mkmv() { 
-    mkdir "$2"
-    mv "$1" "$2"
+  mkdir "$2"
+  mv "$1" "$2"
 }
 
 # make directory and immediately enter it
@@ -839,44 +873,44 @@ md () {
 
 # prints ANSI 16-colors
 ansicolortest() {
-    T='ABC'   # The test text
-    echo -ne "\n\011\011   40m     41m     42m     43m"
-    echo -e "     44m     45m     46m     47m";
-    fff=('    m' '   1m' '  30m' '1;30m' '  31m' '1;31m')
-    fff2=('  32m' '1;32m' '  33m' '1;33m' '  34m' '1;34m')
-    fff3=('  35m' '1;35m' '  36m' '1;36m' '  37m' '1;37m')
-    FGS=("${fff[@]}" "${fff2[@]}" "${fff3[@]}")
-    for FGs in "${FGS[@]}";
-    do FG=${FGs// /}
-    echo -en " $FGs\011 \033[$FG  $T  "
-    for BG in 40m 41m 42m 43m 44m 45m 46m 47m;
-    do echo -en "$EINS \033[$FG\033[$BG  $T \033[0m\033[$BG \033[0m";
-    done
-    echo ""
-    done
-    echo ""
+  T='ABC'   # The test text
+  echo -ne "\n\011\011   40m     41m     42m     43m"
+  echo -e "     44m     45m     46m     47m";
+  fff=('    m' '   1m' '  30m' '1;30m' '  31m' '1;31m')
+  fff2=('  32m' '1;32m' '  33m' '1;33m' '  34m' '1;34m')
+  fff3=('  35m' '1;35m' '  36m' '1;36m' '  37m' '1;37m')
+  FGS=("${fff[@]}" "${fff2[@]}" "${fff3[@]}")
+  for FGs in "${FGS[@]}";
+  do FG=${FGs// /}
+  echo -en " $FGs\011 \033[$FG  $T  "
+  for BG in 40m 41m 42m 43m 44m 45m 46m 47m;
+  do echo -en "$EINS \033[$FG\033[$BG  $T \033[0m\033[$BG \033[0m";
+  done
+  echo ""
+  done
+  echo ""
 }
 
 # prints xterm 256 colors
 256colortest() {
-        echo -en "\n   +  "
-        for i in {0..35}; do
-        printf "%2b " "$i"
-        done
-        printf "\n\n %3b  " 0
-        for i in {0..15}; do
-        echo -en "\033[48;5;${i}m  \033[m "
-        done
-        #for i in 16 52 88 124 160 196 232; do
-        for i in {0..6}; do
-        ((i = i*36 +16))
-        printf "\n\n %3b  " $i
-        for j in {0..35}; do
-        ((val = i+j))
-        echo -en "\033[48;5;${val}m  \033[m "
-        done
-        done
-        echo -e "\n"
+  echo -en "\n   +  "
+  for i in {0..35}; do
+  printf "%2b " "$i"
+  done
+  printf "\n\n %3b  " 0
+  for i in {0..15}; do
+  echo -en "\033[48;5;${i}m  \033[m "
+  done
+  #for i in 16 52 88 124 160 196 232; do
+  for i in {0..6}; do
+  ((i = i*36 +16))
+  printf "\n\n %3b  " $i
+  for j in {0..35}; do
+  ((val = i+j))
+  echo -en "\033[48;5;${val}m  \033[m "
+  done
+  done
+  echo -e "\n"
 }
 
 showcolors256() {
@@ -925,32 +959,32 @@ showcolors256() {
 }
 
 _showcolor256_fg() {
-    local code
-    code=$( printf %03d "$1" )
-    echo -ne "\033[38;5;${code}m"
-    echo -nE " $code "
-    echo -ne "\033[0m"
+  local code
+  code=$( printf %03d "$1" )
+  echo -ne "\033[38;5;${code}m"
+  echo -nE " $code "
+  echo -ne "\033[0m"
 }
 
 _showcolor256_bg() {
-    if (( $2 % 2 == 0 )); then
-        echo -ne "\033[1;37m"
-    else
-        echo -ne "\033[0;30m"
-    fi
-    local code
-    code=$( printf %03d "$1" )
-    echo -ne "\033[48;5;${code}m"
-    echo -nE " $code "
-    echo -ne "\033[0m"
+  if (( $2 % 2 == 0 )); then
+      echo -ne "\033[1;37m"
+  else
+      echo -ne "\033[0;30m"
+  fi
+  local code
+  code=$( printf %03d "$1" )
+  echo -ne "\033[48;5;${code}m"
+  echo -nE " $code "
+  echo -ne "\033[0m"
 }
 
-# Scan subnet for active systems (arp scan) - Usage: subnetscan 192.168.122.1/24
+# scan subnet for active systems (arp scan) - Usage: subnetscan 192.168.122.1/24
 subnetscan() {
   nmap -v -sn "${1}" -oG - | awk '$4=="Status:" && $5=="Up" {print $2}'
 }
 
-# Scan subnet for available IPs - Usage: subnetfree 192.168.122.1/24
+# scan subnet for available IPs - Usage: subnetfree 192.168.122.1/24
 subnetfree() {
   nmap -v -sn -n "${1}" -oG - | awk '/Status: Down/{print $2}'
 }
@@ -974,7 +1008,7 @@ stealthscan-dns(){ # use recursive DNS proxies for a stealth scan on a target - 
   nmap --dns-servers "${1}" -sL "${2}"
 }
 
-# Stealth syn scan, OS and version detection, verbose output - Usage: portscan-stealth 192.168.122.1/24 or portscan-stealth 192.168.122.137 1-65535
+# stealth syn scan, OS and version detection, verbose output - Usage: portscan-stealth 192.168.122.1/24 or portscan-stealth 192.168.122.137 1-65535
 stealthscan-port() {
   sudo nmap -v -p "${2}" -sV -O -sS -T5 "${1}" 
 }
@@ -984,12 +1018,12 @@ wafscan(){
   nmap -p443 --script http-waf-detect --script-args="http-waf-detect.aggro,http-waf-detect.detectBodyChanges" "${1}"
 }
 
-# Detect frame drops using `ping` - Usage: pingdrops 192.168.122.137
+# detect frame drops using `ping` - Usage: pingdrops 192.168.122.137
 pingdrops() { 
   ping "${1}" | grep -oP --line-buffered "(?<=icmp_seq=)[0-9]{1,}(?= )" | awk '$1!=p+1{print p+1"-"$1-1}{p=$1}'
 }
 
-# Use Curl to check URL connection performance - urltest https://google.com
+# use curl to check URL connection performance - urltest https://google.com
 urltest() { 
   URL="$*"
   if [ -n "${URL[0]}" ]; then
@@ -998,7 +1032,7 @@ urltest() {
   fi
 }
 
-# List processes associated with a port - Usage: "portproc 22"
+# list processes associated with a port - Usage: "portproc 22"
 portproc() { 
   port="${1}"
   if [ -n "${port}" ]
@@ -1013,7 +1047,7 @@ portproc() {
   fi
 }
 
-# Generate a file of randomized data and certain size - Usage: filegen <size> <location> <(a)lpha, (n)umeric, (r)andom, (b)inary>
+# generate a file of randomized data and certain size - Usage: filegen <size> <location> <(a)lpha, (n)umeric, (r)andom, (b)inary>
 filegen() {  
   s="${1}"
   if [ -z "${s}" ]; then s="1M"; fi
@@ -1031,7 +1065,7 @@ filegen() {
   ls -alh "${f}"
 }
 
-#  animated gifs from any video - https://gist.github.com/SlexAxton/4989674
+# animated gifs from any video - https://gist.github.com/SlexAxton/4989674
 gifify() { 
   if [[ -n "$1" ]]; then
     if [[ $2 == '--good' ]]; then
@@ -1072,30 +1106,30 @@ appleProtection() {
 videotag() {
   if [ $# -lt 1 ]; then
     echo "Examples of usage:"
-	  echo -e "\t tag_remove <path_to_file> - remove all tags from video"
-	  echo -e "\t tag_remove -t [--tag] <path_to_file> <title> <comment>"
+    echo -e "\t tag_remove <path_to_file> - remove all tags from video"
+    echo -e "\t tag_remove -t [--tag] <path_to_file> <title> <comment>"
   fi
 
   if [[ "$1" == "-h" || "$1" == "--help" ]]; then
     echo "Examples of usage:"
-	  echo -e "\t tag_remove <path_to_file> - remove all tags from video"
-	  echo -e "\t tag_remove -t [--tag] <path_to_file> <title> <comment>"
+    echo -e "\t tag_remove <path_to_file> - remove all tags from video"
+    echo -e "\t tag_remove -t [--tag] <path_to_file> <title> <comment>"
   fi
 
 
   if [[ "$1" == "-t" || "$1" == "--tag" ]]; then
     if [ "$#" -ne 4 ]; then
       echo "Examples of usage:"
-	    echo -e "\t tag_remove <path_to_file> - remove all tags from video"
-	    echo -e "\t tag_remove -t [--tag] <path_to_file> <title> <comment>"
-	  else	
+      echo -e "\t tag_remove <path_to_file> - remove all tags from video"
+      echo -e "\t tag_remove -t [--tag] <path_to_file> <title> <comment>"
+    else	
 
     FILEFULL=$2
     FILE="${FILEFULL%.*}"
     EXT="${FILEFULL##*.}"
     OUTPUT="$FILE.$$.$EXT"
 
-		ffmpeg -i "$FILEFULL" -vcodec copy -acodec copy -map_metadata -1 -metadata title="$3" -metadata comment="$4" "$OUTPUT"
+    ffmpeg -i "$FILEFULL" -vcodec copy -acodec copy -map_metadata -1 -metadata title="$3" -metadata comment="$4" "$OUTPUT"
       fi
   else
 
@@ -1104,11 +1138,11 @@ videotag() {
     EXT="${FILEFULL##*.}"
     OUTPUT="$FILE.$$.$EXT"
 
-  	if [ -f "$FILEFULL" ]; then
-		  ffmpeg -i "$FILEFULL" -vcodec copy -acodec copy -map_metadata -1 -metadata title="F4ck 0ff" -metadata comment="" "$OUTPUT"
-		else
-			echo "$FILEFULL - does not exist!"
-		fi
+    if [ -f "$FILEFULL" ]; then
+      ffmpeg -i "$FILEFULL" -vcodec copy -acodec copy -map_metadata -1 -metadata title="F4ck 0ff" -metadata comment="" "$OUTPUT"
+    else
+      echo "$FILEFULL - does not exist!"
+    fi
   fi
 }
 

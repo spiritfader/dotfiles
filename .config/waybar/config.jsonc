@@ -7,25 +7,32 @@
     "spacing": 4, // Gaps between modules (4px)
     // Choose the order of the modules
     "modules-left": [
-        "hyprland/workspaces"
-        //"hyprland/submap",
-        //"hyprland/scratchpad",
-        //"hyprland/language",
+        "hyprland/workspaces",
+        "hyprland/submap",
+        "hyprland/scratchpad"
+        //"hyprland/language"
         //"custom/media"
+        //"mpris"
     ],
-    //"modules-center": [
-    //    "hyprland/window"
-    //],
+    "modules-center": [
+        //"custom/hyprland_clients"
+        //"custom/hyprWindowMode",
+        "wlr/taskbar",
+        "custom/media"
+        //"privacy"
+        //"hyprland/window"
+    ],
     "modules-right": [
-        //"privacy",
+        //"custom/media",
+        "privacy",
         "idle_inhibitor",
+        //"custom/dunst",
         //"mpris",
         //"mpd",
         //"gamemode",
         "pulseaudio",
-        //"jack",
+        "jack",
         //"network",
-        //"power-profiles-daemon",
         //"systemd-failed-units",
         //"cpu",
         //"memory",
@@ -33,10 +40,9 @@
         "backlight",
         //"keyboard-state",
         "battery",
-        //"battery#bat2",
         "tray",
-        "clock"
-        //"custom/power"
+        "clock",
+        "custom/power"
     ],
     "hyprland/workspaces": {
         "disable-scroll": true,
@@ -87,6 +93,7 @@
         "format": "{class}",
         "rewrite": {
             "(.*) — Mozilla Firefox": " $1",
+            "(.*) — LibreWolf": " $1",
             "firefox": " $1",
             "(.*) - bash": " [$1]",
             "(.*) - vim": " $1",
@@ -167,6 +174,15 @@
         "format": "{percent}% {icon}",
         "format-icons": ["", "", "", "", "", "", "", "", ""]
     },
+    //"upower": {
+    // "icon-size": 18,
+    // "hide-if-empty": true,
+    // "tooltip": true,
+    // "tooltip-spacing": 20,
+    // "show-icon": true,
+    // "format": "{percentage}",
+    // "format-alt": "{percentage} {time}"
+    //},
     "battery": {
         "states": {
             // "good": 95,
@@ -225,22 +241,30 @@
         "on-click": "pavucontrol"
     },
     "jack": {
-        "format": " 󰤽   {}%",
+        "format": "{}% 󱡫 ",
         "format-xrun": "{xruns} xruns",
         "format-disconnected": "DSP off",
         "realtime": true
     },
     "mpris": {
-	    "format": "DEFAULT: {player_icon} {dynamic}",
-	    "format-paused": "DEFAULT: {status_icon} <i>{dynamic}</i>",
+        "player": "playerctld",
+        //"interval": 1,
+	    "format": "{player_icon} {status_icon} {dynamic}",
+	    "format-paused": "{player_icon} {status_icon} <i>{dynamic}</i>",
+        "dynamic-order": ["artist", "title"],
 	    "player-icons": {
-	    	"default": "▶",
-	    	"mpv": "🎵"
+	    	"default": "🎵",
+	    	//"mpv": "",
+            "Spotify": "",
+            //"Cider": "",
+            //"Plexamp": "",
+            "firefox": ""
 	    },
 	    "status-icons": {
+            "playing": "▶",
 	    	"paused": "⏸"
-	    }
-	// "ignored-players": ["firefox"]
+	    },
+	    //"ignored-players": ["firefox"]
     },
     "bluetooth": {
 	    "format": " {status}",
@@ -266,7 +290,7 @@
     },
     "privacy": {
 	    "icon-spacing": 4,
-	    "icon-size": 18,
+	    "icon-size": 22,
 	    "transition-duration": 250,
 	    "modules": [
 	    	{
@@ -286,49 +310,80 @@
 	    	}
 	    ]
     },
-    "systemd-failed-units": {
-	    "hide-on-ok": false, // Do not hide if there is zero failed units.
-	    "format": "✗ {nr_failed}",
-	    "format-ok": "✓",
-	    "system": true, // Monitor failed systemwide units.
-	    "user": false // Ignore failed user units.
-    },
-
+    //"systemd-failed-units": {
+	//    "hide-on-ok": false, // Do not hide if there is zero failed units.
+	//    "format": "✗ {nr_failed}",
+	//    "format-ok": "✓",
+	//    "system": true, // Monitor failed systemwide units.
+	//    "user": false // Ignore failed user units.
+    //},
     "custom/media": {
-        "format": "{icon} {text}",
+        "format": "{}",
+        "escape": true,
         "return-type": "json",
         "max-length": 40,
-        "format-icons": {
-            "spotify": "",
-            "default": "🎜"
-        },
-        "escape": true,
-        "exec": "$HOME/.config/waybar/mediaplayer.py 2> /dev/null" // Script in resources folder
-        // "exec": "$HOME/.config/waybar/mediaplayer.py --player spotify 2> /dev/null" // Filter player based on name
+        "on-click": "playerctl play-pause",
+        "on-click-right": "playerctl stop",
+        "smooth-scrolling-threshold": 10, // This value was tested using a trackpad, it should be lowered if using a mouse.
+        "on-scroll-up": "playerctl next",
+        "on-scroll-down": "playerctl previous",
+        "exec": "$HOME/.config/waybar/scripts/mediaplayer.py 2> /dev/null" // Script in resources/custom_modules folder
     },
-    "custom/power": {
-        "format" : "⏻ ",
-		"tooltip": false,
-		"menu": "on-click",
-		"menu-file": "$HOME/.config/waybar/power_menu.xml", // Menu file in resources folder
-		"menu-actions": {
-			"shutdown": "shutdown",
-			"reboot": "reboot",
-			"suspend": "systemctl suspend",
-			"hibernate": "systemctl hibernate"
-		}
-    }
-    //"custom/gpu-usage": {
-    //    "exec": "cat /sys/class/hwmon/hwmon5/device/gpu_busy_percent",
-    //    "format": "{}% ",
-    //    "return-type": "",
-    //    "interval": 10
+    //"custom/media": { //mpris
+    //    "format": "{}",
+    //    "return-type": "json",
+    //    "format-icons": {
+    //        "Playing": " ",
+    //        "Paused": " ",
+    //    },
+    //    "max-length":70,
+    //    "exec": "playerctl -a metadata --format '{\"text\": \"{{playerName}}: {{artist}} - {{markup_escape(title)}}\", \"tooltip\": \"{{playerName}} : {{markup_escape(title)}}\", \"alt\": \"{{status}}\", \"class\": \"{{status}}\"}' -F",
+    //    "on-click": "playerctl play-pause"
     //},
-    //"custom/x-wayland": {
-    //    "exec": "xlsclients | wc -l",
-    //    "format": "{} ",
-    //    "return-type": "",
-    //    "interval": 10
+    //"custom/power": {
+    //    "format" : "⏻ ",
+	//	"tooltip": false,
+	//	"menu": "on-click",
+	//	"menu-file": "$HOME/.config/waybar/scripts/power_menu.xml", // Menu file in resources folder
+	//	"menu-actions": {
+	//		"shutdown": "shutdown",
+	//		"reboot": "reboot",
+	//		"suspend": "systemctl suspend",
+	//		"hibernate": "systemctl hibernate"
+	//	}
     //},
+    //"custom/hyprland_clients": {
+    //    "exec": "~/.config/waybar/scripts/hyprland_clients.sh",
+    //    "format": "[{}]"
+    //},
+    "wlr/taskbar": {
+    "format": "{icon}",
+    "icon-size": 18,
+    "icon-theme": "Numix-Circle",
+    "tooltip-format": "{title}",
+    "on-click": "activate",
+    "on-click-middle": "close"
+    //"ignore-list": [
+    //],
+    //"app_ids-mapping": {
+    //  "firefoxdeveloperedition": "firefox-developer-edition"
+    //},
+    //"rewrite": {
+    //    "Firefox Web Browser": "Firefox",
+    //    "Foot Server": "Terminal"
+    },
+    "custom/hyprWindowMode": {
+        "exec": "~/.config/waybar/scripts/hyprWindowMode.sh",
+        "return-type": "json",
+        "format": "{}",
+        "on-click": "~/.config/waybar/scripts/hyprWindowMode.sh toggle",
+        "tooltip": true
+    },
+    "custom/dunst": {
+        "exec": "~/.config/waybar/scripts/dunst.sh",
+        "on-click": "dunstctl set-paused toggle",
+        "restart-interval": 1
+    }   
 }
+
 

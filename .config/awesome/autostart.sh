@@ -11,7 +11,8 @@ run /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 run picom -b --config "$HOME"/.config/picom/picom.conf
 #run polybar
 run nm-applet
-run blueman-applet
+#run blueman-applet
+run dunst
 run variety
 #run numlockx on
 run wal -R

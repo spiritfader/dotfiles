@@ -8,17 +8,19 @@ beautiful = require("beautiful")
 package.loaded["naughty.dbus"] = {} -- disable naughty from loading
 ruled = require("ruled")
 hotkeys_popup = require("awful.hotkeys_popup")
+freedesktop = require("freedesktop")
+
 
 --require("awful.hotkeys_popup.keys") -- Enable hotkeys help widget for VIM and other apps when client with a matching name is opened:
-require "awful.hotkeys_popup.keys.vim"
-require "awful.hotkeys_popup.keys.firefox"
+--require "awful.hotkeys_popup.keys.vim"
+--require "awful.hotkeys_popup.keys.firefox"
 --require "awful.hotkeys_popup.keys.tmux"
 --require "awful.hotkeys_popup.keys.qutebrowser"
 --require "awful.hotkeys_popup.keys.termite"
 
 -- custom hotkeys
-require "awful.hotkeys_popup.keys.nvim"
-require "awful.hotkeys_popup.keys.sysrq"
+--require "awful.hotkeys_popup.keys.nvim"
+--require "awful.hotkeys_popup.keys.sysrq"
 
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to another config (This code will only ever execute for the fallback config)
@@ -41,44 +43,44 @@ modkey       = "Mod4"
 altkey       = "Mod1"
 browser      = "flatpak --user run io.gitlab.librewolf-community"
 
--- Create a launcher widget and a main menu
+---- Create a launcher widget and a main menu
 --local myawesomemenu = {
---    { "Hotkeys", function() hotkeys_popup.show_help(nil, awful.screen.focused()) end },
---    { "Manual", string.format("%s -e man awesome", terminal) },
---    { "Edit config", string.format("%s -e %s %s", terminal, editor, awesome.conffile) },
---    { "Restart", awesome.restart },
---    { "Quit", function() awesome.quit() end },
--- }
--- 
--- awful.util.mymainmenu = freedesktop.menu.build {
---     before = {
---         { "Awesome", myawesomemenu, beautiful.awesome_icon },
---         -- other triads can be put here
---     },
---     after = {
---         { "Open terminal", terminal },
---         -- other triads can be put here
---     }
--- }
--- 
--- -- Hide the menu when the mouse leaves it
--- awful.util.mymainmenu.wibox:connect_signal("mouse::leave", function()
---     if not awful.util.mymainmenu.active_child or
---        (awful.util.mymainmenu.wibox ~= mouse.current_wibox and
---        awful.util.mymainmenu.active_child.wibox ~= mouse.current_wibox) then
---         awful.util.mymainmenu:hide()
---     else
---         awful.util.mymainmenu.active_child.wibox:connect_signal("mouse::leave",
---         function()
---             if awful.util.mymainmenu.wibox ~= mouse.current_wibox then
---                 awful.util.mymainmenu:hide()
---             end
---         end)
---     end
--- end)
--- 
--- -- Set the Menubar terminal for applications that require it
--- menubar.utils.terminal = terminal
+--   { "Hotkeys", function() hotkeys_popup.show_help(nil, awful.screen.focused()) end },
+--   { "Manual", string.format("%s -e man awesome", terminal) },
+--   { "Edit config", string.format("%s -e %s %s", terminal, editor, awesome.conffile) },
+--   { "Restart", awesome.restart },
+--   { "Quit", function() awesome.quit() end },
+--}
+--
+--awful.util.mymainmenu = freedesktop.menu.build {
+--    before = {
+--        { "Awesome", myawesomemenu, beautiful.awesome_icon },
+--        -- other triads can be put here
+--    },
+--    after = {
+--        { "Open terminal", terminal },
+--        -- other triads can be put here
+--    }
+--}
+
+-- Hide the menu when the mouse leaves it
+--awful.util.mymainmenu.wibox:connect_signal("mouse::leave", function()
+--    if not awful.util.mymainmenu.active_child or
+--       (awful.util.mymainmenu.wibox ~= mouse.current_wibox and
+--       awful.util.mymainmenu.active_child.wibox ~= mouse.current_wibox) then
+--        awful.util.mymainmenu:hide()
+--    else
+--        awful.util.mymainmenu.active_child.wibox:connect_signal("mouse::leave",
+--        function()
+--            if awful.util.mymainmenu.wibox ~= mouse.current_wibox then
+--                awful.util.mymainmenu:hide()
+--            end
+--        end)
+--    end
+--end)
+
+-- Set the Menubar terminal for applications that require it
+--menubar.utils.terminal = terminal
 
 -- Tag layout - Table of layouts to cover with awful.layout.inc, order matters.
 tag.connect_signal("request::default_layouts", function()
@@ -171,13 +173,13 @@ screen.connect_signal("request::desktop_decoration", function(s)
     s.mywibox = awful.wibar {
         position = "top",
         screen   = s,
-        height = 24,
-        --width = 1920,
+        height = 32,
+        width = 1920,
         widget   = {
             layout = wibox.layout.align.horizontal,
             { -- Left widgets
                 layout = wibox.layout.fixed.horizontal,
-                --mylauncher,
+                mylauncher,
                 s.mytaglist,
                 --s.mypromptbox,
             },

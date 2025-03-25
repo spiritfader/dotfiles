@@ -93,6 +93,7 @@ button:hover {
 #pulseaudio,
 #wireplumber,
 #custom-media,
+#mpris,
 #tray,
 #mode,
 #idle_inhibitor,
@@ -219,9 +220,15 @@ label:focus {
     background-color: #f53c3c;
 }
 
+#mpris {
+    color: #ffffff;
+    padding: 0 20px;
+}
+
 #custom-media {
-    background-color: #66cc99;
-    color: #2a5c45;
+    /*background-color: #66cc99;*/
+    background: rgba(0, 0, 0, 0.5);
+    color: #ffffff;
     min-width: 100px;
 }
 
@@ -322,13 +329,15 @@ label:focus {
 }
 
 #privacy-item.screenshare {
-    background-color: #cf5700;
+    color: #ff6a00;
 }
 
 #privacy-item.audio-in {
-    background-color: #1ca000;
+    color: #2bff00;
 }
 
 #privacy-item.audio-out {
-    background-color: #0069d4;
+    /* background-color: #0069d4;*/
+    /*background-color: rgba(43, 48, 59, 0.5);*/
+    color: #0069d4;
 }

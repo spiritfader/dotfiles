@@ -83,7 +83,7 @@ theme.tooltip_bg_color         = theme.bg_normal
 --theme.taglist_squares_unsel = themes_path.."aure/aure/taglist/square_unsel.png"
 
 -- Generate taglist squares:
-local taglist_square_size = dpi(4)
+local taglist_square_size = dpi(8)
 theme.taglist_squares_sel = theme_assets.taglist_squares_sel(
     taglist_square_size, theme.fg_normal
 )
