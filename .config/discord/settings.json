@@ -9,7 +9,8 @@
     "width": 1920,
     "height": 1080
   },
-  "BACKGROUND_COLOR": "#28282d",
+  "BACKGROUND_COLOR": "#2c2d32",
   "MINIMIZE_TO_TRAY": true,
-  "OPEN_ON_STARTUP": false
+  "OPEN_ON_STARTUP": false,
+  "offloadAdmControls": false
 }

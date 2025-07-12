@@ -105,8 +105,8 @@ if command -v npm &> /dev/null && [ -d "$HOME/.local/bin" ] && [[ ":$PATH:" = *"
 fi
 
 # Set environment variables __________________________________________________
-export EDITOR="emacsclient -t"
-export VISUAL="emacsclient -c -a emacs"
+export EDITOR="emacs"
+export VISUAL="emacs"
 export LD_PRELOAD=""
 export HISTSIZE=8192
 export HISTCONTROL=ignorespace
@@ -226,7 +226,7 @@ unset use_color sh
 # Set aliases & functions_____________________________________________________
 # basic util aliases
 alias ssh='TERM=xterm-256color ssh'
-alias em='emacs -nw'
+alias em='emacs'
 #alias em='emacsclient -t'
 alias sudo='sudo '
 alias ll='ls -lh'
@@ -319,7 +319,7 @@ alias pspmake='ptc docker.io/spiritfader/pspdev-plus:latest make'
 #alias pspkzmake='ptc docker.io/krazynez/ark-4:latest make'
 
 # launch psp app for testing
-alias pspur='ppsspp $HOME/Git/UMDRescue/PSP/GAME150/__SCE__UMDRescue/EBOOT.PBP'
+alias pspur='ppsspp $HOME/Git/spiritfader/UMDRescue/PSP/GAME150/__SCE__UMDRescue/EBOOT.PBP'
 
 export DOCKER_HOST=unix://$XDG_RUNTIME_DIR/docker.sock
 
@@ -333,6 +333,7 @@ updpspdev(){
 if command -v flatpak run org.winehq.Wine &> /dev/null && ! command -v wine &> /dev/null; then alias wine='flatpak run org.winehq.Wine'; fi
 if command -v com.openwall.John &> /dev/null && ! command -v john &> /dev/null; then alias john='com.openwall.John'; fi
 if command -v io.gitlab.librewolf-community &> /dev/null && ! command -v librewolf &> /dev/null; then alias librewolf='io.gitlab.librewolf-community'; fi
+if command -v org.mozilla.firefox $> /dev/null && ! command -v firefox &> /dev/null; then alias firefox='org.mozilla.firefox'; fi
 if command -v org.videolan.VLC &> /dev/null && ! command -v vlc &> /dev/null; then alias vlc='org.videolan.VLC'; fi
 if command -v org.kde.dolphin &> /dev/null && ! command -v dolphin &> /dev/null; then alias dolphin='org.kde.dolphin'; fi
 if command -v org.ppsspp.PPSSPP &> /dev/null && ! command -v ppsspp &> /dev/null; then alias ppsspp='org.ppsspp.PPSSPP'; fi
@@ -344,7 +345,7 @@ alias loginshcron='for i in $(cat /etc/passwd | grep sh$ | cut -f1 -d: ); do ech
 
 # clone a hard disk to another, usage: 'clonedisk2disk /dev/sda /dev/sda' clonedisk2disk [source] [destination]
 clonedisk2disk() {
-  sudo dd if="$1" of="$2" bs=64K conv=noerror,sync status=progress
+  sudo sh -c dd if="$1" of="$2" bs=64K conv=noerror,sync status=progress
 }
 
 # image a hard disk to a compressed file, usage: 'imagedisk2file /dev/sda file_to_write_to.img' clonedisk2file [source-disk] [destination-file]
@@ -530,7 +531,7 @@ upd() {
   fi
 
   # Flatpak
-  if command -v flatpak &> /dev/null; then  tput setaf 2; printf '\n\n%s\n' "Flatpak (flatpak --user update):"; tput sgr0; flatpak --user update; flatpak uninstall --unused;fi
+  if command -v flatpak &> /dev/null; then  tput setaf 2; printf '\n\n%s\n' "Flatpak (flatpak --user update):"; tput sgr0; flatpak --user -y update; flatpak uninstall --unused -y;fi
 
   # Snap
   if command -v snap &> /dev/null; then  tput setaf 2; printf '\n%s\n' "Snap (snap refresh):"; tput sgr0; sudo snap refresh; fi

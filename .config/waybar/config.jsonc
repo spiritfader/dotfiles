@@ -8,8 +8,8 @@
     // Choose the order of the modules
     "modules-left": [
         "hyprland/workspaces",
-        "hyprland/submap",
-        "hyprland/scratchpad"
+        "hyprland/submap"
+        //"hyprland/scratchpad"
         //"hyprland/language"
         //"custom/media"
         //"mpris"
