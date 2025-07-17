@@ -313,6 +313,16 @@ ptc() {
   podman run --rm -it -v "$PWD":/source -w /source "$@"
 }
 
+ptc() {
+  podman run -it -w / "$@"
+}
+
+alias sdu='systemctl --user start'
+alias sdd='systemctl --user stop'
+alias sdr='systemctl --user daemon-reload'
+alias dryrun='/usr/lib/systemd/system-generators/podman-system-generator --user --dryrun'
+alias qhd='cd .config/containers/systemd/'
+
 # compile for psp using pspdev toolchains
 alias pspmake='ptc docker.io/spiritfader/pspdev-plus:latest make'
 #alias pspsdkmake='ptc docker.io/pspdev/pspdev:latest make'
@@ -382,7 +392,6 @@ hugepage() {
 alias gadd='git add'
 alias gpush='git push'
 alias gshow='git ls-tree --full-tree -r --name-only HEAD'
-
 
 gcom(){
   git commit -m "$*"
@@ -497,7 +506,7 @@ upd() {
 
   # Arch Linux
   if command -v pacman &> /dev/null; then
-    if command -v pacman &> /dev/null; then tput setaf 2; tput setaf 2; printf '%s\n' "Arch Official Repos (pacman -Syu):"; tput sgr0; sudo pacman -Syu; fi
+    if command -v pacman &> /dev/null; then tput setaf 2; printf '%s\n' "Arch Official Repos (pacman -Syu):"; tput sgr0; sudo pacman -Syu; fi
     if command -v paru &> /dev/null; then tput setaf 2; printf '\n%s\n' "Arch User Repository (paru -Syu):"; tput sgr0; paru -Syu; fi
     if command -v yay &> /dev/null; then tput setaf 2; printf '\n%s\n' "Arch User Repository (paru -Syu):"; tput sgr0; yay -Syua; fi
     if command -v updatedb &> /dev/null; then tput setaf 2; printf '\n%s\n' "Update locate/plocate database..."; tput sgr0; sudo updatedb; fi
@@ -511,27 +520,34 @@ upd() {
   fi
 
   # OpenSUSE
-  if command -v zypper; then
-    if command -v zypper &> /dev/null; then tput setaf 2; tput setaf 2; printf '\n%s\n' "OpenSUSE Repos (zypper refresh/zypper dup):"; tput sgr0; sudo zypper refresh; sudo zypper dup; fi
+  if command -v zypper &> /dev/null; then
+    if command -v zypper &> /dev/null; then tput setaf 2; printf '\n%s\n' "OpenSUSE Repos (zypper refresh):"; tput sgr0; sudo zypper refresh; fi
+    if command -v zypper &> /dev/null; then tput setaf 2; printf '\n%s\n' "OpenSUSE Repos (zypper update):"; tput sgr0; sudo zypper update; fi
+    if command -v zypper &> /dev/null; then tput setaf 2; printf '\n%s\n' "OpenSUSE Repos (zypper clean):"; tput sgr0; sudo zypper clean; fi
+  fi
+
+  # Fedora/RHEL (DNF)
+  if command -v dnf &> /dev/null; then # if Fedora/RHEL
+    if command -v dnf &> /dev/null; then  tput setaf 2; printf '\n%s\n' "RHEL/Fedora Repos (dnf upgrade):"; tput sgr0; sudo dnf upgrade --assumeyes; fi
   fi
 
   # Debian
-  if command -v apt; then
-    if command -v apt &> /dev/null; then tput setaf 2; tput setaf 2; printf '\n%s\n' "Debian Repos (apt update/apt upgrade):"; tput sgr0; sudo apt update; sudo apt upgrade; fi
+  if command -v apt &> /dev/null; then
+    if command -v apt &> /dev/null; then tput setaf 2; printf '\n%s\n' "Debian Repos (apt update/apt upgrade):"; tput sgr0; sudo apt update; sudo apt upgrade; fi
   fi
 
-  # Fedora/RHEL
-  if command -v yum; then
-    if command -v yum &> /dev/null; then tput setaf 2; tput setaf 2; printf '\n%s\n' "RHEL/Fedora Repos (yum update/yum upgrade):"; tput sgr0; sudo yum update; sudo yum upgrade; fi
+  # Fedora/RHEL (yum)
+  if command -v yum &> /dev/null; then
+    if command -v yum &> /dev/null; then tput setaf 2; printf '\n%s\n' "RHEL/Fedora Repos (yum update/yum upgrade):"; tput sgr0; sudo yum update; sudo yum upgrade; fi
   fi
 
   # Alpine
-  if command -v pkg; then
-    if command -v pkg &> /dev/null; then tput setaf 2; tput setaf 2; printf '\n%s\n' "Alpine Repos (pkg update/pkg upgrade):"; tput sgr0; sudo pkg update; sudo pkg upgrade; fi
+  if command -v pkg &> /dev/null; then
+    if command -v pkg &> /dev/null; then tput setaf 2; printf '\n%s\n' "Alpine Repos (pkg update/pkg upgrade):"; tput sgr0; sudo pkg update; sudo pkg upgrade; fi
   fi
 
   # Flatpak
-  if command -v flatpak &> /dev/null; then  tput setaf 2; printf '\n\n%s\n' "Flatpak (flatpak --user update):"; tput sgr0; flatpak --user -y update; flatpak uninstall --unused -y;fi
+  if command -v flatpak &> /dev/null; then tput setaf 2; printf '\n\n%s\n' "Flatpak (flatpak --user update):"; tput sgr0; flatpak --user -y update; flatpak uninstall --unused -y;fi
 
   # Snap
   if command -v snap &> /dev/null; then  tput setaf 2; printf '\n%s\n' "Snap (snap refresh):"; tput sgr0; sudo snap refresh; fi

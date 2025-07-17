@@ -1,0 +1,11 @@
+[914878a9-e427-494e-a403-11148b2fd220]
+Description=Remove window titlebar and frames
+noborder=true
+noborderrule=3
+types=1
+wmclass=.*
+wmclassmatch=3
+
+[General]
+count=1
+rules=914878a9-e427-494e-a403-11148b2fd220

@@ -1,0 +1,2 @@
+SUBSYSTEM=="power_supply", ATTR{online}=="0", RUN+="/home/spiritfader/.local/bin/powertop-battery.sh"
+SUBSYSTEM=="power_supply", ATTR{online}=="1", RUN+="/home/spiritfader/.local/bin/powertop-plugged.sh"
