@@ -259,6 +259,12 @@ toggle do not disturb=none,,Toggle do not disturb
 [services][Alacritty.desktop]
 New=Meta+Return
 
+[services][com.visualstudio.code.desktop]
+_launch=Meta+C
+
+[services][emacs.desktop]
+_launch=Meta+X
+
 [services][org.kde.spectacle.desktop]
 RecordRegion=Meta+Shift+R
 RectangularRegionScreenShot=Meta+Shift+S
