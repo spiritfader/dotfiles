@@ -1,11 +1,38 @@
-[914878a9-e427-494e-a403-11148b2fd220]
-Description=Remove window titlebar and frames
+[160e4506-351c-4771-bf63-dd32bf1f25c1]
+Description=Remove titlebar and frame on all windows
 noborder=true
 noborderrule=3
-types=1
 wmclass=.*
 wmclassmatch=3
 
+[28dea55d-bced-4929-93bd-3883307a43c0]
+maximizehoriz=true
+maximizehorizrule=3
+maximizevert=true
+maximizevertrule=3
+
+[97cd9a62-8360-470d-aca8-22b87e3045a8]
+maximizehoriz=true
+maximizehorizrule=3
+maximizevert=true
+maximizevertrule=3
+types=1
+
 [General]
-count=1
-rules=914878a9-e427-494e-a403-11148b2fd220
+count=2
+rules=160e4506-351c-4771-bf63-dd32bf1f25c1,f95caa51-0abd-4da1-942d-0e52e642c82e
+
+[d5d5a9e8-b713-45c8-8500-9d749031561b]
+Description=Maximize windows by default
+maximizehoriz=true
+maximizehorizrule=3
+maximizevert=true
+maximizevertrule=3
+
+[f95caa51-0abd-4da1-942d-0e52e642c82e]
+Description=Alacritty starts maximized
+size=1920,1044
+sizerule=3
+wmclass=Alacritty
+wmclasscomplete=true
+wmclassmatch=3

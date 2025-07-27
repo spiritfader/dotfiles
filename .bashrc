@@ -9,7 +9,7 @@
 [[ $- != *i* ]] && return
 
 # source git-prompt for ps1
-source /usr/share/git/git-prompt.sh
+#source /usr/share/git/git-prompt.sh
 
 # source bashrc.d if exists
 for sh in /etc/bash/bashrc.d/* ; do
@@ -218,7 +218,7 @@ if [ "$use_color" = yes ]; then
 fi
 
 # import colorscheme from 'wal' asynchronously.
-(cat ~/.cache/wal/sequences &)
+#(cat ~/.cache/wal/sequences &)
 
 # try to keep environment pollution down, EPA loves us.
 unset use_color sh
@@ -292,6 +292,9 @@ alias rr='ranger'
 
 # add an "alert" alias for long running commands, Usage: "sleep 10; alert"
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+
+# selinux troubleshooting
+alias errsel='sudo ausearch -m AVC,USER_AVC,SELINUX_ERR,USER_SELINUX_ERR'
 
 # docker aliases
 alias lzd='lazydocker'
@@ -522,8 +525,9 @@ upd() {
   # OpenSUSE
   if command -v zypper &> /dev/null; then
     if command -v zypper &> /dev/null; then tput setaf 2; printf '\n%s\n' "OpenSUSE Repos (zypper refresh):"; tput sgr0; sudo zypper refresh; fi
-    if command -v zypper &> /dev/null; then tput setaf 2; printf '\n%s\n' "OpenSUSE Repos (zypper update):"; tput sgr0; sudo zypper update; fi
+    if command -v zypper &> /dev/null; then tput setaf 2; printf '\n%s\n' "OpenSUSE Repos (zypper dist-upgrade):"; tput sgr0; sudo zypper dup; fi
     if command -v zypper &> /dev/null; then tput setaf 2; printf '\n%s\n' "OpenSUSE Repos (zypper clean):"; tput sgr0; sudo zypper clean; fi
+    if which -v sbctl &> /dev/null; then tput setaf 2; printf '\n%s\n' "Secure Boot Signing (sbctl sign-all):"; tput sgr0; sudo sbctl sign-all; fi
   fi
 
   # Fedora/RHEL (DNF)
@@ -531,14 +535,14 @@ upd() {
     if command -v dnf &> /dev/null; then  tput setaf 2; printf '\n%s\n' "RHEL/Fedora Repos (dnf upgrade):"; tput sgr0; sudo dnf upgrade --assumeyes; fi
   fi
 
+   # Fedora/RHEL (yum)
+  if command -v yum &> /dev/null; then
+    if command -v yum &> /dev/null; then tput setaf 2; printf '\n%s\n' "RHEL/Fedora Repos (yum update/yum upgrade):"; tput sgr0; sudo yum update; sudo yum upgrade; fi
+  fi
+
   # Debian
   if command -v apt &> /dev/null; then
     if command -v apt &> /dev/null; then tput setaf 2; printf '\n%s\n' "Debian Repos (apt update/apt upgrade):"; tput sgr0; sudo apt update; sudo apt upgrade; fi
-  fi
-
-  # Fedora/RHEL (yum)
-  if command -v yum &> /dev/null; then
-    if command -v yum &> /dev/null; then tput setaf 2; printf '\n%s\n' "RHEL/Fedora Repos (yum update/yum upgrade):"; tput sgr0; sudo yum update; sudo yum upgrade; fi
   fi
 
   # Alpine
@@ -743,17 +747,17 @@ dusort() {
 }
 
 # traverse up a number of directories | cu   -> cd ../ | cu 2 -> cd ../../ |  cu 3 -> cd ../../../
-..() { 
-  local count=$1
-  if [ -z "${count}" ]; then
-    count=1
-  fi
-  local path=""
-  for i in $(seq 1 "${count}"); do
-    path="${path}../"
-  done
-  cd $path || exit
-}
+#..() {
+#  local count=$1
+#  if [ -z "${count}" ]; then
+#    count=1
+#  fi
+#  local path=""
+#  for i in $(seq 1 "${count}"); do
+#    path="${path}../"
+#  done
+#  cd $path || exit
+#}
 
 # open all modified files in vim tabs
 nvimod() {
@@ -884,9 +888,9 @@ mkmv() {
 }
 
 # make directory and immediately enter it
-md () { 
-  mkdir -p "$@" && cd "$@" || exit
-}
+#md() {
+#  mkdir -p "$@" && cd "$@" || exit
+#}
 
 # prints ANSI 16-colors
 ansicolortest() {

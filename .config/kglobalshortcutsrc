@@ -1,6 +1,6 @@
 [ActivityManager]
 _k_friendly_name=Activity Manager
-switch-to-activity-8cf4fabb-9114-4300-b11a-81a96651e3e2=none,none,Switch to activity "Default"
+switch-to-activity-15356b9a-9a65-4a6c-a966-8061b8c64e48=none,none,Switch to activity "Default"
 
 [KDE Keyboard Layout Switcher]
 Switch to Last-Used Keyboard Layout=Meta+Alt+L,Meta+Alt+L,Switch to Last-Used Keyboard Layout
@@ -21,6 +21,11 @@ increase_volume=Volume Up,Volume Up,Increase Volume
 increase_volume_small=Shift+Volume Up,Shift+Volume Up,Increase Volume by 1%
 mic_mute=Microphone Mute\tMeta+Volume Mute,Microphone Mute\tMeta+Volume Mute,Mute Microphone
 mute=Volume Mute,Volume Mute,Mute
+
+[konversation]
+_k_friendly_name=Konversation
+next_active_tab=none,none,Next Active Tab
+toggle_mainwindow_visibility=none,none,Show/Hide Konversation
 
 [ksmserver]
 Halt Without Confirmation=none,,Shut Down Without Confirmation
@@ -46,41 +51,6 @@ ExposeClassCurrentDesktop=none,none,Toggle Present Windows (Window class on curr
 Grid View=Meta+G,Meta+G,Toggle Grid View
 Increase Opacity=none,,Increase Opacity of Active Window by 5%
 Kill Window=Meta+Ctrl+Esc,Meta+Ctrl+Esc,Kill Window
-KrohnkiteBTreeLayout=none,none,Krohnkite: BTree Layout
-KrohnkiteColumnsLayout=none,none,Krohnkite: Columns Layout
-KrohnkiteDecrease=none,none,Krohnkite: Decrease
-KrohnkiteFloatAll=Meta+Shift+F,none,Krohnkite: Toggle Float All
-KrohnkiteFloatingLayout=none,none,Krohnkite: Floating Layout
-KrohnkiteFocusDown=Meta+J,none,Krohnkite: Focus Down
-KrohnkiteFocusLeft=Meta+H,none,Krohnkite: Focus Left
-KrohnkiteFocusNext=none,none,Krohnkite: Focus Next
-KrohnkiteFocusPrev=Meta+\\,,none,Krohnkite: Focus Previous
-KrohnkiteFocusRight=none,none,Krohnkite: Focus Right
-KrohnkiteFocusUp=Meta+K,none,Krohnkite: Focus Up
-KrohnkiteGrowHeight=Meta+Ctrl+J,none,Krohnkite: Grow Height
-KrohnkiteIncrease=Meta+I,none,Krohnkite: Increase
-KrohnkiteMonocleLayout=Meta+M,none,Krohnkite: Monocle Layout
-KrohnkiteNextLayout=Meta+\\\\,none,Krohnkite: Next Layout
-KrohnkitePreviousLayout=Meta+|,none,Krohnkite: Previous Layout
-KrohnkiteQuarterLayout=none,none,Krohnkite: Quarter Layout
-KrohnkiteRotate=Meta+R,none,Krohnkite: Rotate
-KrohnkiteRotatePart=Meta+Shift+R,none,Krohnkite: Rotate Part
-KrohnkiteSetMaster=none,none,Krohnkite: Set master
-KrohnkiteShiftDown=Meta+Shift+J,none,Krohnkite: Move Down/Next
-KrohnkiteShiftLeft=Meta+Shift+H,none,Krohnkite: Move Left
-KrohnkiteShiftRight=Meta+Shift+L,none,Krohnkite: Move Right
-KrohnkiteShiftUp=Meta+Shift+K,none,Krohnkite: Move Up/Prev
-KrohnkiteShrinkHeight=Meta+Ctrl+K,none,Krohnkite: Shrink Height
-KrohnkiteShrinkWidth=Meta+Ctrl+H,none,Krohnkite: Shrink Width
-KrohnkiteSpiralLayout=none,none,Krohnkite: Spiral Layout
-KrohnkiteSpreadLayout=none,none,Krohnkite: Spread Layout
-KrohnkiteStackedLayout=none,none,Krohnkite: Stacked Layout
-KrohnkiteStairLayout=none,none,Krohnkite: Stair Layout
-KrohnkiteTileLayout=none,none,Krohnkite: Tile Layout
-KrohnkiteToggleFloat=Meta+F,none,Krohnkite: Toggle Float
-KrohnkiteTreeColumnLayout=none,none,Krohnkite: Tree Column Layout
-KrohnkitegrowWidth=Meta+Ctrl+L,none,Krohnkite: Grow Width
-KrohnkitetoggleDock=none,none,Krohnkite: Toggle Dock
 Move Tablet to Next Output=none,none,Move the tablet to the next output
 MoveMouseToCenter=Meta+F6,Meta+F6,Move Mouse to Center
 MoveMouseToFocus=Meta+F5,Meta+F5,Move Mouse to Focus
@@ -147,7 +117,7 @@ Walk Through Windows of Current Application Alternative=none,none,Walk Through W
 Walk Through Windows of Current Application Alternative (Reverse)=none,none,Walk Through Windows of Current Application Alternative (Reverse)
 Window Above Other Windows=none,,Keep Window Above Others
 Window Below Other Windows=none,,Keep Window Below Others
-Window Close=Meta+Q,Alt+F4,Close Window
+Window Close=Meta+Q\tAlt+F4,Alt+F4,Close Window
 Window Custom Quick Tile Bottom=none,,Custom Quick Tile Window to the Bottom
 Window Custom Quick Tile Left=none,,Custom Quick Tile Window to the Left
 Window Custom Quick Tile Right=none,,Custom Quick Tile Window to the Right
@@ -268,14 +238,13 @@ activate task manager entry 6=Meta+6,Meta+6,Activate Task Manager Entry 6
 activate task manager entry 7=Meta+7,Meta+7,Activate Task Manager Entry 7
 activate task manager entry 8=Meta+8,Meta+8,Activate Task Manager Entry 8
 activate task manager entry 9=Meta+9,Meta+9,Activate Task Manager Entry 9
-activate widget 29=none,none,Activate Application Launcher Widget
 clear-history=none,,Clear Clipboard History
 clipboard_action=Meta+Ctrl+X,Meta+Ctrl+X,Automatic Action Popup Menu
 cycle-panels=Meta+Alt+P,Meta+Alt+P,Move keyboard focus between panels
 cycleNextAction=none,,Next History Item
 cyclePrevAction=none,,Previous History Item
 edit_clipboard=none,,Edit Contents…
-manage activities=Alt+Q,Meta+Q,Show Activity Switcher
+manage activities=none,Meta+Q,Show Activity Switcher
 next activity=Meta+A,none,Walk through activities
 previous activity=Meta+Shift+A,none,Walk through activities (Reverse)
 repeat_action=none,,Manually Invoke Action on Current Clipboard
@@ -291,17 +260,15 @@ toggle do not disturb=none,,Toggle do not disturb
 New=Meta+Return
 
 [services][org.kde.spectacle.desktop]
-ActiveWindowScreenShot=none
-FullScreenScreenShot=none
-RecordRegion=none
-RecordScreen=none
-RecordWindow=none
+RecordRegion=Meta+Shift+R
 RectangularRegionScreenShot=Meta+Shift+S
-WindowUnderCursorScreenShot=none
 _launch=Print
 
 [services][org.mozilla.firefox.desktop]
 new-window=Meta+W
+
+[services][ranger.desktop]
+_launch=Meta+R
 
 [wacomtablet]
 Map to fullscreen=Meta+Ctrl+F,Meta+Ctrl+F,Map to fullscreen
