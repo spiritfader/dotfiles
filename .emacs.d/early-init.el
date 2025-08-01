@@ -40,3 +40,14 @@
                             (foreground-color . "#ffffff")
                             (ns-appearance . dark)
                             (ns-transparent-titlebar . t)))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;;   Custom Theme Modifications
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            ;; set font
+                            (set-face-attribute 'default nil :family "DroidSansM Nerd Font Mono" :height 110)
+                            
+                            ;; set background transparency
+                            (set-frame-parameter nil 'alpha-background 100)
+                            (add-to-list 'default-frame-alist '(alpha-background . 100))

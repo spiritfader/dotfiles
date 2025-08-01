@@ -52,51 +52,51 @@ fi
 
 #### check for user bin $HOME/.local/bin and add to path if it exists and isnt in path
 if [ -d "$HOME/.local/bin" ] && [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
-  PATH="$HOME/.local/bin${PATH:+":$PATH"}"
+  path="$HOME/.local/bin${PATH:+":$path"}"
 fi
 
 #### check for user bin $HOME/bin and add to path if it exists and isnt in path
 if [ -d "$HOME/bin" ] && [[ ":$PATH:" != *":$HOME/bin:"* ]]; then
-  PATH="$HOME/bin${PATH:+":$PATH"}"
+  path="$HOME/bin${PATH:+":$path"}"
 fi
 
 #### check for pspdev toolchain and add to path if exists
-if [ -d "$HOME/$PSPDEV" ] && [[ ":$PATH:" != *":$HOME/$PSPDEV/bin:"* ]]; then
+if [ -d "$HOME/.pspdev" ] && [[ ":$PATH:" != *":$HOME/.pspdev/bin:"* ]]; then
   export PSPDEV=.pspdev
-  PATH="$HOME/$PSPDEV/bin${PATH:+":$PATH"}"
+  path="$HOME/$PSPDEV/bin${PATH:+":$path"}"
 fi
 
 #### Check for openjdk and add to env variable
 if [ -f /etc/profile.d/jre.sh ] && [[ ":$PATH:" != *":/usr/lib/jvm/default/bin:"* ]]; then
-  PATH="/usr/lib/jvm/default/bin${PATH:+":$PATH"}"
+  path="/usr/lib/jvm/default/bin${PATH:+":$path"}"
 fi
 
 #### check for ruby gems & add ruby gems to path
 if command -v gem &> /dev/null && [ -d "$(gem env user_gemhome)" ] && [[ ":$PATH:" != *":$GEM_HOME/bin:"* ]]; then
   GEM_HOME="$(gem env user_gemhome)"
   export GEM_HOME
-  PATH="$GEM_HOME/bin${PATH:+":$PATH"}"
+  path="$GEM_HOME/bin${PATH:+":$path"}"
 fi
 
 #### check for go bin and add to path
 if command -v go &> /dev/null && [ -d "$(go env GOPATH)" ] && [[ ":$PATH:" != *":$(go env GOBIN):$(go env GOPATH)/bin:"* ]]; then
-  PATH="$(go env GOBIN):$(go env GOPATH)/bin${PATH:+":$PATH"}"
+  path="$(go env GOBIN):$(go env GOPATH)/bin${PATH:+":$path"}"
 fi
 
 #### check for dotnet and add to path
 if command -v dotnet &> /dev/null && [ -d "$HOME/.dotnet/tools"  ] && [[ ":$PATH:" != *":$HOME/.dotnet/tools:"* ]]; then
-  PATH="$HOME/.dotnet/tools${PATH:+":$PATH"}"
+  path="$HOME/.dotnet/tools${PATH:+":$path"}"
   export DOTNET_CLI_TELEMETRY_OPTOUT=1
 fi
 
 #### check for ccache and add to path
 if command -v ccache &> /dev/null && [ -d "/usr/lib/ccache/bin" ] && [[ ":$PATH:" != *":/usr/lib/ccache/bin:"* ]]; then
-  PATH="/usr/lib/ccache/bin${PATH:+":$PATH"}"
+  path="/usr/lib/ccache/bin${PATH:+":$path"}"
 fi
 
 #### check for rustup and add to path
 if command -v rustup &> /dev/null && [ -d "/usr/lib/rustup/bin" ] && [[ ":$PATH:" != *":/usr/lib/rustup/bin:"* ]]; then
-  PATH="/usr/lib/rustup/bin${PATH:+":$PATH"}"
+  path="/usr/lib/rustup/bin${PATH:+":$path"}"
 fi
 
 #### check for npm and allow for local installations
@@ -229,8 +229,8 @@ alias ssh='TERM=xterm-256color ssh'
 alias em='emacs'
 #alias em='emacsclient -t'
 alias sudo='sudo '
-alias ll='ls -lh'
-alias la='ls -lha'
+alias ll='ls -lhZ'
+alias la='ls -lhaZ'
 alias l='ls -CF'
 alias less='less -FR --use-color'
 alias env='env | sort'
@@ -244,7 +244,6 @@ alias curl="curl --user-agent 'noleak'"
 alias count='find . -type f | wc -l'
 alias empty_trash='rm -rf ~/.local/share/Trash/*'
 alias infgears='vblank_mode=0 glxgears'
-alias updaterepo='sudo reflector --verbose -c "United States" --latest 30 --fastest 30 --score 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist'
 alias fwupd='fwupdmgr get-updates'
 alias logout='pkill -9 -u $(whoami)'
 alias h='fc -l'
@@ -285,8 +284,6 @@ alias scheduler='grep "" /sys/block/*/queue/scheduler'
 alias upde='sudo pacman -Syu && paru -Syu'
 alias xls='xlsclients'
 alias err='journalctl -b -p err'
-alias reinstall-packages='sudo pacman -Qqn | sudo pacman -S -'
-alias packagereinstall='sudo pacman -Qqe > packages.txt; sudo pacman -S $(comm -12 <(pacman -Slq | sort) <(sort packages.txt)); rm packages.txt'
 alias sysdblame='systemd-analyze plot > $HOME/Pictures/boot.svg'
 alias rr='ranger'
 
@@ -313,10 +310,10 @@ alias pls='podman container ps --all'
 
 # compile in podman toolchain, usage: ptc "docker image"
 ptc() {
-  podman run --rm -it -v "$PWD":/source -w /source "$@"
+  podman run --rm -it -v "$PWD":/source:z -w /source "$@"
 }
 
-ptc() {
+ptr() {
   podman run -it -w / "$@"
 }
 
@@ -423,10 +420,11 @@ git_update_all() {
 alias dtf='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 alias dfpush='dtf push origin'
 alias dfshow='dtf ls-tree --full-tree -r --name-only HEAD'
+alias dfs='dtf status'
+
 dfc(){
   dtf commit -am "$*"
 }
-alias dfs='dtf status'
 
 # Dotfile Management System - Loop through ".$HOME/.dotfiles.conf" of files, check to see if file within exists and track it in the bare repo
 dftrack(){
@@ -524,9 +522,9 @@ upd() {
 
   # OpenSUSE
   if command -v zypper &> /dev/null; then
-    if command -v zypper &> /dev/null; then tput setaf 2; printf '\n%s\n' "OpenSUSE Repos (zypper refresh):"; tput sgr0; sudo zypper refresh; fi
-    if command -v zypper &> /dev/null; then tput setaf 2; printf '\n%s\n' "OpenSUSE Repos (zypper dist-upgrade):"; tput sgr0; sudo zypper dup; fi
-    if command -v zypper &> /dev/null; then tput setaf 2; printf '\n%s\n' "OpenSUSE Repos (zypper clean):"; tput sgr0; sudo zypper clean; fi
+    if command -v zypper &> /dev/null; then tput setaf 2; printf '\n%s\n' "OpenSUSE Repos (zypper refresh):"; tput sgr0; sudo zypper -v refresh; fi
+    if command -v zypper &> /dev/null; then tput setaf 2; printf '\n%s\n' "OpenSUSE Repos (zypper dist-upgrade):"; tput sgr0; sudo zypper -v dup; fi
+    if command -v zypper &> /dev/null; then tput setaf 2; printf '\n%s\n' "OpenSUSE Repos (zypper clean):"; tput sgr0; sudo zypper -v clean; fi
     if which -v sbctl &> /dev/null; then tput setaf 2; printf '\n%s\n' "Secure Boot Signing (sbctl sign-all):"; tput sgr0; sudo sbctl sign-all; fi
   fi
 
@@ -746,9 +744,9 @@ dusort() {
   find "$@" -mindepth 1 -maxdepth 1 -exec du -sch {} + | sort -h
 }
 
-# traverse up a number of directories | cu   -> cd ../ | cu 2 -> cd ../../ |  cu 3 -> cd ../../../
+## traverse up a number of directories | cu -> cd ../ | cu 2 -> cd ../../ |  cu 3 -> cd ../../../
 #..() {
-#  local count=$1
+#  local count="$1"
 #  if [ -z "${count}" ]; then
 #    count=1
 #  fi
@@ -756,7 +754,7 @@ dusort() {
 #  for i in $(seq 1 "${count}"); do
 #    path="${path}../"
 #  done
-#  cd $path || exit
+#  cd "$path" || exit
 #}
 
 # open all modified files in vim tabs
@@ -887,7 +885,7 @@ mkmv() {
   mv "$1" "$2"
 }
 
-# make directory and immediately enter it
+## make directory and immediately enter it
 #md() {
 #  mkdir -p "$@" && cd "$@" || exit
 #}

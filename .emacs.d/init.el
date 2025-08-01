@@ -65,7 +65,7 @@
 (savehist-mode)
 
 ;; Move through windows with Ctrl-<arrow keys>
-(windmove-default-keybindings 'control) ; You can use other modifiers here
+;(windmove-default-keybindings 'control) ; You can use other modifiers here
 
 ;; Fix archaic defaults
 (setopt sentence-end-double-space nil)
@@ -109,6 +109,7 @@ If the new path's directories does not exist, create them."
 ;; which-key: shows a popup of available keybindings when typing a long key
 ;; sequence (e.g. C-x ...)
 (use-package which-key
+  :ensure t
   :config
   (which-key-mode))
 
@@ -175,6 +176,9 @@ If the new path's directories does not exist, create them."
 ;; Use common keystrokes by default
 (cua-mode)
 
+;; For terminal users, make the mouse more useful
+(xterm-mouse-mode 1)
+
 ;; Display line numbers in programming mode
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 (setopt display-line-numbers-width 3)           ; Set a minimum width
@@ -196,11 +200,11 @@ If the new path's directories does not exist, create them."
 (setopt tab-bar-show 1)
 
 ;; Add the time to the tab-bar, if visible
-(add-to-list 'tab-bar-format 'tab-bar-format-align-right 'append)
-(add-to-list 'tab-bar-format 'tab-bar-format-global 'append)
-(setopt display-time-format "%a %F %T")
-(setopt display-time-interval 1)
-(display-time-mode)
+;(add-to-list 'tab-bar-format 'tab-bar-format-align-right 'append)
+;(add-to-list 'tab-bar-format 'tab-bar-format-global 'append)
+;(setopt display-time-format "%a %F %T")
+;(setopt display-time-interval 1)
+;(display-time-mode)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
@@ -261,16 +265,17 @@ If the new path's directories does not exist, create them."
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(setq gc-cons-threshold (or bedrock--initial-gc-threshold 800000))
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages nil))
+ '(package-selected-packages 'nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
+(setq gc-cons-threshold (or bedrock--initial-gc-threshold 800000))

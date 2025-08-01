@@ -259,6 +259,9 @@ toggle do not disturb=none,,Toggle do not disturb
 [services][Alacritty.desktop]
 New=Meta+Return
 
+[services][code.desktop]
+_launch=Meta+C
+
 [services][com.visualstudio.code.desktop]
 _launch=Meta+C
 
