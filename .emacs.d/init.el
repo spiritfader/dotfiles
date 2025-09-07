@@ -246,10 +246,10 @@ If the new path's directories does not exist, create them."
 ;(load-file (expand-file-name "extras/email.el" user-emacs-directory))
 
 ;; Tools for academic researchers
-;(load-file (expand-file-name "extras/researcher.el" user-emacs-directory))
+(load-file (expand-file-name "extras/researcher.el" user-emacs-directory))
 
 ;; Packages for writing
-;(load-file (expand-file-name "extras/writer.el" user-emacs-directory))
+(load-file (expand-file-name "extras/writer.el" user-emacs-directory))
 
 ;; non-bedrock additions_______________________________________________________
 
@@ -270,7 +270,9 @@ If the new path's directories does not exist, create them."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages 'nil))
+ '(package-selected-packages nil)
+ '(warning-suppress-log-types '((use-package) (comp) (bytecomp)))
+ '(warning-suppress-types '((use-package))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

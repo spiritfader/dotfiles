@@ -105,8 +105,8 @@ if command -v npm &> /dev/null && [ -d "$HOME/.local/bin" ] && [[ ":$PATH:" = *"
 fi
 
 # Set environment variables __________________________________________________
-export EDITOR="emacs"
-export VISUAL="emacs"
+export EDITOR="nvim"
+export VISUAL="nvim"
 export LD_PRELOAD=""
 export HISTSIZE=8192
 export HISTCONTROL=ignorespace
@@ -114,7 +114,6 @@ export MANPAGER="less -R --use-color -Dd+r -Du+b"
 export RANGER_LOAD_DEFAULT_RC=FALSE
 export PAGER="less"
 export SYSTEMD_PAGER="less"
-export CFLAGS+="-fdiagnostics-color=always"
 
 shopt -s autocd # Enable auto cd when typing directories
 shopt -s checkwinsize # check the terminal size when it regains control - check winsize when resize
@@ -290,8 +289,22 @@ alias rr='ranger'
 # add an "alert" alias for long running commands, Usage: "sleep 10; alert"
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
+# update arkenfox configuration
+alias arkenfox-update='bash "$HOME/.var/app/org.mozilla.firefox/.mozilla/firefox/*.default-release/updater.sh"'
+
+# run arkenfox pref cleaner
+alias arkenfox-prefcleaner='bash ""$HOME/.var/app/org.mozilla.firefox/.mozilla/firefox/*.default-release/prefsCleaner.sh"'
+
 # selinux troubleshooting
 alias errsel='sudo ausearch -m AVC,USER_AVC,SELINUX_ERR,USER_SELINUX_ERR'
+
+rm-small-moduli() {
+  if [[ -f /etc/ssh/moduli ]]; then
+   sudo awk '$5 >= 3071' /etc/ssh/moduli | "/etc/ssh/moduli.safe"; sudo cat "/etc/ssh/moduli.safe" | "/etc/ssh/moduli"
+  else
+    echo "ERROR: Moduli not found in \"/etc/ssh/\""
+  fi
+}
 
 # docker aliases
 alias lzd='lazydocker'
@@ -317,6 +330,10 @@ ptr() {
   podman run -it -w / "$@"
 }
 
+podman-containers() {
+    podman ps -a --format "table {{.ID}}\t{{.Names}}" | (read -r; printf "%s\n" "$REPLY"; sort -k 2)
+}
+
 alias sdu='systemctl --user start'
 alias sdd='systemctl --user stop'
 alias sdr='systemctl --user daemon-reload'
@@ -324,14 +341,16 @@ alias dryrun='/usr/lib/systemd/system-generators/podman-system-generator --user 
 alias qhd='cd .config/containers/systemd/'
 
 # compile for psp using pspdev toolchains
-alias pspmake='ptc docker.io/spiritfader/pspdev-plus:latest make'
+pspmake(){  
+  ptc docker.io/spiritfader/pspdev-plus:latest make
+}
 #alias pspsdkmake='ptc docker.io/pspdev/pspdev:latest make'
 #alias pspkzmake='ptc docker.io/krazynez/ark-4:latest make'
 
 # launch psp app for testing
 alias pspur='ppsspp $HOME/Git/spiritfader/UMDRescue/PSP/GAME150/__SCE__UMDRescue/EBOOT.PBP'
 
-export DOCKER_HOST=unix://$XDG_RUNTIME_DIR/docker.sock
+#export DOCKER_HOST=unix://$XDG_RUNTIME_DIR/docker.sock
 
 # update the latest pspsdk toolchain
 updpspdev(){
@@ -352,6 +371,11 @@ if command -v org.ppsspp.PPSSPP &> /dev/null && ! command -v ppsspp &> /dev/null
 alias loginsh='cat /etc/passwd | grep sh$'
 alias allcron='for i in $(cat /etc/passwd | grep sh$ | cut -f1 -d: ); do echo $i; sudo crontab -u $i -l; done'
 alias loginshcron='for i in $(cat /etc/passwd | grep sh$ | cut -f1 -d: ); do echo $i; sudo crontab -u $i -l; done'
+
+# generate randomized 8192kB keyfile to use for whatever
+genkeyfile() { # usage: genkeyfile destination-file
+  tr -d "[:cntrl:]" < /dev/urandom | dd bs=512 count=16 iflag=fullblock of="$1"
+}
 
 # clone a hard disk to another, usage: 'clonedisk2disk /dev/sda /dev/sda' clonedisk2disk [source] [destination]
 clonedisk2disk() {
@@ -520,9 +544,9 @@ upd() {
     fi
   fi
 
-  # OpenSUSE
+  # OpenSUSE Tumbleweed
   if command -v zypper &> /dev/null; then
-    if command -v zypper &> /dev/null; then tput setaf 2; printf '\n%s\n' "OpenSUSE Repos (zypper refresh):"; tput sgr0; sudo zypper -v refresh; fi
+    if command -v zypper &> /dev/null; then tput setaf 2; printf '\n%s\n' "OpenSUSE Repos (zypper refresh):"; tput sgr0; sudo zypper refresh; fi
     if command -v zypper &> /dev/null; then tput setaf 2; printf '\n%s\n' "OpenSUSE Repos (zypper dist-upgrade):"; tput sgr0; sudo zypper -v dup; fi
     if command -v zypper &> /dev/null; then tput setaf 2; printf '\n%s\n' "OpenSUSE Repos (zypper clean):"; tput sgr0; sudo zypper -v clean; fi
     if which -v sbctl &> /dev/null; then tput setaf 2; printf '\n%s\n' "Secure Boot Signing (sbctl sign-all):"; tput sgr0; sudo sbctl sign-all; fi
@@ -539,8 +563,10 @@ upd() {
   fi
 
   # Debian
-  if command -v apt &> /dev/null; then
-    if command -v apt &> /dev/null; then tput setaf 2; printf '\n%s\n' "Debian Repos (apt update/apt upgrade):"; tput sgr0; sudo apt update; sudo apt upgrade; fi
+  if command -v apt &> /dev/null && grep Debian < /etc/os-release; then
+    if command -v apt &> /dev/null; then tput setaf 2; printf '\n%s\n' "Debian Repos (apt update):"; tput sgr0; sudo apt update; fi
+    if command -v apt &> /dev/null; then tput setaf 2; printf '\n%s\n' "Debian Repos (apt list --upgradable):"; tput sgr0; sudo apt list --upgradable; fi
+    if command -v apt &> /dev/null; then tput setaf 2; printf '\n%s\n' "Debian Repos (apt dist-upgrade):"; tput sgr0; sudo apt dist-upgrade; fi
   fi
 
   # Alpine
