@@ -52,51 +52,52 @@ fi
 
 #### check for user bin $HOME/.local/bin and add to path if it exists and isnt in path
 if [ -d "$HOME/.local/bin" ] && [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
-  path="$HOME/.local/bin${PATH:+":$path"}"
+  PATH="$HOME/.local/bin${PATH:+":$PATH"}"
 fi
 
 #### check for user bin $HOME/bin and add to path if it exists and isnt in path
 if [ -d "$HOME/bin" ] && [[ ":$PATH:" != *":$HOME/bin:"* ]]; then
-  path="$HOME/bin${PATH:+":$path"}"
+  PATH="$HOME/bin${PATH:+":$PATH"}"
 fi
 
 #### check for pspdev toolchain and add to path if exists
 if [ -d "$HOME/.pspdev" ] && [[ ":$PATH:" != *":$HOME/.pspdev/bin:"* ]]; then
-  export PSPDEV=.pspdev
-  path="$HOME/$PSPDEV/bin${PATH:+":$path"}"
+  export PSPDEV="$HOME/.pspdev"
+  export PSPSDK="$HOME/.pspdev/psp/sdk"
+  PATH="$HOME/$PSPDEV/bin${PATH:+":$PATH"}"
 fi
 
 #### Check for openjdk and add to env variable
 if [ -f /etc/profile.d/jre.sh ] && [[ ":$PATH:" != *":/usr/lib/jvm/default/bin:"* ]]; then
-  path="/usr/lib/jvm/default/bin${PATH:+":$path"}"
+  PATH="/usr/lib/jvm/default/bin${PATH:+":$PATH"}"
 fi
 
 #### check for ruby gems & add ruby gems to path
 if command -v gem &> /dev/null && [ -d "$(gem env user_gemhome)" ] && [[ ":$PATH:" != *":$GEM_HOME/bin:"* ]]; then
   GEM_HOME="$(gem env user_gemhome)"
   export GEM_HOME
-  path="$GEM_HOME/bin${PATH:+":$path"}"
+  PATH="$GEM_HOME/bin${PATH:+":$PATH"}"
 fi
 
 #### check for go bin and add to path
 if command -v go &> /dev/null && [ -d "$(go env GOPATH)" ] && [[ ":$PATH:" != *":$(go env GOBIN):$(go env GOPATH)/bin:"* ]]; then
-  path="$(go env GOBIN):$(go env GOPATH)/bin${PATH:+":$path"}"
+  PATH="$(go env GOBIN):$(go env GOPATH)/bin${PATH:+":$PATH"}"
 fi
 
 #### check for dotnet and add to path
 if command -v dotnet &> /dev/null && [ -d "$HOME/.dotnet/tools"  ] && [[ ":$PATH:" != *":$HOME/.dotnet/tools:"* ]]; then
-  path="$HOME/.dotnet/tools${PATH:+":$path"}"
+  #PATH="$HOME/.dotnet/tools${PATH:+":$PATH"}"
   export DOTNET_CLI_TELEMETRY_OPTOUT=1
 fi
 
 #### check for ccache and add to path
 if command -v ccache &> /dev/null && [ -d "/usr/lib/ccache/bin" ] && [[ ":$PATH:" != *":/usr/lib/ccache/bin:"* ]]; then
-  path="/usr/lib/ccache/bin${PATH:+":$path"}"
+  PATH="/usr/lib/ccache/bin${PATH:+":$PATH"}"
 fi
 
 #### check for rustup and add to path
 if command -v rustup &> /dev/null && [ -d "/usr/lib/rustup/bin" ] && [[ ":$PATH:" != *":/usr/lib/rustup/bin:"* ]]; then
-  path="/usr/lib/rustup/bin${PATH:+":$path"}"
+  PATH="/usr/lib/rustup/bin${PATH:+":$PATH"}"
 fi
 
 #### check for npm and allow for local installations
@@ -178,9 +179,9 @@ gitPrompt () {
 if ${use_color} ; then 
   i=1;
   if [[ ${EUID} == 0 ]] ; then # set root PS1
-    PS1+='\[\e[32m\]\T \[\e[36m\]\w\[\e[33m\]$(gitPrompt)\[\e[34m\] \$\[\e[00m\]$(if ! [ $(jobs | wc -l) -eq 0 ]; then jobs | wc -l;fi) ' # custom root prompt with inline git branch status
+    PS1+='\[\e[32m\]\T \H \[\e[36m\]\w\[\e[33m\]$(gitPrompt)\[\e[34m\] \$\[\e[00m\]$(if ! [ $(jobs | wc -l) -eq 0 ]; then jobs | wc -l;fi) ' # custom root prompt with inline git branch status
   else # set user PS1
-    PS1+='\[\e[32m\]\T \[\e[36m\]\w\[\e[33m\]$(gitPrompt)\[\e[34m\] \$\[\e[36m\]$(if ! [ $(jobs | wc -l) -eq 0 ]; then echo "[$(jobs | wc -l)]";fi)\[\e[00m\] ' # custom root prompt with inline git branch status
+    PS1+='\[\e[32m\]\T \H \[\e[36m\]\w\[\e[33m\]$(gitPrompt)\[\e[34m\] \$\[\e[36m\]$(if ! [ $(jobs | wc -l) -eq 0 ]; then echo "[$(jobs | wc -l)]";fi)\[\e[00m\] ' # custom root prompt with inline git branch status
     PS2="~ "
   fi
   #BSD#@export CLICOLOR=1
@@ -227,7 +228,7 @@ unset use_color sh
 alias ssh='TERM=xterm-256color ssh'
 alias em='emacs'
 #alias em='emacsclient -t'
-alias sudo='sudo '
+#alias sudo='sudo '
 alias ll='ls -lhZ'
 alias la='ls -lhaZ'
 alias l='ls -CF'
@@ -285,6 +286,9 @@ alias xls='xlsclients'
 alias err='journalctl -b -p err'
 alias sysdblame='systemd-analyze plot > $HOME/Pictures/boot.svg'
 alias rr='ranger'
+alias ff='fastfetch'
+alias hf='hyfetch'
+alias walp='wal -i "$(cat $HOME/.config/variety/wallpaper/wallpaper.jpg.txt)"'
 
 # add an "alert" alias for long running commands, Usage: "sleep 10; alert"
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
@@ -316,14 +320,14 @@ dtc() {
   docker run --rm -v "$PWD":/source -w /source "$@"
 }
 
-# podman aliases 
+# podman aliases
 alias pcu='podman compose up -d'
 alias pcd='podman compose down'
 alias pls='podman container ps --all'
 
 # compile in podman toolchain, usage: ptc "docker image"
 ptc() {
-  podman run --rm -it -v "$PWD":/source:z -w /source "$@"
+  podman run --security-opt label=disable --rm -it -v "$PWD":/source -w /source "$@"
 }
 
 ptr() {
@@ -340,32 +344,33 @@ alias sdr='systemctl --user daemon-reload'
 alias dryrun='/usr/lib/systemd/system-generators/podman-system-generator --user --dryrun'
 alias qhd='cd .config/containers/systemd/'
 
-# compile for psp using pspdev toolchains
+# compile or run command using pspdev-plus containerized toolchain
 pspmake(){  
-  ptc docker.io/spiritfader/pspdev-plus:latest make
+  ptc docker.io/spiritfader/pspdev-plus:latest make "$@"
 }
 #alias pspsdkmake='ptc docker.io/pspdev/pspdev:latest make'
 #alias pspkzmake='ptc docker.io/krazynez/ark-4:latest make'
 
 # launch psp app for testing
-alias pspur='ppsspp $HOME/Git/spiritfader/UMDRescue/PSP/GAME150/__SCE__UMDRescue/EBOOT.PBP'
+alias pspur='flatpak --user run org.ppsspp.PPSSPP $HOME/Git/UMDRescue/release/GAME/UMDRescue/EBOOT.PBP'
 
 #export DOCKER_HOST=unix://$XDG_RUNTIME_DIR/docker.sock
 
 # update the latest pspsdk toolchain
 updpspdev(){
+  if [ -d "$HOME/.pspdev" ]; then rm -rf "$HOME/.pspdev"; fi  
   curl -L https://github.com/pspdev/pspdev/releases/latest/download/pspdev-ubuntu-latest-x86_64.tar.gz | tar -zxvf - -C "$HOME"
-  mv "$HOME/pspdev" "$HOME/.pspdev"
+  mv -f "$HOME/pspdev" "$HOME/.pspdev"
 }
 
 # flatpak aliases
-if command -v flatpak run org.winehq.Wine &> /dev/null && ! command -v wine &> /dev/null; then alias wine='flatpak run org.winehq.Wine'; fi
-if command -v com.openwall.John &> /dev/null && ! command -v john &> /dev/null; then alias john='com.openwall.John'; fi
-if command -v io.gitlab.librewolf-community &> /dev/null && ! command -v librewolf &> /dev/null; then alias librewolf='io.gitlab.librewolf-community'; fi
-if command -v org.mozilla.firefox $> /dev/null && ! command -v firefox &> /dev/null; then alias firefox='org.mozilla.firefox'; fi
-if command -v org.videolan.VLC &> /dev/null && ! command -v vlc &> /dev/null; then alias vlc='org.videolan.VLC'; fi
-if command -v org.kde.dolphin &> /dev/null && ! command -v dolphin &> /dev/null; then alias dolphin='org.kde.dolphin'; fi
-if command -v org.ppsspp.PPSSPP &> /dev/null && ! command -v ppsspp &> /dev/null; then alias ppsspp='org.ppsspp.PPSSPP'; fi
+#if command -v flatpak run org.winehq.Wine &> /dev/null && ! command -v wine &> /dev/null; then alias wine='flatpak run org.winehq.Wine'; fi
+#if command -v com.openwall.John &> /dev/null && ! command -v john &> /dev/null; then alias john='com.openwall.John'; fi
+#if command -v io.gitlab.librewolf-community &> /dev/null && ! command -v librewolf &> /dev/null; then alias librewolf='io.gitlab.librewolf-community'; fi
+#if command -v org.mozilla.firefox $> /dev/null && ! command -v firefox &> /dev/null; then alias firefox='org.mozilla.firefox'; fi
+#if command -v org.videolan.VLC &> /dev/null && ! command -v vlc &> /dev/null; then alias vlc='org.videolan.VLC'; fi
+#if command -v org.kde.dolphin &> /dev/null && ! command -v dolphin &> /dev/null; then alias dolphin='org.kde.dolphin'; fi
+#if command -v org.ppsspp.PPSSPP &> /dev/null && ! command -v ppsspp &> /dev/null; then alias ppsspp='flatpak --user run org.ppsspp.PPSSPP'; fi
 
 # digital forensics
 alias loginsh='cat /etc/passwd | grep sh$'
@@ -409,7 +414,7 @@ alias cpuvuln='for f in /sys/devices/system/cpu/vulnerabilities/*; do echo "${f#
 
 # check for hugepage support
 hugepage() {
-  grep -e AnonHugePages  /proc/*/smaps | awk  '{ if($2>4) print $0} ' |  awk -F "/"  '{printf $0; system("ps -fp " $3)} '
+  sudo grep -e AnonHugePages /proc/*/smaps | awk  '{ if($2>4) print $0} ' |  awk -F "/"  '{printf $0; system("ps -fp " $3)} '
 }
 
 # git tools___________________________________________________________________

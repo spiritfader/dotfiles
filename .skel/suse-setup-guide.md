@@ -114,6 +114,12 @@ git config --global commit.gpgsign true
 ```zsh
 git config --global gpg.format ssh
 ```
+- tell git to default to ssh for new repos
+```zsh
+git config --global url.ssh://git@github.com/.insteadOf https://github.com/
+git config --global url.ssh://git@gitlab.com/.insteadOf https://gitlab.com/
+git config --global url.ssh://git@bitbucket.org/.insteadOf https://bitbucket.org/
+```
 <br>
 
 ### Finally create an ssh host alias for github and test your connection

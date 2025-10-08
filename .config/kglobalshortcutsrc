@@ -279,6 +279,9 @@ new-window=Meta+W
 [services][ranger.desktop]
 _launch=Meta+R
 
+[services][systemsettings.desktop]
+_launch=Tools\tMeta+I
+
 [wacomtablet]
 Map to fullscreen=Meta+Ctrl+F,Meta+Ctrl+F,Map to fullscreen
 Map to screen 1=Meta+Ctrl+1,Meta+Ctrl+1,Map to screen 1
