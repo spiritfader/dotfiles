@@ -1,0 +1,16 @@
+[General]
+autoSaveImage=true
+clipboardGroup=PostScreenshotCopyImage
+printKeyRunningAction=StartNewInstance
+rememberSelectionRect=Never
+showCaptureInstructions=false
+useReleaseToCapture=true
+
+[ImageSave]
+imageFilenameTemplate=Screenshot-<UnixTime>
+lastImageSaveLocation=file:///home/spiritfader/Pictures/Screenshots/Screenshot-1759894686.png
+translatedScreenshotsFolder=Screenshots
+
+[VideoSave]
+translatedScreencastsFolder=Screencasts
+videoFilenameTemplate=Screencast-<UnixTime>
